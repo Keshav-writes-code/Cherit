@@ -1,22 +1,23 @@
-<ul class="menu bg-base-200 rounded-box w-56">
-  <li><a>Item 1</a></li>
-  <li>
-    <details open>
-      <summary>Parent</summary>
-      <ul>
-        <li><a>Submenu 1</a></li>
-        <li><a>Submenu 2</a></li>
-        <li>
-          <details open>
-            <summary>Parent</summary>
-            <ul>
-              <li><a>Submenu 1</a></li>
-              <li><a>Submenu 2</a></li>
-            </ul>
-          </details>
-        </li>
-      </ul>
-    </details>
-  </li>
-  <li><a>Item 3</a></li>
-</ul>
+<script lang="ts">
+  import { build_file_tree, type FileNode } from "./build_file_tree";
+  import ItemsRender from "./items_render.svelte";
+
+  // Reactive state for the file tree
+  let file_tree: FileNode[] = $state([]);
+
+  // Function to load the tree
+  async function loadTree(rootPath: string): Promise<void> {
+    try {
+      file_tree = await build_file_tree(rootPath);
+    } catch (error) {
+      console.error("Error loading file tree:", error);
+      // Handle error in UI, e.g., show a message
+    }
+  }
+  $effect(() => {
+    loadTree(".");
+  });
+  $inspect(file_tree);
+</script>
+
+<ItemsRender {file_tree} />

@@ -3,5 +3,12 @@
   "identifier": "default",
   "description": "enables the default permissions",
   "windows": ["main"],
-  "permissions": ["core:default", "fs:default"]
+  "permissions": [
+    "core:default",
+    "fs:default",
+    {
+      "identifier": "fs:allow-home-read-recursive",
+      "allow": [{ "path": "$HOME/*.*/*" }]
+    }
+  ]
 }
