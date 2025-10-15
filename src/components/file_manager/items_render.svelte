@@ -22,21 +22,23 @@
 </ul>
 
 <style>
-  /* Minimal accordion animation for <details> with a wrapper */
-  details > .content {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 250ms ease;
+  :global(summary::after) {
+    content: none;
   }
-  details[open] > .content {
-    grid-template-rows: 1fr;
+  :global(summary::before) {
+    content: "";
+    width: 0.375rem;
+    height: 0.375rem;
+    box-shadow: inset 2px 2px;
+    transform-origin: 50%;
+    rotate: 135deg;
+    transition-property: rotate;
+    transition-duration: 0.2s;
   }
-  details > .content > * {
-    overflow: hidden;
-  }
-
-  /* Optional: make summary look clickable */
-  details > summary {
-    cursor: pointer;
+  :global(
+      .menu :where(li > details[open] > summary):before,
+      .menu :where(li > .menu-dropdown-toggle.menu-dropdown-show):before
+    ) {
+    rotate: 225deg;
   }
 </style>
