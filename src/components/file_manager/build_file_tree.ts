@@ -1,4 +1,4 @@
-import { readDir, BaseDirectory, type DirEntry } from "@tauri-apps/plugin-fs";
+import { readDir } from "@tauri-apps/plugin-fs";
 export interface FileNode {
   name: string;
   path: string;
@@ -9,9 +9,7 @@ export interface FileNode {
 
 // Recursive function to build the file tree
 export async function build_file_tree(dirPath: string): Promise<FileNode[]> {
-  const entries = await readDir(dirPath, {
-    baseDir: BaseDirectory.Home,
-  });
+  const entries = await readDir(dirPath);
   const tree: FileNode[] = [];
 
   for (const entry of entries) {
