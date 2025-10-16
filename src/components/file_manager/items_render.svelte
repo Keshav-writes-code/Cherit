@@ -4,7 +4,9 @@
   let { file_tree }: { file_tree: FileNode[] } = $props();
 </script>
 
-<ul class="menu menu-sm bg-base-200 rounded-box relative w-full">
+<ul
+  class="menu bg-base-200 h-full menu-sm bg-base-200 rounded-box relative w-full"
+>
   {#each file_tree as node}
     {#if node.isDirectory}
       <li>
