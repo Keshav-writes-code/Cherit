@@ -10,5 +10,7 @@
       "identifier": "fs:allow-home-read-recursive",
       "allow": [{ "path": "$HOME/*.*/*" }]
     }
+    "store:default",
+    "dialog:default",
   ]
 }

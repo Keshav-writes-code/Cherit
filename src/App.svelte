@@ -1,9 +1,13 @@
 <script lang="ts">
   import FileManager from "@/components/file_manager/index.svelte";
   import TextEditior from "@/components/text_editor/index.svelte";
+  import RootFolderSelector from "@/components/root_folder_selector/index.svelte";
+  // NOTE: GLobal Variables
+  let root_path: string | undefined = $state();
 </script>
 
 <div class="drawer lg:drawer-open">
+  <RootFolderSelector bind:root_path />
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content flex flex-col items-center justify-center">
     <!-- Page content here -->
