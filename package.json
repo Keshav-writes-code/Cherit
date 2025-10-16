@@ -1,5 +1,5 @@
 {
-  "name": "chert",
+  "name": "cherit",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,7 +10,7 @@
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
   },
   "devDependencies": {
-    "@0x-jerry/unocss-preset-daisyui": "^0.2.1",
+    "@0x-jerry/unocss-preset-daisyui": "^0.2.2",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "@tauri-apps/cli": "^2.8.4",
     "@tsconfig/svelte": "^5.0.5",
@@ -25,7 +25,9 @@
   "dependencies": {
     "@iconify-json/carbon": "^1.2.14",
     "@iconify-json/tabler": "^1.2.23",
+    "@tauri-apps/plugin-dialog": "~2",
     "@tauri-apps/plugin-fs": "~2",
+    "@tauri-apps/plugin-store": "~2",
     "@unocss/preset-icons": "^66.5.3",
     "@unocss/preset-mini": "^66.5.3",
     "@unocss/reset": "^66.5.3",
