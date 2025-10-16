@@ -22,6 +22,6 @@
   <div class="drawer-side bg-base-200 w-80">
     <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"
     ></label>
-    <FileManager rootPath="." />
+    <FileManager {root_path} />
   </div>
 </div>

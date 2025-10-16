@@ -5,6 +5,8 @@
   // Reactive state for the file tree
   let file_tree: FileNode[] = $state([]);
 
+  let { root_path }: { root_path: string | undefined } = $props();
+
   // Function to load the tree
   async function loadTree(rootPath: string): Promise<void> {
     try {
@@ -15,7 +17,8 @@
     }
   }
   $effect(() => {
-    loadTree(".");
+    if (!root_path) return;
+    loadTree(root_path);
   });
   $inspect(file_tree);
 </script>
