@@ -2,6 +2,8 @@
   import FileManager from "@/components/file_manager/index.svelte";
   import TextEditior from "@/components/text_editor/index.svelte";
   import RootFolderSelector from "@/components/root_folder_selector/index.svelte";
+  import TitleBar from "@/components/titlebar/index.svelte";
+
   // NOTE: GLobal Variables
   let root_path: string | undefined = $state();
 </script>
@@ -11,6 +13,7 @@
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content flex flex-col items-center justify-center">
     <!-- Page content here -->
+    <TitleBar />
     <TextEditior />
     <label for="my-drawer-3" class="btn drawer-button lg:hidden">
       Open drawer
