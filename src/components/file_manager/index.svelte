@@ -1,6 +1,6 @@
 <script lang="ts">
   import { build_file_tree, type FileNode } from "./build_file_tree";
-  import ItemsRender from "./items_render.svelte";
+  import ItemsRender from "@/components/file_manager/items_renderer.svelte";
 
   // Reactive state for the file tree
   let file_tree: FileNode[] = $state([]);
@@ -28,5 +28,5 @@
     class="w-full h-8 min-h-8 bg-neutral-content/10"
     data-tauri-drag-region
   ></div>
-  <ItemsRender {file_tree} />
+  <ItemsRender {file_tree} {root_path} />
 </div>
