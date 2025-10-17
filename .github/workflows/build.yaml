@@ -35,12 +35,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - name: setup node and bun
+      - name: setup node
         uses: actions/setup-node@v4
-        uses: oven-sh/setup-bun@v2
 
         with:
           node-version: lts/*
+      - name: setup bun
+        uses: oven-sh/setup-bun@v2
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
