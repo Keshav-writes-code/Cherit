@@ -2,13 +2,11 @@
   import { build_file_tree, type FileNode } from "./build_file_tree";
   import ItemsRender from "@/components/file_manager/items_renderer.svelte";
 
-  // Reactive state for the file tree
   let file_tree: FileNode[] = $state([]);
 
   let { root_path }: { root_path: string | undefined } = $props();
 
-  // Function to load the tree
-  async function loadTree(rootPath: string): Promise<void> {
+  async function load_tree(rootPath: string): Promise<void> {
     try {
       file_tree = await build_file_tree(rootPath);
     } catch (error) {
@@ -18,7 +16,7 @@
   }
   $effect(() => {
     if (!root_path) return;
-    loadTree(root_path);
+    load_tree(root_path);
   });
   $inspect(file_tree);
 </script>
