@@ -17,7 +17,7 @@
 {#if root_path && file_tree[0]}
   <ul
     class={isDirectChild(root_path, file_tree[0].path)
-      ? "menu bg-base-200 h-full menu-sm bg-base-200 rounded-box relative w-full"
+      ? "menu bg-base-200 h-full menu-sm bg-base-200 rounded-box relative w-full select-none"
       : ""}
   >
     {#each file_tree as node}
