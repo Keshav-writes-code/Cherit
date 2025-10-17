@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { FileNode } from "./build_file_tree";
+  import ItemsRender2 from "./items_renderer_2.svelte";
 
   let { file_tree }: { file_tree: FileNode[] } = $props();
 </script>
@@ -10,12 +11,12 @@
       <li>
         <details open>
           <summary> {node.name} </summary>
-          <svelte:self file_tree={node.children} />
+          <ItemsRender2 file_tree={node.children} />
         </details>
       </li>
     {:else}
       <li>
-        <a>{node.name} </a>
+        <a href="">{node.name} </a>
       </li>
     {/if}
   {/each}
