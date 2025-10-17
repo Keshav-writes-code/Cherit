@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "cherit",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "io.github.keshav-writes-code.cherit",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
