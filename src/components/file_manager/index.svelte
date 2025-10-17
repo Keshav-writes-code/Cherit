@@ -23,7 +23,7 @@
 
 <div class="flex h-full flex-col w-80">
   <div
-    class="w-full h-8 min-h-8 bg-neutral-content/10"
+    class="w-full h-10 bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)]"
     data-tauri-drag-region
   ></div>
   <ItemsRender {file_tree} {root_path} />
