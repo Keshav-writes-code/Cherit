@@ -24,13 +24,20 @@
       {#if node.isDirectory}
         <li>
           <details class="w-full">
-            <summary class="hover:text-white"> {node.name} </summary>
+            <summary
+              class=" hover:text-[color-mix(in_srgb,var(--color-base-content)_75%,black)]"
+            >
+              {node.name}
+            </summary>
             <ItemsRenderer file_tree={node.children} {root_path} />
           </details>
         </li>
       {:else}
         <li>
-          <a class="w-full hover:text-white truncate block">{node.name} </a>
+          <a
+            class="w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_75%,black)] truncate block"
+            >{node.name}
+          </a>
         </li>
       {/if}
     {/each}
