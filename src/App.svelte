@@ -19,7 +19,7 @@
       Open drawer
     </label>
   </div>
-  <div class="drawer-side w-80">
+  <div class="drawer-side">
     <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"
     ></label>
     <FileManager {root_path} />

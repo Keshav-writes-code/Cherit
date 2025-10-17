@@ -23,7 +23,7 @@
   $inspect(file_tree);
 </script>
 
-<div class="flex h-full flex-col">
+<div class="flex h-full flex-col w-80">
   <div class="w-full h-8 min-h-8 bg-neutral-content/10"></div>
   <ItemsRender {file_tree} />
 </div>
