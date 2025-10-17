@@ -15,9 +15,6 @@
     <!-- Page content here -->
     <TitleBar />
     <TextEditior />
-    <label for="my-drawer-3" class="btn drawer-button lg:hidden">
-      Open drawer
-    </label>
   </div>
   <div class="drawer-side">
     <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"
