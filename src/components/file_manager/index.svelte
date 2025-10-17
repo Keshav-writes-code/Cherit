@@ -24,6 +24,9 @@
 </script>
 
 <div class="flex h-full flex-col w-80">
-  <div class="w-full h-8 min-h-8 bg-neutral-content/10"></div>
+  <div
+    class="w-full h-8 min-h-8 bg-neutral-content/10"
+    data-tauri-drag-region
+  ></div>
   <ItemsRender {file_tree} />
 </div>

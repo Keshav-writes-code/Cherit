@@ -5,8 +5,8 @@
 
 <div
   class="  w-full h-8 min-h-8 z-1 flex justify-end bg-neutral-content/10 relative"
+  data-tauri-drag-region
 >
-  <div data-tauri-drag-region class="absolute size-full"></div>
   <div class="flex *:px-3.5 *:hover:bg-white/10 color-white">
     <button
       id="titlebar-minimize"
