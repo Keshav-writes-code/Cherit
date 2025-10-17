@@ -31,6 +31,7 @@
             const file = await open({
               multiple: false,
               directory: true,
+              recursive: true,
             });
             if (file) root_path = file;
           }}>Open</button
