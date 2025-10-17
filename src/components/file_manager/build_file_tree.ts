@@ -1,36 +1,33 @@
 import { readDir } from "@tauri-apps/plugin-fs";
+
 export interface FileNode {
   name: string;
   path: string;
   isDirectory: boolean;
   children: FileNode[];
-  expanded?: boolean; // Optional: For UI expansion state
 }
 
-// Recursive function to build the file tree
 export async function build_file_tree(dirPath: string): Promise<FileNode[]> {
   const entries = await readDir(dirPath);
-  const tree: FileNode[] = [];
 
-  for (const entry of entries) {
-    if (!entry.name.endsWith(".md") && !entry.isDirectory) {
-      continue;
-    }
-    const fullPath = `${dirPath}/${entry.name}`;
-    const node: FileNode = {
-      name: entry.name,
-      path: fullPath,
-      isDirectory: entry.isDirectory,
-      children: [],
-    };
+  const nodes = await Promise.all(
+    entries
+      .filter(
+        (entry) =>
+          (entry.isDirectory && !entry.name.startsWith(".")) ||
+          entry.name.endsWith(".md"),
+      )
+      .map(async (entry) => ({
+        name: entry.name.replace(/\.md$/, ""),
+        path: `${dirPath}/${entry.name}`,
+        isDirectory: entry.isDirectory,
+        children: entry.isDirectory
+          ? await build_file_tree(`${dirPath}/${entry.name}`)
+          : [],
+      })),
+  );
 
-    if (entry.isDirectory) {
-      // Recursively build children for directories
-      node.children = await build_file_tree(fullPath);
-    }
-
-    tree.push(node);
-  }
-
-  return tree;
+  return nodes.sort(
+    (a, b) => (b.isDirectory ? 1 : 0) - (a.isDirectory ? 1 : 0),
+  );
 }
