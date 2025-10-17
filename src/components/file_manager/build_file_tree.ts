@@ -13,8 +13,8 @@ export async function build_file_tree(dirPath: string): Promise<FileNode[]> {
   const tree: FileNode[] = [];
 
   for (const entry of entries) {
-    if (entry.name.startsWith(".")) {
-      continue; // Skip dotfiles
+    if (!entry.name.endsWith(".md") && !entry.isDirectory) {
+      continue;
     }
     const fullPath = `${dirPath}/${entry.name}`;
     const node: FileNode = {
