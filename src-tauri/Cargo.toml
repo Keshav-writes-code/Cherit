@@ -1,10 +1,10 @@
 [package]
-name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+name = "cherit"
+version = "0.0.0"
+description = "A WSYIWYG Markdown Editor Inspired by Obsidian"
+authors = ["keshav-writes-code"]
 license = ""
-repository = ""
+repository = "https://github.com/Keshav-writes-code/Cherit"
 edition = "2021"
 rust-version = "1.77.2"
 
