@@ -13,7 +13,7 @@
 <div class="drawer isolate lg:drawer-open">
   <RootFolderSelector bind:root_path />
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
-  <div class="drawer-content flex flex-col items-center justify-center">
+  <div class="drawer-content flex flex-col items-center h-screen">
     <!-- Page content here -->
     <TitleBar />
 
