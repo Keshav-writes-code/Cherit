@@ -19,10 +19,16 @@
   });
 </script>
 
-<div class="breadcrumbs text-sm">
+<div class="breadcrumbs text-xs">
   <ul>
     {#each file_path_array as segment}
-      <li><a>{segment}</a></li>
+      <li
+        class={segment != file_path_array[file_path_array.length - 1]
+          ? "text-[color-mix(in_srgb,var(--color-base-content)_80%,black)]"
+          : ""}
+      >
+        {segment}
+      </li>
     {/each}
   </ul>
 </div>
