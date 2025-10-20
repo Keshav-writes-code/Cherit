@@ -1,11 +1,5 @@
 import { readDir } from "@tauri-apps/plugin-fs";
-
-export interface FileNode {
-  name: string;
-  path: string;
-  isDirectory: boolean;
-  children: FileNode[];
-}
+import { type FileNode } from "@/types";
 
 export async function build_file_tree(dirPath: string): Promise<FileNode[]> {
   const entries = await readDir(dirPath);
