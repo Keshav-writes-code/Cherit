@@ -1,6 +1,7 @@
 <script lang="ts">
   import BreadCrumb from "@/components/breadcrumb_path/index.svelte";
   import type { FileNode } from "@/types";
+  import { add_class_to_hashtags } from "./key_event_handlers";
   let {
     filenode,
     root_path,
@@ -9,19 +10,6 @@
 
   let html: string | undefined = $state();
   let last_pressed_key = "";
-
-  function add_class_to_hashtags(htmlString: string): string {
-    const doc = new DOMParser().parseFromString(
-      `<div>${htmlString}</div>`,
-      "text/html",
-    );
-    doc.querySelectorAll("div > div").forEach((div) => {
-      if (div.textContent?.trim().startsWith("#")) {
-        div.classList.add("text-4xl");
-      }
-    });
-    return doc.querySelector("div")?.innerHTML || "";
-  }
 </script>
 
 <BreadCrumb {filenode} {root_path} />
@@ -38,7 +26,6 @@
   oninput={(e) => {
     switch (last_pressed_key) {
       case "#":
-        console.log("# Detected");
         html = add_class_to_hashtags(e.currentTarget.innerHTML);
         break;
 
