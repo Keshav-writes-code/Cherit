@@ -1,10 +1,15 @@
 <script lang="ts">
-  import { build_file_tree, type FileNode } from "./build_file_tree";
+  import { build_file_tree } from "./build_file_tree";
   import ItemsRender from "@/components/file_manager/items_renderer.svelte";
+  import { type FileNode } from "@/types";
 
   let file_tree: FileNode[] = $state([]);
 
-  let { root_path }: { root_path: string | undefined } = $props();
+  let {
+    opened_filenode = $bindable(),
+    root_path,
+  }: { opened_filenode: FileNode | undefined; root_path: string | undefined } =
+    $props();
 
   async function load_tree(rootPath: string): Promise<void> {
     try {
@@ -26,5 +31,5 @@
     class="w-full h-10 bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)]"
     data-tauri-drag-region
   ></div>
-  <ItemsRender {file_tree} {root_path} />
+  <ItemsRender bind:opened_filenode {file_tree} {root_path} />
 </div>

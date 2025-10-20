@@ -2,9 +2,14 @@
   import type { FileNode } from "./build_file_tree";
   import ItemsRenderer from "@/components/file_manager/items_renderer.svelte";
   let {
+    opened_filenode = $bindable(),
     file_tree,
     root_path,
-  }: { file_tree: FileNode[]; root_path: string | undefined } = $props();
+  }: {
+    opened_filenode: FileNode | undefined;
+    file_tree: FileNode[];
+    root_path: string | undefined;
+  } = $props();
   const isDirectChild = (r: string, f: string) =>
     f.replace(/\/+$/, "").startsWith(r.replace(/\/+$/, "")) &&
     f
@@ -29,15 +34,22 @@
             >
               {node.name}
             </summary>
-            <ItemsRenderer file_tree={node.children} {root_path} />
+            <ItemsRenderer
+              bind:opened_filenode
+              file_tree={node.children}
+              {root_path}
+            />
           </details>
         </li>
       {:else}
         <li>
-          <a
+          <button
             class="w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
+            onclick={() => {
+              opened_filenode = node;
+            }}
             >{node.name}
-          </a>
+          </button>
         </li>
       {/if}
     {/each}

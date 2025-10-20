@@ -22,6 +22,6 @@
   <div class="drawer-side">
     <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"
     ></label>
-    <FileManager {root_path} />
+    <FileManager bind:opened_filenode {root_path} />
   </div>
 </div>
