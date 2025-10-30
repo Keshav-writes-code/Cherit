@@ -34,3 +34,13 @@ for folks having older Nvidia GPU on linux and seeing a Blank screen when openin
 
 - edit the file at `/usr/share/applications/cherit.desktop`
 - next to `Exec :`, replace it with this `Exec: WEBKIT_DISABLE_DMABUF_RENDERER=1 ...`
+
+## Star History
+
+<a href="https://www.star-history.com/#Keshav-writes-code/Cherit&type=date&legend=bottom-right">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Keshav-writes-code/Cherit&type=date&theme=dark&legend=bottom-right" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Keshav-writes-code/Cherit&type=date&legend=bottom-right" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Keshav-writes-code/Cherit&type=date&legend=bottom-right" />
+ </picture>
+</a>
