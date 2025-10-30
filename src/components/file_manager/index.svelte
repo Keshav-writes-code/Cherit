@@ -23,7 +23,6 @@
     if (!root_path) return;
     load_tree(root_path);
   });
-  $inspect(file_tree);
 </script>
 
 <div class="flex h-full flex-col w-80">
