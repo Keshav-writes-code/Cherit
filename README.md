@@ -9,6 +9,15 @@
 ![project screenshot](https://i.vgy.me/3DPkAd.png)
 ![project screenshot](https://i.vgy.me/CB0d8M.png)
 
+## 💻Built with
+
+Technologies used in the project:
+
+- [tauri](https://v2.tauri.app/)
+- [sveltejs](https://svelte.dev/)
+- [unocss](https://unocss.dev/)
+- [daisyui](https://daisyui.com/)
+
 ## Contribution
 
 Run the dev Server on Nvidia Driver (linux)
