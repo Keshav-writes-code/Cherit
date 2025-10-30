@@ -6,8 +6,8 @@
 
 ## Project Screenshots :
 
-<img src="https://i.vgy.me/3DPkAd.png" alt="project-screenshot" width="1121" height="467/">
-<img src="https://i.vgy.me/CB0d8M.png" alt="project-screenshot" width="1121" height="880/">
+![project screenshot](https://i.vgy.me/3DPkAd.png)
+![project screenshot](https://i.vgy.me/CB0d8M.png)
 
 ## Contribution
 
