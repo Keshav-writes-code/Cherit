@@ -27,7 +27,7 @@
           ? "text-[color-mix(in_srgb,var(--color-base-content)_80%,black)]"
           : ""}
       >
-        {segment}
+        {segment.split(".md")[0]}
       </li>
     {/each}
   </ul>
