@@ -12,7 +12,7 @@
   import { htmlBlockExtension } from "@prosemark/render-html";
   import { languages } from "@codemirror/language-data";
   import { indentUnit } from "@codemirror/language";
-  import { obsidian_theme } from "./prosemark_theme";
+  import { obsidian_theme, dynamicHangingIndent } from "./prosemark_theme";
 
   let { text_content }: { text_content: string | undefined } = $props();
   let element: HTMLDivElement | undefined = $state();
@@ -25,8 +25,10 @@
         doc: text_content,
         parent: element,
         extensions: [
+          EditorView.lineWrapping,
+          dynamicHangingIndent,
           EditorState.tabSize.of(8),
-          indentUnit.of("        "),
+          indentUnit.of("\t"),
           obsidian_theme,
           markdown({
             codeLanguages: languages,
