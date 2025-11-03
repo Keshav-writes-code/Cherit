@@ -106,13 +106,4 @@
     --pm-syntax-invalid: oklch(75.93% 0.182 28.91);
     --pm-cursor-color: white;
   }
-
-  #codemirror-container {
-    min-height: 100px;
-    width: 100%;
-    --font: Inter;
-    * {
-      margin-top: 0px;
-    }
-  }
 </style>
