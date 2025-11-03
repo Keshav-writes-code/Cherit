@@ -92,4 +92,7 @@ export const obsidian_theme = EditorView.theme({
   ".cm-rendered-list-mark": {
     margin: "0",
   },
+  ".ͼ12": {
+    marginLeft: "0.5px",
+  },
 });
