@@ -46,4 +46,7 @@ export const obsidian_theme = EditorView.theme({
     borderWidth: "0 2px 2px 0",
     transform: "translate(-50%, -50%) rotate(45deg)",
   },
+  ".cm-line:has(.cm-checkbox:checked)": {
+    textDecoration: "line-through",
+  },
 });
