@@ -1,5 +1,6 @@
 <script lang="ts">
   import { EditorView } from "@codemirror/view";
+  import { EditorState } from "@codemirror/state";
   import { markdown } from "@codemirror/lang-markdown";
   import { GFM } from "@lezer/markdown";
 
@@ -10,6 +11,7 @@
   } from "@prosemark/core";
   import { htmlBlockExtension } from "@prosemark/render-html";
   import { languages } from "@codemirror/language-data";
+  import { indentUnit } from "@codemirror/language";
 
   let { text_content }: { text_content: string | undefined } = $props();
   let element: HTMLDivElement | undefined = $state();
@@ -22,6 +24,56 @@
         doc: text_content,
         parent: element,
         extensions: [
+          EditorState.tabSize.of(8),
+          indentUnit.of("        "),
+          EditorView.theme({
+            ".cm-rendered-link": {
+              textDecoration: "underline",
+              cursor: "pointer",
+              color: "red",
+            },
+            ".cm-line": {
+              fontSize: "1.8rem",
+              lineHeight: "3rem",
+              fontFamily:
+                "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+            },
+            ".cm-rendered-list-mark": {
+              margin: "0",
+            },
+            ".cm-checkbox": {
+              appearance: "none",
+              width: "1.8rem",
+              height: "1.8rem",
+              border: "2px solid #555",
+              borderRadius: "0.3rem",
+              backgroundColor: "#111",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              position: "relative",
+              verticalAlign: "text-top",
+            },
+            ".cm-checkbox:hover": {
+              borderColor: "#00ffe0",
+              backgroundColor: "#1a1a1a",
+            },
+            ".cm-checkbox:checked": {
+              backgroundColor: "#00ffe0",
+              borderColor: "#00ffe0",
+            },
+            ".cm-checkbox:checked::after": {
+              content: '""',
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              width: "4px",
+              height: "8px",
+              border: "solid #111",
+              borderWidth: "0 2px 2px 0",
+              transform: "translate(-50%, -50%) rotate(45deg)",
+            },
+          }),
+
           markdown({
             codeLanguages: languages,
             extensions: [GFM, prosemarkMarkdownSyntaxExtensions],
@@ -44,10 +96,6 @@
 
 <style>
   :root {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
-
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -77,9 +125,8 @@
     --pm-syntax-invalid: oklch(64.62% 0.203 29.2);
     --pm-cursor-color: black;
   }
-
   :root[data-theme="dark"] {
-    --pm-header-mark-color: oklch(44.3% 0.11 240.79);
+    --pm-header-mark-color: oklch(60.3% 0 0);
     --pm-link-color: oklch(58.8% 0.158 241.966);
     --pm-muted-color: oklch(55.4% 0.046 257.417);
     --pm-code-background-color: oklch(27.9% 0.041 260.031);
