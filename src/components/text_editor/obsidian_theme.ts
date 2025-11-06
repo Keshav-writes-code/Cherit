@@ -13,6 +13,10 @@ export const obsidian_theme = EditorView.theme({
     cursor: "pointer",
     color: "red",
   },
+  ".cm-gutterElement": {
+    fontSize: "1.4rem",
+    lineHeight: "3rem",
+  },
   ".cm-line": {
     fontSize: "1.8rem",
     lineHeight: "3rem",
