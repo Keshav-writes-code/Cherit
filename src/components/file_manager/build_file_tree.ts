@@ -21,7 +21,12 @@ export async function build_file_tree(dirPath: string): Promise<FileNode[]> {
       })),
   );
 
-  return nodes.sort(
-    (a, b) => (b.isDirectory ? 1 : 0) - (a.isDirectory ? 1 : 0),
-  );
+  return nodes.sort((a, b) => {
+    // Folders first
+    if (a.isDirectory && !b.isDirectory) return -1;
+    if (!a.isDirectory && b.isDirectory) return 1;
+
+    // Alphabetical order (case-insensitive)
+    return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+  });
 }
