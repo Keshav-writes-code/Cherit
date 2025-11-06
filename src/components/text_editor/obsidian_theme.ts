@@ -1,46 +1,4 @@
-import { StateField, RangeSetBuilder } from "@codemirror/state";
-import { Decoration, EditorView } from "@codemirror/view";
-
-export const dynamicHangingIndent = StateField.define({
-  create() {
-    return Decoration.none;
-  },
-  update(deco, tr) {
-    // Only recompute on doc changes
-    if (!tr.docChanged) return deco;
-
-    const builder = new RangeSetBuilder<Decoration>();
-    const doc = tr.state.doc;
-
-    for (let i = 1; i <= doc.lines; i++) {
-      const line = doc.line(i);
-      const match = line.text.match(/^(\s+)/);
-      if (!match) continue;
-
-      // Compute indent in characters (spaces/tabs)
-      const indentText = match[1].replace(/\t/g, "        "); // your indentUnit = 8 spaces
-      const indentChars = indentText.length;
-
-      // Skip very small indents (no need for hanging)
-      if (indentChars < 1) continue;
-
-      builder.add(
-        line.from,
-        line.from,
-        Decoration.line({
-          attributes: {
-            style: `
-              padding-left: ${indentChars}ch;
-              text-indent: -${indentChars}ch;
-            `,
-          },
-        }),
-      );
-    }
-
-    return builder.finish();
-  },
-});
+import { EditorView } from "@codemirror/view";
 
 export const obsidian_theme = EditorView.theme({
   ".cm-rendered-link": {
