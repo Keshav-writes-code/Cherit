@@ -1,6 +1,10 @@
 <script lang="ts">
   import BreadCrumb from "@/components/breadcrumb_path/index.svelte";
-  import { readTextFile, BaseDirectory } from "@tauri-apps/plugin-fs";
+  import {
+    readTextFile,
+    BaseDirectory,
+    writeTextFile,
+  } from "@tauri-apps/plugin-fs";
   import type { FileNode } from "@/types";
   import Prosemark from "./prosemark.svelte";
   let {
@@ -22,6 +26,12 @@
     <h2 class="w-full mb-16 mt-10 font-semibold text-5xl">
       {filenode?.name}
     </h2>
-    <Prosemark {text_content} />
+    <Prosemark
+      {text_content}
+      write_to_file={(content) => {
+        if (!filenode) return;
+        writeTextFile(filenode?.path, content);
+      }}
+    />
   </div>
 </div>

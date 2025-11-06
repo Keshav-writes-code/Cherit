@@ -14,9 +14,16 @@
   import { indentUnit } from "@codemirror/language";
   import { obsidian_theme, dynamicHangingIndent } from "./prosemark_theme";
 
-  let { text_content }: { text_content: string | undefined } = $props();
+  let {
+    text_content,
+    write_to_file,
+  }: {
+    text_content: string | undefined;
+    write_to_file: (markdown_content_state: string) => void;
+  } = $props();
   let element: HTMLDivElement | undefined = $state();
   let editor: EditorView | undefined = $state();
+  let is_contents_changed = $state(false);
 
   $effect(() => {
     let newEditor: EditorView | undefined;
@@ -30,6 +37,11 @@
           EditorState.tabSize.of(8),
           indentUnit.of("\t"),
           obsidian_theme,
+          EditorView.updateListener.of((update) => {
+            if (update.docChanged && !is_contents_changed) {
+              is_contents_changed = true;
+            }
+          }),
           markdown({
             codeLanguages: languages,
             extensions: [GFM, prosemarkMarkdownSyntaxExtensions],
@@ -48,7 +60,15 @@
   });
 </script>
 
-<div bind:this={element} class="pb-50vh"></div>
+<div
+  bind:this={element}
+  onfocusout={() => {
+    if (!editor || !is_contents_changed) return;
+    write_to_file(editor.state.doc.toString());
+    is_contents_changed = false;
+  }}
+  class="pb-50vh"
+></div>
 
 <style>
   :root {
