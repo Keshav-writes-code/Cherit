@@ -12,8 +12,8 @@
   import { htmlBlockExtension } from "@prosemark/render-html";
   import { languages } from "@codemirror/language-data";
   import { indentUnit } from "@codemirror/language";
-  import { obsidian_theme, dynamicHangingIndent } from "./prosemark_theme";
-
+  import { obsidian_theme } from "./obsidian_theme";
+  import { indentedLineWrap } from "./hanging_indentation_plugin";
   let {
     text_content,
     write_to_file,
@@ -33,9 +33,9 @@
         parent: element,
         extensions: [
           EditorView.lineWrapping,
-          dynamicHangingIndent,
           EditorState.tabSize.of(8),
           indentUnit.of("\t"),
+          indentedLineWrap,
           obsidian_theme,
           EditorView.updateListener.of((update) => {
             if (update.docChanged && !is_contents_changed) {
