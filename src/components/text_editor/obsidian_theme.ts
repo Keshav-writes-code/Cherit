@@ -1,6 +1,13 @@
 import { EditorView } from "@codemirror/view";
 
 export const obsidian_theme = EditorView.theme({
+  ".cm-gutters": {
+    opacity: "0",
+    transition: "opacity 0.2s ease",
+  },
+  ".cm-scroller:hover .cm-gutters": {
+    opacity: "1",
+  },
   ".cm-rendered-link": {
     textDecoration: "underline",
     cursor: "pointer",
