@@ -34,7 +34,7 @@
     "@prosemark/render-html": "^0.0.3",
     "@tauri-apps/plugin-dialog": "~2.4.2",
     "@tauri-apps/plugin-fs": "~2.4.4",
-    "@tauri-apps/plugin-store": "~2.4.1",
+    "@tauri-apps/plugin-store": "~2",
     "@unocss/preset-icons": "^66.5.4",
     "@unocss/preset-mini": "^66.5.4",
     "@unocss/reset": "^66.5.4",
