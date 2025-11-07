@@ -39,6 +39,7 @@
     "@unocss/preset-mini": "^66.5.4",
     "@unocss/reset": "^66.5.4",
     "@unocss/transformer-variant-group": "^66.5.4",
-    "daisyui": "^5.3.10"
+    "daisyui": "^5.3.10",
+    "svelte-sonner": "^1.0.5"
   }
 }

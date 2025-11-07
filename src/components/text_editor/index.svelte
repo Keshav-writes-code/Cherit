@@ -3,6 +3,7 @@
   import { readTextFile, rename, writeTextFile } from "@tauri-apps/plugin-fs";
   import type { FileNode } from "@/types";
   import Prosemark from "./prosemark.svelte";
+  import { toast } from "svelte-sonner";
   let {
     filenode = $bindable(),
     root_path,
@@ -34,10 +35,14 @@
         if (!current_file_name || !filenode) return;
         const new_file_path =
           filenode.path.replace(/[^/\\]+$/, current_file_name) + ".md";
-        await rename(filenode.path, new_file_path);
-        filenode.path = new_file_path;
-        filenode.name = current_file_name;
-        is_file_named_changed = false;
+        try {
+          await rename(filenode.path, new_file_path);
+          filenode.path = new_file_path;
+          filenode.name = current_file_name;
+          is_file_named_changed = false;
+        } catch (e) {
+          if (e instanceof Error) toast.error(e.message);
+        }
       }}
       bind:value={current_file_name}
       class="w-full outline-none b-0 focus:ring-0 mb-16 mt-10 font-semibold text-5xl"
