@@ -25,9 +25,10 @@
     <input
       type="text"
       oninput={(e) => {
-        current_file_name = current_file_name
-          ?.replace(/[^A-Za-z0-9 _.\-()]/g, "") // remove invalid characters
-          .replace(/^\s+|\s+$/g, ""); // remove leading and trailing spaces
+        current_file_name = current_file_name?.replace(
+          /[^A-Za-z0-9 _.\-()]/g,
+          "",
+        );
         is_file_named_changed = current_file_name != filenode?.name;
       }}
       onfocusout={async () => {
