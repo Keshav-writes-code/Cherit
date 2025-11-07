@@ -1,18 +1,16 @@
 <script lang="ts">
   import BreadCrumb from "@/components/breadcrumb_path/index.svelte";
-  import {
-    readTextFile,
-    BaseDirectory,
-    writeTextFile,
-  } from "@tauri-apps/plugin-fs";
+  import { readTextFile, rename, writeTextFile } from "@tauri-apps/plugin-fs";
   import type { FileNode } from "@/types";
   import Prosemark from "./prosemark.svelte";
   let {
-    filenode,
+    filenode = $bindable(),
     root_path,
   }: { filenode: FileNode | undefined; root_path: string | undefined } =
     $props();
   let text_content: string | undefined = $state();
+  let current_file_name: string | undefined = $derived(filenode?.name);
+  let is_file_named_changed: boolean = $state(false);
 
   $effect(async () => {
     if (!filenode) return;
@@ -23,9 +21,28 @@
 <BreadCrumb {filenode} {root_path} />
 <div class="w-full px-8 flex justify-center flex-1 overflow-auto">
   <div class="max-w-170 w-full font-sans">
-    <h2 class="w-full mb-16 mt-10 font-semibold text-5xl">
-      {filenode?.name}
-    </h2>
+    <input
+      type="text"
+      oninput={(e) => {
+        current_file_name = current_file_name
+          ?.replace(/[^A-Za-z0-9 _.\-()]/g, "") // remove invalid characters
+          .replace(/^\s+|\s+$/g, ""); // remove leading and trailing spaces
+        is_file_named_changed = current_file_name != filenode?.name;
+      }}
+      onfocusout={async () => {
+        if (!is_file_named_changed) return;
+        if (!current_file_name || !filenode) return;
+        const new_file_path =
+          filenode.path.replace(/[^/\\]+$/, current_file_name) + ".md";
+        await rename(filenode.path, new_file_path);
+        filenode.path = new_file_path;
+        filenode.name = current_file_name;
+        is_file_named_changed = false;
+      }}
+      bind:value={current_file_name}
+      class="w-full outline-none b-0 focus:ring-0 mb-16 mt-10 font-semibold text-5xl"
+    />
+
     <Prosemark
       {text_content}
       write_to_file={(content) => {
