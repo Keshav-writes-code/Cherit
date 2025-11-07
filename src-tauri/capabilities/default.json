@@ -12,6 +12,8 @@
     "core:window:allow-close",
     "core:window:allow-minimize",
     "core:window:allow-toggle-maximize",
-    "fs:allow-write-text-file"
+    "fs:allow-write-text-file",
+    "fs:allow-home-read-recursive",
+    "fs:allow-home-write-recursive"
   ]
 }
