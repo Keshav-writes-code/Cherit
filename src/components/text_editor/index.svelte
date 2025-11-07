@@ -13,9 +13,11 @@
   let current_file_name: string | undefined = $derived(filenode?.name);
   let is_file_named_changed: boolean = $state(false);
 
-  $effect(async () => {
+  $effect(() => {
     if (!filenode) return;
-    text_content = await readTextFile(filenode.path);
+    readTextFile(filenode.path).then((res) => {
+      text_content = res;
+    });
   });
 </script>
 
