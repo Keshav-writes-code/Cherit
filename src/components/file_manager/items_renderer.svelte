@@ -22,7 +22,7 @@
 {#if root_path && file_tree[0]}
   <ul
     class={isDirectChild(root_path, file_tree[0].path)
-      ? "menu bg-base-200 menu-sm bg-base-200 rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide"
+      ? "menu  menu-sm  rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide"
       : ""}
   >
     {#each file_tree as node}
