@@ -23,16 +23,16 @@
 
 {#if root_path && file_tree[0]}
   <ul
-    class={isDirectChild(root_path, file_tree[0].path)
-      ? "menu  menu-sm  rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide"
-      : ""}
+    class="{isDirectChild(root_path, file_tree[0].path)
+      ? 'menu menu-sm rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide'
+      : ''} flex flex-col gap-0.5 pt-0.5"
   >
     {#each file_tree as node}
       {#if node.isDirectory}
         <li>
           <details open={!collapsed_state} class="w-full">
             <summary
-              class=" hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
+              class="py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
             >
               {node.name}
             </summary>
@@ -49,7 +49,7 @@
           <button
             class="{opened_filenode?.path === node.path
               ? 'bg-base-content/10'
-              : ''} w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
+              : ''} py-0.75 w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
             onclick={() => {
               opened_filenode = node;
             }}
