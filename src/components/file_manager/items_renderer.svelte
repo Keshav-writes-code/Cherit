@@ -5,10 +5,12 @@
     opened_filenode = $bindable(),
     file_tree,
     root_path,
+    collapsed_state,
   }: {
     opened_filenode: FileNode | undefined;
     file_tree: FileNode[];
     root_path: string | undefined;
+    collapsed_state: boolean;
   } = $props();
   const isDirectChild = (r: string, f: string) =>
     f.replace(/\/+$/, "").startsWith(r.replace(/\/+$/, "")) &&
@@ -28,7 +30,7 @@
     {#each file_tree as node}
       {#if node.isDirectory}
         <li>
-          <details class="w-full">
+          <details open={!collapsed_state} class="w-full">
             <summary
               class=" hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
             >
@@ -38,6 +40,7 @@
               bind:opened_filenode
               file_tree={node.children}
               {root_path}
+              {collapsed_state}
             />
           </details>
         </li>

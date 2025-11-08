@@ -2,15 +2,14 @@
   import { build_file_tree } from "./build_file_tree";
   import ItemsRender from "@/components/file_manager/items_renderer.svelte";
   import { type FileNode } from "@/types";
-
-  let file_tree: FileNode[] = $state([]);
-
   let {
     opened_filenode = $bindable(),
     root_path,
   }: { opened_filenode: FileNode | undefined; root_path: string | undefined } =
     $props();
 
+  let file_tree: FileNode[] = $state([]);
+  let collapsed_state: boolean = $state(true);
   async function load_tree(rootPath: string): Promise<void> {
     try {
       file_tree = await build_file_tree(rootPath);
@@ -46,9 +45,16 @@
       ><div class="i-tabler:sort-ascending size-5"></div>
     </button>
     <button
+      onclick={() => {
+        collapsed_state = !collapsed_state;
+      }}
       class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
-      ><div class="i-famicons:chevron-collapse size-5"></div>
+      ><div
+        class=" {collapsed_state
+          ? 'i-famicons:chevron-expand'
+          : 'i-famicons:chevron-collapse'} size-5"
+      ></div>
     </button>
   </div>
-  <ItemsRender bind:opened_filenode {file_tree} {root_path} />
+  <ItemsRender bind:opened_filenode {collapsed_state} {file_tree} {root_path} />
 </div>
