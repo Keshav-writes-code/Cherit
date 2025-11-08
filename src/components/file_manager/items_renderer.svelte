@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { FileNode } from "./build_file_tree";
+  import type { FileNode } from "@/types";
   import ItemsRenderer from "@/components/file_manager/items_renderer.svelte";
   let {
     opened_filenode = $bindable(),
@@ -47,7 +47,9 @@
       {:else}
         <li>
           <button
-            class="w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
+            class="{opened_filenode?.path === node.path
+              ? 'bg-base-content/10'
+              : ''} w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
             onclick={() => {
               opened_filenode = node;
             }}
