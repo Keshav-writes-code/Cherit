@@ -68,4 +68,15 @@ export const obsidian_theme = EditorView.theme({
     fontSize: "1.6rem",
     lineHeight: "3rem",
   },
+  ".cm-horizontal-rule-container hr": {
+    borderTop:
+      "2px solid color-mix(in srgb, var(--color-base-content), black 70%)",
+  },
+  ".cm-horizontal-rule-container ": {
+    paddingTop: "1.5rem",
+    paddingBottom: "1.5rem",
+  },
+  ".ͼ19": {
+    fontFamily: "monospace",
+  },
 });
