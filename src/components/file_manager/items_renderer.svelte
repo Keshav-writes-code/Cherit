@@ -24,48 +24,53 @@
 {#if root_path && file_tree[0]}
   <ul
     class="{isDirectChild(root_path, file_tree[0].path)
-      ? 'menu menu-sm rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide'
-      : ''} flex flex-col gap-0.5 pt-0.5"
+      ? 'menu menu-sm rounded-box w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide'
+      : 'menu-dropdown max-w-full'} relative gap-0.5 pt-0.5"
+    class:menu-dropdown-show={collapsed_state}
   >
-    {#each file_tree as node}
-      {#if node.isDirectory}
-        <li>
-          <details open={!collapsed_state} class="w-full">
-            <summary
-              class="py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
-            >
-              {node.name}
-            </summary>
-            <ItemsRenderer
-              bind:opened_filenode
-              file_tree={node.children}
-              {root_path}
-              {collapsed_state}
-            />
-          </details>
-        </li>
-      {:else}
-        <li>
+    {#each file_tree as node (node.path)}
+      <li class="max-w-full relative">
+        {#if node.isDirectory}
+          <!-- new implementation -->
+          <button
+            class="menu-dropdown-toggle truncate max-w-full relative"
+            class:menu-dropdown-show={collapsed_state}
+            onclick={(e: MouseEvent) => {
+              const target = e.currentTarget as HTMLButtonElement;
+              const ul = target.nextElementSibling as HTMLUListElement;
+              target.classList.toggle("menu-dropdown-show");
+              ul.classList.toggle("menu-dropdown-show");
+            }}
+          >
+            {node.name}
+          </button>
+          <ItemsRenderer
+            bind:opened_filenode
+            file_tree={node.children}
+            {root_path}
+            {collapsed_state}
+          />
+        {:else}
           <button
             class="{opened_filenode?.path === node.path
               ? 'bg-base-content/10'
-              : ''} py-0.75 w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
+              : ''} py-0.75 max-w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
             onclick={() => {
               opened_filenode = node;
             }}
             >{node.name}
           </button>
-        </li>
-      {/if}
+        {/if}
+      </li>
     {/each}
   </ul>
 {/if}
 
 <style>
-  :global(summary::after) {
+  .menu-dropdown-toggle::after {
     content: none;
   }
-  :global(summary::before) {
+  .menu-dropdown-toggle::before {
     content: "";
     width: 0.375rem;
     height: 0.375rem;
@@ -76,10 +81,9 @@
     transition-property: rotate;
     transition-duration: 0.2s;
   }
-  :global(
-      .menu :where(li > details[open] > summary):before,
-      .menu :where(li > .menu-dropdown-toggle.menu-dropdown-show):before
-    ) {
+
+  .menu :where(li > details[open] > summary):before,
+  .menu :where(li > .menu-dropdown-toggle.menu-dropdown-show):before {
     rotate: 225deg;
   }
 </style>
