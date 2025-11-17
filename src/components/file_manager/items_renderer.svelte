@@ -25,7 +25,7 @@
       .filter((s) => s).length === 1;
 </script>
 
-{#if root_path && file_tree[0]}
+{#if root_path && file_tree.length}
   <ul
     class="{isDirectChild(root_path, file_tree[0].path)
       ? 'menu menu-sm rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide'
@@ -68,6 +68,13 @@
       {/if}
     {/each}
   </ul>
+{:else}
+  <div
+    class="color-purple/60 i-tabler:file-text-spark size-15 mx-auto mt-20"
+  ></div>
+  <p class="text-base-content/40 text-pretty text-center mt-2 px-13">
+    created notes will show up here
+  </p>
 {/if}
 
 <style>
