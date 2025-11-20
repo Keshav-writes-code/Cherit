@@ -30,6 +30,6 @@
     class="w-full h-10 bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)]"
     data-tauri-drag-region
   ></div>
-  <Toolbar {collapsed_state} {root_path} bind:file_tree />
+  <Toolbar bind:collapsed_state {root_path} bind:file_tree />
   <ItemsRender bind:opened_filenode {collapsed_state} {file_tree} {root_path} />
 </div>
