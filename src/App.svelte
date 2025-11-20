@@ -30,6 +30,7 @@
   position="top-right"
   richColors
   theme="dark"
+  closeButton
   toastOptions={{
     classes: {
       toast: "mt-10",
