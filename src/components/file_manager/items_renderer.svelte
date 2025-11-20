@@ -42,7 +42,9 @@
           <details
             open={!collapsed_state}
             class="w-full overflow-y-clip"
-            use:animatedDetails={{ duration: 100 }}
+            use:animatedDetails={{
+              duration: 100 - 10 + 10 * node.children.length,
+            }}
           >
             <summary
               class="py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
