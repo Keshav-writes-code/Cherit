@@ -5,6 +5,8 @@
 <script lang="ts">
   import type { FileNode } from "@/types";
   import ItemsRenderer from "@/components/file_manager/items_renderer.svelte";
+  import { blur, fly } from "svelte/transition";
+  import { backOut } from "svelte/easing";
   let {
     opened_filenode = $bindable(),
     file_tree,
@@ -32,7 +34,7 @@
       : ''} flex flex-col gap-0.5 pt-0.5"
   >
     {#each file_tree as node}
-      <li>
+      <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
         {#if node.isDirectory}
           <details open={!collapsed_state} class="w-full">
             <summary
