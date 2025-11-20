@@ -9,7 +9,6 @@
     file_tree: FileNode[];
     root_path: string | undefined;
   } = $props();
-  $inspect(file_tree);
 </script>
 
 <div
