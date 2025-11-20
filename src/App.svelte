@@ -11,7 +11,9 @@
   let opened_filenode: FileNode | undefined = $state();
 </script>
 
-<div class="drawer isolate lg:drawer-open">
+<div
+  class="drawer selection:bg-[rgb(from_var(--color-accent)_r_g_b_/_0.2)] isolate lg:drawer-open"
+>
   <RootFolderSelector bind:root_path />
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content flex flex-col items-center h-screen">
