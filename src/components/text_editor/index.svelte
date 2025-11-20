@@ -15,9 +15,14 @@
 
   $effect(() => {
     if (!filenode) return;
-    readTextFile(filenode.path).then((res) => {
-      text_content = res;
-    });
+    readTextFile(filenode.path)
+      .then((res) => {
+        text_content = res;
+      })
+      .catch((err) => {
+        toast.error(err);
+        console.log("Error");
+      });
   });
 </script>
 
