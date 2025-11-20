@@ -32,8 +32,8 @@
       : ''} flex flex-col gap-0.5 pt-0.5"
   >
     {#each file_tree as node}
-      {#if node.isDirectory}
-        <li>
+      <li>
+        {#if node.isDirectory}
           <details open={!collapsed_state} class="w-full">
             <summary
               class="py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
@@ -52,9 +52,7 @@
               />
             {/if}
           </details>
-        </li>
-      {:else}
-        <li>
+        {:else}
           <button
             class="{opened_filenode?.path === node.path
               ? 'bg-base-content/10'
@@ -64,8 +62,8 @@
             }}
             >{node.name}
           </button>
-        </li>
-      {/if}
+        {/if}
+      </li>
     {/each}
   </ul>
 {:else}
