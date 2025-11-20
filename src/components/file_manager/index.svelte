@@ -6,6 +6,7 @@
   import ItemsRender from "@/components/file_manager/items_renderer.svelte";
   import { type FileNode } from "@/types";
   import Toolbar from "./toolbar.svelte";
+  import { toast } from "svelte-sonner";
   let {
     opened_filenode = $bindable(),
     root_path,
@@ -17,17 +18,11 @@
     return sort_file_tree(file_tree);
   });
   let collapsed_state: boolean = $state(true);
-  async function load_tree(rootPath: string): Promise<void> {
-    try {
-      file_tree = await build_file_tree_from_fs(rootPath);
-    } catch (error) {
-      console.error("Error loading file tree:", error);
-      // Handle error in UI, e.g., show a message
-    }
-  }
   $effect(() => {
     if (!root_path) return;
-    load_tree(root_path);
+    build_file_tree_from_fs(root_path)
+      .then((v) => (file_tree = v))
+      .catch((e) => toast.error("Error loading file tree:" + e));
   });
 </script>
 
