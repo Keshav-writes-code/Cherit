@@ -2,6 +2,7 @@
   import { build_file_tree } from "./build_file_tree";
   import ItemsRender from "@/components/file_manager/items_renderer.svelte";
   import { type FileNode } from "@/types";
+  import Toolbar from "./toolbar.svelte";
   let {
     opened_filenode = $bindable(),
     root_path,
@@ -29,32 +30,6 @@
     class="w-full h-10 bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)]"
     data-tauri-drag-region
   ></div>
-  <div
-    class="text-[color-mix(in_srgb,var(--color-base-content)_65%,black)] pt-1.5 flex justify-center *:h-full mb-2"
-  >
-    <button
-      class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
-      ><div class="i-tabler:edit size-5"></div>
-    </button>
-    <button
-      class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
-      ><div class="i-tabler:folder-plus size-5"></div>
-    </button>
-    <button
-      class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
-      ><div class="i-tabler:sort-ascending size-5"></div>
-    </button>
-    <button
-      onclick={() => {
-        collapsed_state = !collapsed_state;
-      }}
-      class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
-      ><div
-        class=" {collapsed_state
-          ? 'i-famicons:chevron-expand'
-          : 'i-famicons:chevron-collapse'} size-5"
-      ></div>
-    </button>
-  </div>
+  <Toolbar {collapsed_state} {root_path} bind:file_tree />
   <ItemsRender bind:opened_filenode {collapsed_state} {file_tree} {root_path} />
 </div>
