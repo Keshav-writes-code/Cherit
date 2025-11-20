@@ -51,6 +51,10 @@
               onmousedown={() => {
                 _expansionState[node.path] = true;
               }}
+              onkeydown={(e: KeyboardEvent) => {
+                if (e.key !== " ") return;
+                _expansionState[node.path] = true;
+              }}
             >
               {node.name}
             </summary>
