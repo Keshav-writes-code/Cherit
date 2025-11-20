@@ -30,6 +30,14 @@
   <button
     aria-label="New Folder Button"
     class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
+    onclick={() => {
+      file_tree.push({
+        name: "Hello",
+        path: root_path + "/hello",
+        isDirectory: true,
+        children: [],
+      });
+    }}
     ><div class="i-tabler:folder-plus size-5"></div>
   </button>
   <!-- <button -->
