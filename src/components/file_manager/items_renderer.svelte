@@ -36,7 +36,7 @@
       ? 'menu menu-sm rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide'
       : ''} flex flex-col gap-0.5 pt-0.5"
   >
-    {#each file_tree as node}
+    {#each file_tree as node (node.path)}
       <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
         {#if node.isDirectory}
           <details
