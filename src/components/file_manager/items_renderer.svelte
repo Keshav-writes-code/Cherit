@@ -12,11 +12,13 @@
     file_tree,
     root_path,
     collapsed_state,
+    is_root = true,
   }: {
     opened_filenode: FileNode | undefined;
     file_tree: FileNode[];
     root_path: string | undefined;
     collapsed_state: boolean;
+    is_root?: boolean;
   } = $props();
   const isDirectChild = (r: string, f: string) =>
     f.replace(/\/+$/, "").startsWith(r.replace(/\/+$/, "")) &&
@@ -51,6 +53,7 @@
                 file_tree={node.children}
                 {root_path}
                 {collapsed_state}
+                is_root={false}
               />
             {/if}
           </details>
@@ -68,7 +71,7 @@
       </li>
     {/each}
   </ul>
-{:else}
+{:else if is_root && !file_tree.length}
   <div
     class="color-purple/60 i-tabler:file-text-spark size-15 mx-auto mt-20"
   ></div>
