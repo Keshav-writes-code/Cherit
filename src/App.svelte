@@ -22,7 +22,7 @@
 
     <TextEditior bind:filenode={opened_filenode} {root_path} />
   </div>
-  <div class="drawer-side">
+  <div class="drawer-side relative">
     <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"
     ></label>
     <FileManager bind:opened_filenode {root_path} />

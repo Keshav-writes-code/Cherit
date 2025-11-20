@@ -9,6 +9,7 @@
     file_tree: FileNode[];
     root_path: string | undefined;
   } = $props();
+  let untitled_file_counter = 0;
 </script>
 
 <div
@@ -19,11 +20,12 @@
     class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
     onclick={() => {
       file_tree.push({
-        name: "Hello",
-        path: root_path + "/hello",
+        name: `Untitled ${untitled_file_counter || ""}`.trim(),
+        path: root_path + `/Untitled ${untitled_file_counter || ""}`.trim(),
         isDirectory: false,
         children: [],
       });
+      untitled_file_counter++;
     }}
     ><div class="i-tabler:edit size-5"></div>
   </button>

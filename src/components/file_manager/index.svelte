@@ -24,9 +24,28 @@
       .then((v) => (file_tree = v))
       .catch((e) => toast.error("Error loading file tree:" + e));
   });
+  let left_x: number | undefined = $state(undefined);
+  let is_resizing = $state(false);
 </script>
 
-<div class="flex h-full flex-col w-80 bg-base-200">
+<svelte:window
+  onmousemove={(e: MouseEvent) => {
+    if (!is_resizing) return;
+    left_x = e.clientX;
+  }}
+  onmouseup={() => (is_resizing = false)}
+  ondblclick={() => (left_x = undefined)}
+/>
+<div
+  role="presentation"
+  aria-hidden="true"
+  onmousedown={() => (is_resizing = true)}
+  class={`absolute h-full w-0.8 hover:bg-primary ${is_resizing && "bg-primary"} transition-all duration-300 cursor-row-resize right-0 z-1`}
+></div>
+<div
+  style={left_x ? `width: ${left_x}px` : ""}
+  class="flex h-full min-w-[200px] b-r-1 b-r-[color-mix(in_srgb,var(--color-base-content)_22%,black)] max-w-[600px] duration-0 flex-col w-80 bg-base-200"
+>
   <div
     class="w-full h-10 bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)]"
     data-tauri-drag-region
