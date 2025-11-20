@@ -7,6 +7,7 @@
   import ItemsRenderer from "@/components/file_manager/items_renderer.svelte";
   import { blur, fly } from "svelte/transition";
   import { backOut } from "svelte/easing";
+  import animatedDetails from "svelte-animated-details";
   let {
     opened_filenode = $bindable(),
     file_tree,
@@ -38,10 +39,14 @@
     {#each file_tree as node}
       <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
         {#if node.isDirectory}
-          <details open={!collapsed_state} class="w-full">
+          <details
+            open={!collapsed_state}
+            class="w-full overflow-y-clip"
+            use:animatedDetails={{ duration: 100 }}
+          >
             <summary
               class="py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
-              onclick={() => {
+              onmousedown={() => {
                 _expansionState[node.path] = true;
               }}
             >
