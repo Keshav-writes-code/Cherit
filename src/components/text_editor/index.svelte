@@ -10,7 +10,7 @@
   }: { filenode: FileNode | undefined; root_path: string | undefined } =
     $props();
   let text_content: string | undefined = $state();
-  let current_file_name: string | undefined = $derived(filenode?.name);
+  let current_file_name: string | undefined = $state();
   let is_file_named_changed: boolean = $state(false);
 
   $effect(() => {
@@ -18,11 +18,13 @@
     readTextFile(filenode.path)
       .then((res) => {
         text_content = res;
+        current_file_name = filenode?.name;
       })
       .catch((err) => {
         toast.error(err);
         filenode = undefined;
         text_content = undefined;
+        current_file_name = undefined;
       });
   });
 </script>
