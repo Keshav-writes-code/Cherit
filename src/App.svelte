@@ -39,5 +39,5 @@
       info: "alert alert-info alert-soft",
     },
   }}
-  duration={100000}
+  duration={2000}
 />
