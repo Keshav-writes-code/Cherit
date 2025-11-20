@@ -21,7 +21,8 @@
       })
       .catch((err) => {
         toast.error(err);
-        console.log("Error");
+        filenode = undefined;
+        text_content = undefined;
       });
   });
 </script>
