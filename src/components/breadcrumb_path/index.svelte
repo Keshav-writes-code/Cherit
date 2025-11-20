@@ -14,7 +14,10 @@
   }
   let file_path_array: string[] = $state([]);
   $effect(() => {
-    if (!filenode || !root_path) return;
+    if (!filenode || !root_path) {
+      file_path_array = [];
+      return;
+    }
     file_path_array = getPathSegments(filenode.path, root_path);
   });
 </script>
