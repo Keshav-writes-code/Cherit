@@ -1,5 +1,5 @@
 <script module lang="ts">
-  const _expansionState: { [key: string]: boolean } = $state({});
+  let expansion_state: { [key: string]: boolean } = $state({});
 </script>
 
 <script lang="ts">
@@ -21,6 +21,10 @@
     collapsed_state: boolean;
     is_root?: boolean;
   } = $props();
+  $effect(() => {
+    if (collapsed_state) return;
+    expansion_state = {};
+  });
   const isDirectChild = (r: string, f: string) =>
     f.replace(/\/+$/, "").startsWith(r.replace(/\/+$/, "")) &&
     f
@@ -49,16 +53,16 @@
             <summary
               class="py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
               onmousedown={() => {
-                _expansionState[node.path] = true;
+                expansion_state[node.path] = true;
               }}
               onkeydown={(e: KeyboardEvent) => {
                 if (e.key !== " ") return;
-                _expansionState[node.path] = true;
+                expansion_state[node.path] = true;
               }}
             >
               {node.name}
             </summary>
-            {#if _expansionState[node.path] || false || !collapsed_state}
+            {#if expansion_state[node.path] || false || !collapsed_state}
               <ItemsRenderer
                 bind:opened_filenode
                 file_tree={node.children}
