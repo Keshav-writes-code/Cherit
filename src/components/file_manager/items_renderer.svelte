@@ -25,18 +25,11 @@
     if (collapsed_state) return;
     expansion_state = {};
   });
-  const isDirectChild = (r: string, f: string) =>
-    f.replace(/\/+$/, "").startsWith(r.replace(/\/+$/, "")) &&
-    f
-      .replace(/\/+$/, "")
-      .slice(r.replace(/\/+$/, "").length)
-      .split("/")
-      .filter((s) => s).length === 1;
 </script>
 
 {#if root_path && file_tree.length}
   <ul
-    class="{isDirectChild(root_path, file_tree[0].path)
+    class="{is_root
       ? 'menu menu-sm rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide'
       : ''} flex flex-col gap-0.5 pt-0.5"
   >
