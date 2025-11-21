@@ -36,7 +36,6 @@
     left_x = e.clientX;
   }}
   onmouseup={() => (is_resizing = false)}
-  ondblclick={() => (left_x = undefined)}
 />
 <div
   style={left_x ? `width: ${left_x}px` : ""}
@@ -48,6 +47,7 @@
     role="presentation"
     aria-hidden="true"
     onmousedown={() => (is_resizing = true)}
+    ondblclick={() => (left_x = undefined)}
     class={`absolute h-full w-0.8 hover:bg-primary ${is_resizing && "bg-primary"} transition-all duration-300 cursor-row-resize right-0 z-1`}
   ></div>
   <div
