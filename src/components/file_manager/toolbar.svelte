@@ -6,6 +6,7 @@
     collapsed_state = $bindable(),
     file_tree = $bindable(),
     opened_filenode = $bindable(),
+    hover_newfile_button = $bindable(),
     root_path,
     focused_directory,
   }: {
@@ -14,6 +15,7 @@
     root_path: string | undefined;
     focused_directory: string | undefined;
     opened_filenode: FileNode | undefined;
+    hover_newfile_button: boolean;
   } = $props();
   let untitled_file_counter = 0;
 </script>
@@ -25,6 +27,8 @@
     aria-label="New File Button"
     class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
     disabled={!focused_directory}
+    onmouseenter={() => (hover_newfile_button = true)}
+    onmouseleave={() => (hover_newfile_button = false)}
     onclick={async () => {
       const new_file_path =
         `${focused_directory}/Untitled ${untitled_file_counter || ""}`.trim() +

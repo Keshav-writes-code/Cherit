@@ -1,5 +1,6 @@
 <script module lang="ts">
   let expanded_nodes_ever: { [key: string]: boolean } = $state({});
+  let expanded_state: { [key: string]: boolean } = $state({});
 </script>
 
 <script lang="ts">
@@ -15,6 +16,7 @@
     root_path,
     collapsed_state,
     is_root = true,
+    hover_newfile_button,
   }: {
     opened_filenode: FileNode | undefined;
     file_tree: FileNode[];
@@ -22,6 +24,7 @@
     collapsed_state: boolean;
     is_root?: boolean;
     focused_directory: string | undefined;
+    hover_newfile_button: boolean;
   } = $props();
   $effect(() => {
     if (collapsed_state) return;
@@ -54,18 +57,28 @@
         out:blur
       >
         {#if node.isDirectory}
+          {@const is_focused_and_collapsed_and_hover =
+            expanded_state[node.path] === false &&
+            node.path === focused_directory &&
+            hover_newfile_button}
           <details
             open={!collapsed_state}
-            class="w-full overflow-y-clip"
+            class="w-full {!is_focused_and_collapsed_and_hover &&
+              'overflow-y-clip'}"
             use:animatedDetails={{
               duration: 100 - 10 + 10 * node.children.length,
             }}
           >
             <summary
-              class="py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
+              class="
+              {is_focused_and_collapsed_and_hover &&
+                'outline-solid outline-2 outline-accent'}
+               py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
               onmousedown={() => {
                 expanded_nodes_ever[node.path] = true;
               }}
+              onclick={() =>
+                (expanded_state[node.path] = !expanded_state[node.path])}
               onkeydown={(e: KeyboardEvent) => {
                 if (e.key !== " ") return;
                 expanded_nodes_ever[node.path] = true;
@@ -80,6 +93,7 @@
                 file_tree={node.children}
                 {root_path}
                 {collapsed_state}
+                {hover_newfile_button}
                 is_root={false}
               />
             {/if}

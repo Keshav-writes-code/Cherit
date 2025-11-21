@@ -27,6 +27,7 @@
   });
   let left_x: number | undefined = $state(undefined);
   let is_resizing = $state(false);
+  let hover_newfile_button: boolean = $state(false);
 </script>
 
 <svelte:window
@@ -56,6 +57,7 @@
   <Toolbar
     bind:collapsed_state
     bind:opened_filenode
+    bind:hover_newfile_button
     {focused_directory}
     {root_path}
     bind:file_tree
@@ -63,6 +65,7 @@
   <ItemsRender
     bind:opened_filenode
     bind:focused_directory
+    {hover_newfile_button}
     {collapsed_state}
     {file_tree}
     {root_path}
