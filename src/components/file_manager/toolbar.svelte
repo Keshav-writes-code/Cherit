@@ -4,10 +4,12 @@
     collapsed_state = $bindable(),
     file_tree = $bindable(),
     root_path,
+    focused_directory,
   }: {
     collapsed_state: boolean;
     file_tree: FileNode[];
     root_path: string | undefined;
+    focused_directory: string | undefined;
   } = $props();
   let untitled_file_counter = 0;
 </script>

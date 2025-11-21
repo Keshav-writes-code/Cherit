@@ -14,6 +14,7 @@
     $props();
 
   let file_tree: FileNode[] = $state([]);
+  let focused_directory: string | undefined = $derived(root_path);
   $effect(() => {
     sort_file_tree(file_tree);
   });
@@ -52,6 +53,17 @@
     class="w-full h-10 bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)]"
     data-tauri-drag-region
   ></div>
-  <Toolbar bind:collapsed_state {root_path} bind:file_tree />
-  <ItemsRender bind:opened_filenode {collapsed_state} {file_tree} {root_path} />
+  <Toolbar
+    bind:collapsed_state
+    {focused_directory}
+    {root_path}
+    bind:file_tree
+  />
+  <ItemsRender
+    bind:opened_filenode
+    bind:focused_directory
+    {collapsed_state}
+    {file_tree}
+    {root_path}
+  />
 </div>

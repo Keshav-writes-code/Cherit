@@ -10,6 +10,7 @@
   import animatedDetails from "svelte-animated-details";
   let {
     opened_filenode = $bindable(),
+    focused_directory = $bindable(),
     file_tree,
     root_path,
     collapsed_state,
@@ -20,21 +21,38 @@
     root_path: string | undefined;
     collapsed_state: boolean;
     is_root?: boolean;
+    focused_directory: string | undefined;
   } = $props();
   $effect(() => {
     if (collapsed_state) return;
     expanded_nodes_ever = {};
   });
+  const get_parent_path = (p: string) => p.split("/").slice(0, -1).join("/");
 </script>
 
 {#if root_path && file_tree.length}
   <ul
-    class="{is_root
-      ? 'menu menu-sm rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide'
-      : ''} flex flex-col gap-0.5 pt-0.5"
+    class="
+    {is_root &&
+      'menu menu-sm rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide'}
+    {get_parent_path(file_tree[0].path) == focused_directory &&
+      ' bg-[color-mix(in_srgb,var(--color-base-200)_98%,white)]'}
+    flex flex-col gap-0.5 pt-0.5"
   >
     {#each file_tree as node (node.path)}
-      <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
+      <li
+        onclick={(e) => {
+          if (e.target === e.currentTarget.querySelector(":scope > button")) {
+            focused_directory = get_parent_path(node.path);
+          } else if (
+            e.target === e.currentTarget.querySelector("details > summary")
+          ) {
+            focused_directory = node.path;
+          }
+        }}
+        in:fly={{ y: -10, duration: 300, easing: backOut }}
+        out:blur
+      >
         {#if node.isDirectory}
           <details
             open={!collapsed_state}
@@ -58,6 +76,7 @@
             {#if expanded_nodes_ever[node.path] || false || !collapsed_state}
               <ItemsRenderer
                 bind:opened_filenode
+                bind:focused_directory
                 file_tree={node.children}
                 {root_path}
                 {collapsed_state}
