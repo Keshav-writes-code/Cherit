@@ -36,12 +36,12 @@ export const obsidian_theme = EditorView.theme({
     verticalAlign: "text-top",
   },
   ".cm-checkbox:hover": {
-    borderColor: "#00ffe0",
+    borderColor: "var(--color-accent)",
     backgroundColor: "#1a1a1a",
   },
   ".cm-checkbox:checked": {
-    backgroundColor: "#00ffe0",
-    borderColor: "#00ffe0",
+    backgroundColor: "var(--color-accent)",
+    borderColor: "var(--color-accent)",
   },
   ".cm-checkbox:checked::after": {
     content: '""',
