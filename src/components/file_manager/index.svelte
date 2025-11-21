@@ -37,15 +37,17 @@
   ondblclick={() => (left_x = undefined)}
 />
 <div
-  role="presentation"
-  aria-hidden="true"
-  onmousedown={() => (is_resizing = true)}
-  class={`absolute h-full w-0.8 hover:bg-primary ${is_resizing && "bg-primary"} transition-all duration-300 cursor-row-resize right-0 z-1`}
-></div>
-<div
   style={left_x ? `width: ${left_x}px` : ""}
-  class="flex h-full min-w-[200px] b-r-1 b-r-[color-mix(in_srgb,var(--color-base-content)_22%,black)] max-w-[600px] duration-0 flex-col w-80 bg-base-200"
+  class="
+  {is_resizing && 'duration-0'}
+  flex h-full min-w-[200px] b-r-1 b-r-[color-mix(in_srgb,var(--color-base-content)_22%,black)] max-w-[600px] flex-col w-80 bg-base-200"
 >
+  <div
+    role="presentation"
+    aria-hidden="true"
+    onmousedown={() => (is_resizing = true)}
+    class={`absolute h-full w-0.8 hover:bg-primary ${is_resizing && "bg-primary"} transition-all duration-300 cursor-row-resize right-0 z-1`}
+  ></div>
   <div
     class="w-full h-10 bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)]"
     data-tauri-drag-region
