@@ -9,6 +9,7 @@
   import { blur, fly } from "svelte/transition";
   import { backOut } from "svelte/easing";
   import animatedDetails from "svelte-animated-details";
+  import { get_parent_path } from "./file_tree_functions";
   let {
     opened_filenode = $bindable(),
     focused_directory = $bindable(),
@@ -30,7 +31,6 @@
     if (collapsed_state) return;
     expanded_nodes_ever = {};
   });
-  const get_parent_path = (p: string) => p.split("/").slice(0, -1).join("/");
 </script>
 
 {#if root_path && file_tree.length}

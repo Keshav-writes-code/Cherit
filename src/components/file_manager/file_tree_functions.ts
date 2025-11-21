@@ -78,3 +78,5 @@ export function insert_node_in_place(
   level.push(new_node);
   return new_node;
 }
+export const get_parent_path = (p: string) =>
+  p.split("/").slice(0, -1).join("/");
