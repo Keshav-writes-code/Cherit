@@ -36,8 +36,8 @@
     {is_root &&
       'menu menu-sm rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide'}
     {get_parent_path(file_tree[0].path) == focused_directory &&
-      ' bg-[color-mix(in_srgb,var(--color-base-200)_98%,white)]'}
-    flex flex-col gap-0.5 pt-0.5"
+      ' before:opacity-100 before:bg-[var(--color-accent)] '}
+    flex flex-col gap-0.5 pt-0.5 before:transition-all"
   >
     {#each file_tree as node (node.path)}
       <li
