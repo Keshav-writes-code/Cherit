@@ -44,3 +44,37 @@ export function sort_file_tree(nodes: FileNode[]): FileNode[] {
 
   return nodes;
 }
+export function insert_node_in_place(
+  roots: FileNode[],
+  new_node: FileNode,
+  offset = "",
+): FileNode {
+  const rel_path = new_node.path.startsWith(offset)
+    ? new_node.path.slice(offset.length)
+    : new_node.path;
+  const parts = rel_path.split(/[/\\]/).filter(Boolean).slice(0, -1);
+
+  let level = roots;
+  let current_path = offset.replace(/[/\\]+$/, "");
+
+  for (const part of parts) {
+    current_path += "/" + part;
+    let node = level.find((n) => n.isDirectory && n.name === part);
+
+    if (!node) {
+      level.push(
+        (node = {
+          name: part,
+          path: current_path,
+          isDirectory: true,
+          children: [],
+        }),
+      );
+    }
+
+    level = node.children;
+  }
+
+  level.push(new_node);
+  return new_node;
+}

@@ -55,6 +55,7 @@
   ></div>
   <Toolbar
     bind:collapsed_state
+    bind:opened_filenode
     {focused_directory}
     {root_path}
     bind:file_tree

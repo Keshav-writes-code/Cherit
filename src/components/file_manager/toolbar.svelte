@@ -1,9 +1,11 @@
 <script lang="ts">
   import { type FileNode } from "@/types";
   import { create } from "@tauri-apps/plugin-fs";
+  import { insert_node_in_place } from "./file_tree_functions";
   let {
     collapsed_state = $bindable(),
     file_tree = $bindable(),
+    opened_filenode = $bindable(),
     root_path,
     focused_directory,
   }: {
@@ -11,6 +13,7 @@
     file_tree: FileNode[];
     root_path: string | undefined;
     focused_directory: string | undefined;
+    opened_filenode: FileNode | undefined;
   } = $props();
   let untitled_file_counter = 0;
 </script>
@@ -28,12 +31,17 @@
         ".md";
 
       await create(new_file_path);
-      file_tree.push({
-        name: `Untitled ${untitled_file_counter || ""}`.trim(),
-        path: new_file_path,
-        isDirectory: false,
-        children: [],
-      });
+      const node = insert_node_in_place(
+        file_tree,
+        {
+          name: `Untitled ${untitled_file_counter || ""}`.trim(),
+          path: new_file_path,
+          isDirectory: false,
+          children: [],
+        },
+        root_path,
+      );
+      opened_filenode = node;
 
       untitled_file_counter++;
     }}
