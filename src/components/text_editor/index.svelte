@@ -17,7 +17,7 @@
     if (!filenode) return;
     readTextFile(filenode.path)
       .then((res) => {
-        text_content = res;
+        text_content = res || "\n";
         current_file_name = filenode?.name;
       })
       .catch((err) => {
