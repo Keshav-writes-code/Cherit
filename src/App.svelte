@@ -12,17 +12,15 @@
 </script>
 
 <div
-  class="drawer selection:bg-[rgb(from_var(--color-accent)_r_g_b_/_0.2)] isolate lg:drawer-open"
+  class="drawer lg:drawer-open selection:bg-[rgb(from_var(--color-accent)_r_g_b_/_0.2)] isolate"
 >
   <RootFolderSelector bind:root_path />
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content flex flex-col items-center h-screen">
-    <!-- Page content here -->
     <TitleBar />
-
     <TextEditior bind:filenode={opened_filenode} {root_path} />
   </div>
-  <div class="drawer-side relative">
+  <div class="drawer-side is-drawer-close:overflow-visible">
     <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"
     ></label>
     <FileManager bind:opened_filenode {root_path} />
