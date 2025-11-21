@@ -1,5 +1,6 @@
 <script module lang="ts">
-  let expansion_state: { [key: string]: boolean } = $state({});
+  let expanded_nodes_ever: { [key: string]: boolean } = $state({});
+  let expanded_states: { [key: string]: boolean } = $state({});
 </script>
 
 <script lang="ts">
@@ -23,7 +24,8 @@
   } = $props();
   $effect(() => {
     if (collapsed_state) return;
-    expansion_state = {};
+    expanded_nodes_ever = {};
+    expanded_states = {};
   });
 </script>
 
@@ -37,7 +39,7 @@
       <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
         {#if node.isDirectory}
           <details
-            open={!collapsed_state}
+            open={!collapsed_state || expanded_states[node.path]}
             class="w-full overflow-y-clip"
             use:animatedDetails={{
               duration: 100 - 10 + 10 * node.children.length,
@@ -46,16 +48,19 @@
             <summary
               class="py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
               onmousedown={() => {
-                expansion_state[node.path] = true;
+                expanded_nodes_ever[node.path] = true;
+              }}
+              onclick={() => {
+                expanded_states[node.path] = !expanded_states[node.path];
               }}
               onkeydown={(e: KeyboardEvent) => {
                 if (e.key !== " ") return;
-                expansion_state[node.path] = true;
+                expanded_nodes_ever[node.path] = true;
               }}
             >
               {node.name}
             </summary>
-            {#if expansion_state[node.path] || false || !collapsed_state}
+            {#if expanded_nodes_ever[node.path] || false || !collapsed_state}
               <ItemsRenderer
                 bind:opened_filenode
                 file_tree={node.children}
