@@ -26,19 +26,21 @@ export async function build_file_tree_from_fs(
   return nodes;
 }
 export function sort_file_tree(nodes: FileNode[]): FileNode[] {
-  return [...nodes] // 1. Shallow copy the array to prevent in-place sorting
-    .sort((a, b) => {
-      if (a.isDirectory !== b.isDirectory) return a.isDirectory ? -1 : 1;
-      return a.name.localeCompare(b.name, undefined, {
-        numeric: true,
-        sensitivity: "base",
-      });
-    })
-    .map((node) => ({
-      ...node, // 2. Shallow copy the node object
-      // 3. Assign the result of the recursion to the 'children' property of the new node
-      children: node.children?.length
-        ? sort_file_tree(node.children)
-        : node.children,
-    }));
+  // Sort array in-place
+  nodes.sort((a, b) => {
+    if (a.isDirectory !== b.isDirectory) return a.isDirectory ? -1 : 1;
+    return a.name.localeCompare(b.name, undefined, {
+      numeric: true,
+      sensitivity: "base",
+    });
+  });
+
+  // Recursively sort children in-place
+  for (const node of nodes) {
+    if (node.children?.length) {
+      sort_file_tree(node.children);
+    }
+  }
+
+  return nodes;
 }

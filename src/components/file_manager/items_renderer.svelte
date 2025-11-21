@@ -1,6 +1,5 @@
 <script module lang="ts">
   let expanded_nodes_ever: { [key: string]: boolean } = $state({});
-  let expanded_states: { [key: string]: boolean } = $state({});
 </script>
 
 <script lang="ts">
@@ -25,7 +24,6 @@
   $effect(() => {
     if (collapsed_state) return;
     expanded_nodes_ever = {};
-    expanded_states = {};
   });
 </script>
 
@@ -39,7 +37,7 @@
       <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
         {#if node.isDirectory}
           <details
-            open={!collapsed_state || expanded_states[node.path]}
+            open={!collapsed_state}
             class="w-full overflow-y-clip"
             use:animatedDetails={{
               duration: 100 - 10 + 10 * node.children.length,
@@ -49,9 +47,6 @@
               class="py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
               onmousedown={() => {
                 expanded_nodes_ever[node.path] = true;
-              }}
-              onclick={() => {
-                expanded_states[node.path] = !expanded_states[node.path];
               }}
               onkeydown={(e: KeyboardEvent) => {
                 if (e.key !== " ") return;

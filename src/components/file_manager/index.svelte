@@ -14,8 +14,8 @@
     $props();
 
   let file_tree: FileNode[] = $state([]);
-  let file_tree_sorted: FileNode[] = $derived.by(() => {
-    return sort_file_tree(file_tree);
+  $effect(() => {
+    sort_file_tree(file_tree);
   });
   let collapsed_state: boolean = $state(true);
   $effect(() => {
@@ -51,10 +51,5 @@
     data-tauri-drag-region
   ></div>
   <Toolbar bind:collapsed_state {root_path} bind:file_tree />
-  <ItemsRender
-    bind:opened_filenode
-    {collapsed_state}
-    file_tree={file_tree_sorted}
-    {root_path}
-  />
+  <ItemsRender bind:opened_filenode {collapsed_state} {file_tree} {root_path} />
 </div>
