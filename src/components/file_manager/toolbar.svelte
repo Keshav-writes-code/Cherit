@@ -17,7 +17,6 @@
     opened_filenode: FileNode | undefined;
     hover_newfile_button: boolean;
   } = $props();
-  let untitled_file_counter = 0;
 </script>
 
 <div
@@ -30,15 +29,22 @@
     onmouseenter={() => (hover_newfile_button = true)}
     onmouseleave={() => (hover_newfile_button = false)}
     onclick={async () => {
-      const new_file_path =
-        `${focused_directory}/Untitled ${untitled_file_counter || ""}`.trim() +
-        ".md";
+      const exists = (p: string) =>
+        file_tree.some(function f(n) {
+          return n.path === p || n.children?.some(f);
+        });
 
+      let i = 0,
+        name = "Untitled";
+      while (exists(`${focused_directory}/${name}.md`))
+        name = `Untitled ${++i}`;
+
+      const new_file_path = `${focused_directory}/${name}.md`;
       await create(new_file_path);
       const node = insert_node_in_place(
         file_tree,
         {
-          name: `Untitled ${untitled_file_counter || ""}`.trim(),
+          name,
           path: new_file_path,
           isDirectory: false,
           children: [],
@@ -46,8 +52,6 @@
         root_path,
       );
       opened_filenode = node;
-
-      untitled_file_counter++;
     }}
     ><div class="i-tabler:edit size-5"></div>
   </button>
