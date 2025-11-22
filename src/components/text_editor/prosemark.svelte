@@ -8,12 +8,12 @@
     prosemarkBasicSetup,
     prosemarkBaseThemeSetup,
     prosemarkMarkdownSyntaxExtensions,
+    softIndentExtension,
   } from "@prosemark/core";
   import { htmlBlockExtension } from "@prosemark/render-html";
   import { languages } from "@codemirror/language-data";
   import { indentUnit } from "@codemirror/language";
   import { obsidian_theme } from "./obsidian_theme";
-  import { indentedLineWrap } from "./hanging_indentation_plugin";
   let {
     text_content,
     write_to_file,
@@ -24,7 +24,6 @@
   let element: HTMLDivElement | undefined = $state();
   let editor: EditorView | undefined = $state();
   let is_contents_changed = $state(false);
-
   $effect(() => {
     let newEditor: EditorView | undefined;
     if (text_content && element) {
@@ -35,7 +34,7 @@
           EditorView.lineWrapping,
           EditorState.tabSize.of(8),
           indentUnit.of("\t"),
-          indentedLineWrap,
+          softIndentExtension,
           obsidian_theme,
           EditorView.updateListener.of((update) => {
             if (update.docChanged && !is_contents_changed) {
