@@ -63,7 +63,7 @@
             hover_newfile_button}
           <details
             open={!collapsed_state}
-            class="w-full {!is_focused_and_collapsed_and_hover &&
+            class="w-full overflow-visible {!is_focused_and_collapsed_and_hover &&
               'overflow-y-clip'}"
             use:animatedDetails={{
               duration: 100 - 10 + 10 * node.children.length,
