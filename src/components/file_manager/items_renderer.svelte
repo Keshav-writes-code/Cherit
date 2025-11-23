@@ -43,19 +43,7 @@
     flex flex-col gap-0.5 pt-0.5 before:transition-all"
   >
     {#each file_tree as node (node.path)}
-      <li
-        onclick={(e) => {
-          if (e.target === e.currentTarget.querySelector(":scope > button")) {
-            focused_directory = get_parent_path(node.path);
-          } else if (
-            e.target === e.currentTarget.querySelector("details > summary")
-          ) {
-            focused_directory = node.path;
-          }
-        }}
-        in:fly={{ y: -10, duration: 300, easing: backOut }}
-        out:blur
-      >
+      <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
         {#if node.isDirectory}
           {@const is_focused_and_collapsed_and_hover =
             expanded_state[node.path] === false &&
@@ -77,8 +65,12 @@
               onmousedown={() => {
                 expanded_nodes_ever[node.path] = true;
               }}
-              onclick={() =>
-                (expanded_state[node.path] = !expanded_state[node.path])}
+              onclick={(e) => {
+                expanded_state[node.path] = !expanded_state[node.path];
+                if (e.target === e.currentTarget) {
+                  focused_directory = node.path;
+                }
+              }}
               onkeydown={(e: KeyboardEvent) => {
                 if (e.key !== " ") return;
                 expanded_nodes_ever[node.path] = true;
@@ -103,8 +95,11 @@
             class="{opened_filenode?.path === node.path
               ? 'bg-base-content/10'
               : ''} py-0.75 w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
-            onclick={() => {
+            onclick={(e) => {
               opened_filenode = node;
+              if (e.target === e.currentTarget) {
+                focused_directory = get_parent_path(node.path);
+              }
             }}
             >{node.name}
           </button>
