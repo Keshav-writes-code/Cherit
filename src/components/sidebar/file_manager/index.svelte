@@ -25,35 +25,10 @@
       .then((v) => (file_tree = v))
       .catch((e) => toast.error("Error loading file tree:" + e));
   });
-  let left_x: number | undefined = $state(undefined);
-  let is_resizing = $state(false);
   let hover_newfile_button: boolean = $state(false);
 </script>
 
-<svelte:window
-  onmousemove={(e: MouseEvent) => {
-    if (!is_resizing) return;
-    left_x = e.clientX;
-  }}
-  onmouseup={() => (is_resizing = false)}
-/>
-<div
-  style={left_x ? `width: ${left_x}px` : ""}
-  class="
-  {is_resizing && 'duration-0'}
-  flex h-full min-w-[200px] b-r-1 b-r-[color-mix(in_srgb,var(--color-base-content)_22%,black)] max-w-[600px] flex-col w-80 bg-base-200"
->
-  <div
-    role="presentation"
-    aria-hidden="true"
-    onmousedown={() => (is_resizing = true)}
-    ondblclick={() => (left_x = undefined)}
-    class={`absolute h-full w-0.8 hover:bg-primary ${is_resizing && "bg-primary"} transition-all duration-300 cursor-row-resize right-0 z-1`}
-  ></div>
-  <div
-    class="w-full h-10 bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)]"
-    data-tauri-drag-region
-  ></div>
+<div class=" flex min-h-0 flex-1 flex-col w-full bg-base-200">
   <Toolbar
     bind:collapsed_state
     bind:opened_filenode
