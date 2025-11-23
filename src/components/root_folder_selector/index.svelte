@@ -16,7 +16,7 @@
   });
 </script>
 
-<dialog id="my_modal_1" open={state_open} class="modal">
+<dialog id="my_modal_1" open={state_open} class="modal z-11">
   <div class="modal-box p-0 size-80% max-w-none flex max-w-250">
     <div class="w-70 bg-base-content/10">
       {#if recent_paths.length}
