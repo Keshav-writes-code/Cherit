@@ -80,3 +80,7 @@ export function insert_node_in_place(
 }
 export const get_parent_path = (p: string) =>
   p.split("/").slice(0, -1).join("/");
+export const exists = (file_tree: FileNode[], p: string) =>
+  file_tree.some(function f(n) {
+    return n.path === p || n.children?.some(f);
+  });
