@@ -106,12 +106,17 @@
     {/each}
     <button
       aria-label="Set focused directory"
-      class=" w-2 hover:bg-accent b-l-1px absolute start-0 top-3 bottom-3 transition-all
-      {get_parent_path(file_tree[0].path) == focused_directory
-        ? ' b-l-[var(--color-accent)] '
-        : 'b-l-[rgb(from_var(--color-base-content)_r_g_b_/_0.1)]'} "
+      class=" w-2 flex hover:bg-accent absolute start--1.75 top-3 bottom-3 transition-all"
       onclick={() => (focused_directory = get_parent_path(file_tree[0].path))}
-    ></button>
+    >
+      <span
+        class="w-1px h-full m-auto transition-all
+        {get_parent_path(file_tree[0].path) == focused_directory
+          ? 'bg-[var(--color-accent)] '
+          : 'bg-[rgb(from_var(--color-base-content)_r_g_b_/_0.1)]'}
+        "
+      ></span>
+    </button>
   </ul>
 {:else if is_root && !file_tree.length}
   <div
