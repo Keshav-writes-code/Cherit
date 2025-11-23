@@ -5,7 +5,7 @@
 
 <script lang="ts">
   import type { FileNode } from "@/types";
-  import ItemsRenderer from "@/components/file_manager/items_renderer.svelte";
+  import ItemsRenderer from "./items_renderer.svelte";
   import { blur, fly } from "svelte/transition";
   import { backOut } from "svelte/easing";
   import animatedDetails from "svelte-animated-details";

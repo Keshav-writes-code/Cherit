@@ -3,7 +3,7 @@
     build_file_tree_from_fs,
     sort_file_tree,
   } from "./file_tree_functions";
-  import ItemsRender from "@/components/file_manager/items_renderer.svelte";
+  import ItemsRender from "./items_renderer.svelte";
   import { type FileNode } from "@/types";
   import Toolbar from "./toolbar.svelte";
   import { toast } from "svelte-sonner";
