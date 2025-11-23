@@ -37,10 +37,8 @@
   <ul
     class="
     {is_root &&
-      'menu menu-sm rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide'}
-    {get_parent_path(file_tree[0].path) == focused_directory &&
-      ' before:opacity-100 before:bg-[var(--color-accent)] '}
-    flex flex-col gap-0.5 pt-0.5 before:transition-all"
+      'menu menu-sm rounded-box relative w-full select-none flex-1 overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide pb-50% '}
+    flex before:content-none flex-col gap-0.5 pt-0.5"
   >
     {#each file_tree as node (node.path)}
       <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
@@ -106,6 +104,14 @@
         {/if}
       </li>
     {/each}
+    <button
+      aria-label="Set focused directory"
+      class=" w-2 hover:bg-accent b-l-1px absolute start-0 top-3 bottom-3 transition-all
+      {get_parent_path(file_tree[0].path) == focused_directory
+        ? ' b-l-[var(--color-accent)] '
+        : 'b-l-[rgb(from_var(--color-base-content)_r_g_b_/_0.1)]'} "
+      onclick={() => (focused_directory = get_parent_path(file_tree[0].path))}
+    ></button>
   </ul>
 {:else if is_root && !file_tree.length}
   <div
