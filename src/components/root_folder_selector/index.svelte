@@ -29,6 +29,7 @@
               recent_paths = [];
             }}
             class="btn btn-square btn-ghost color-gray"
+            aria-label="Delete All Recent folders"
           >
             <div class=" i-tabler:trash-filled size-4"></div>
           </button>
