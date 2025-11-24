@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { root_folder_picker_dialog_state } from "@/misc_global_states.svelte";
+
   let { root_path }: { root_path: string | undefined } = $props();
 </script>
 
@@ -7,7 +9,11 @@
 >
   <ul class="menu menu-xs bg-base-200 rounded-box w-full">
     <li>
-      <button>
+      <button
+        onclick={() => {
+          root_folder_picker_dialog_state.open = true;
+        }}
+      >
         <div class=" i-famicons:chevron-expand size-4"></div>
         {root_path?.split("/").filter(Boolean).pop()}
       </button>

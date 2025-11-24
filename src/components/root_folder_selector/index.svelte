@@ -1,11 +1,8 @@
 <script lang="ts">
+  import { root_folder_picker_dialog_state } from "@/misc_global_states.svelte";
   import { open } from "@tauri-apps/plugin-dialog";
   import { LazyStore } from "@tauri-apps/plugin-store";
   import { onMount } from "svelte";
-  let state_open = $state(true);
-  $effect(() => {
-    if (root_path) state_open = false;
-  });
   let { root_path = $bindable() }: { root_path: string | undefined } = $props();
 
   const user_activity = new LazyStore("user_activity.json");
@@ -16,7 +13,11 @@
   });
 </script>
 
-<dialog id="my_modal_1" open={state_open} class="modal z-11">
+<dialog
+  id="my_modal_1"
+  open={root_folder_picker_dialog_state.open}
+  class="modal z-11"
+>
   <div class="modal-box p-0 size-80% max-w-none flex max-w-250">
     <div class="w-70 bg-base-content/10">
       {#if recent_paths.length}
@@ -38,6 +39,7 @@
               <button
                 onclick={() => {
                   root_path = path;
+                  root_folder_picker_dialog_state.open = false;
                 }}
                 class="flex gap-0 flex-col items-baseline"
               >
