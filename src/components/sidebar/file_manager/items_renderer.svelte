@@ -37,7 +37,10 @@
   <ul
     class="
     {is_root &&
-      'menu menu-sm h-full rounded-box relative w-full select-none  overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide pb-50% '}
+      'menu menu-sm h-full rounded-box relative w-full select-none  overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide  '}
+    {is_root &&
+      focused_directory == root_path &&
+      'shadow-[inset_0_0_0_1px_var(--color-accent)]'}
     flex before:content-none flex-col gap-0.5 pt-0.5"
   >
     {#each file_tree as node (node.path)}
@@ -117,6 +120,14 @@
         "
       ></span>
     </button>
+    {#if is_root}
+      <button
+        aria-label="Set Focus to root"
+        class="min-h-30% grow"
+        onclick={() => (focused_directory = root_path)}
+      >
+      </button>
+    {/if}
   </ul>
 {:else if is_root && !file_tree.length}
   <div
