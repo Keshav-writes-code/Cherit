@@ -23,7 +23,7 @@
   <div class="drawer-side is-drawer-close:overflow-visible">
     <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"
     ></label>
-    <Sidebar bind:opened_filenode {root_path} />
+    <Sidebar bind:opened_filenode bind:root_path />
   </div>
 </div>
 <Toaster

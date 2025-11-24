@@ -9,11 +9,12 @@
   import { toast } from "svelte-sonner";
   let {
     opened_filenode = $bindable(),
-    root_path,
+    root_path = $bindable(),
   }: { opened_filenode: FileNode | undefined; root_path: string | undefined } =
     $props();
 
   let file_tree: FileNode[] = $state([]);
+  let prev_root_folder: string | undefined = $state();
   let focused_directory: string | undefined = $derived(root_path);
   $effect(() => {
     sort_file_tree(file_tree);
@@ -22,8 +23,14 @@
   $effect(() => {
     if (!root_path) return;
     build_file_tree_from_fs(root_path)
-      .then((v) => (file_tree = v))
-      .catch((e) => toast.error("Error loading file tree:" + e));
+      .then((v) => {
+        file_tree = v;
+        prev_root_folder = root_path;
+      })
+      .catch((e) => {
+        toast.error("Error loading file tree: \n" + e);
+        root_path = prev_root_folder;
+      });
   });
   let hover_newfile_button: boolean = $state(false);
 </script>

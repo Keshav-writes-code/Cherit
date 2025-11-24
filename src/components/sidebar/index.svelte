@@ -4,7 +4,7 @@
   import type { FileNode } from "@/types";
 
   let {
-    root_path,
+    root_path = $bindable(),
     opened_filenode = $bindable(),
   }: {
     root_path: string | undefined;
@@ -32,7 +32,7 @@
     class="w-full h-10 min-h-10 bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)]"
     data-tauri-drag-region
   ></div>
-  <FileManager bind:opened_filenode {root_path} />
+  <FileManager bind:opened_filenode bind:root_path />
   <BottomSidebar {root_path} />
   <div
     role="presentation"
