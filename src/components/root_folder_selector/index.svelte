@@ -41,7 +41,9 @@
                   root_path = path;
                   root_folder_picker_dialog_state.open = false;
                 }}
-                class="flex gap-0 flex-col items-baseline"
+                class="
+                {root_path == path && 'bg-base-100'}
+                flex gap-0 flex-col items-baseline"
               >
                 <p class="text-sm text-base-content/80">
                   {path.split(/[\\/]/).filter(Boolean).pop()!}
