@@ -4,6 +4,9 @@
   import { LazyStore } from "@tauri-apps/plugin-store";
   import { onMount } from "svelte";
   let { root_path = $bindable() }: { root_path: string | undefined } = $props();
+  $effect(() => {
+    if (root_path) root_folder_picker_dialog_state.open = false;
+  });
 
   const user_activity = new LazyStore("user_activity.json");
   let recent_paths: string[] = $state([]);
