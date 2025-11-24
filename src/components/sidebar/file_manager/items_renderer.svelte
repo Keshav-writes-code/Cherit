@@ -109,7 +109,8 @@
     {/each}
     <button
       aria-label="Set focused directory"
-      class=" w-2 flex hover:bg-accent absolute start--1.75 top-3 bottom-3 transition-all"
+      class=" w-2 flex hover:bg-accent absolute start--1.75 top-3 bottom-3 transition-all rounded-0.7"
+      disabled={is_root}
       onclick={() => (focused_directory = get_parent_path(file_tree[0].path))}
     >
       <span
