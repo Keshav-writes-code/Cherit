@@ -2,7 +2,9 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "enables the default permissions",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "fs:default",
@@ -14,6 +16,7 @@
     "core:window:allow-toggle-maximize",
     "fs:allow-write-text-file",
     "fs:allow-home-read-recursive",
-    "fs:allow-home-write-recursive"
+    "fs:allow-home-write-recursive",
+    "os:default"
   ]
 }
