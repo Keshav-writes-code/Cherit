@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { type FileNode } from "@/types";
-  import { create, mkdir } from "@tauri-apps/plugin-fs";
-  import { exists, insert_node_in_place } from "./file_tree_functions";
-  let {
-    collapsed_state = $bindable(),
-    file_tree = $bindable(),
-    opened_filenode = $bindable(),
-    hover_newfile_button = $bindable(),
-    root_path,
-    focused_directory,
-  }: {
-    collapsed_state: boolean;
-    file_tree: FileNode[];
-    root_path: string | undefined;
-    focused_directory: string | undefined;
-    opened_filenode: FileNode | undefined;
-    hover_newfile_button: boolean;
-  } = $props();
+import { type FileNode } from "@/types";
+import { create, mkdir } from "@tauri-apps/plugin-fs";
+import { exists, insert_node_in_place } from "./file_tree_functions";
+let {
+  collapsed_state = $bindable(),
+  file_tree = $bindable(),
+  opened_filenode = $bindable(),
+  hover_newfile_button = $bindable(),
+  root_path,
+  focused_directory,
+}: {
+  collapsed_state: boolean;
+  file_tree: FileNode[];
+  root_path: string | undefined;
+  focused_directory: string | undefined;
+  opened_filenode: FileNode | undefined;
+  hover_newfile_button: boolean;
+} = $props();
 </script>
 
 <div

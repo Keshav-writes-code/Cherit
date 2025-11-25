@@ -1,7 +1,7 @@
 <script>
-  import { current_platform_type } from "@/misc_global_states.svelte";
-  import { getCurrentWindow } from "@tauri-apps/api/window";
-  const appWindow = getCurrentWindow();
+import { current_platform_type } from "@/misc_global_states.svelte";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+const appWindow = getCurrentWindow();
 </script>
 
 {#if current_platform_type !== "mobile"}

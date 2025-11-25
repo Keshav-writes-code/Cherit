@@ -1,22 +1,22 @@
 <script lang="ts">
-  import {
-    current_platform_type,
-    root_folder_picker_dialog_state,
-  } from "@/misc_global_states.svelte";
-  import { open } from "@tauri-apps/plugin-dialog";
-  import { LazyStore } from "@tauri-apps/plugin-store";
-  import { onMount } from "svelte";
-  let { root_path = $bindable() }: { root_path: string | undefined } = $props();
-  $effect(() => {
-    if (root_path) root_folder_picker_dialog_state.open = false;
-  });
+import {
+  current_platform_type,
+  root_folder_picker_dialog_state,
+} from "@/misc_global_states.svelte";
+import { open } from "@tauri-apps/plugin-dialog";
+import { LazyStore } from "@tauri-apps/plugin-store";
+import { onMount } from "svelte";
+let { root_path = $bindable() }: { root_path: string | undefined } = $props();
+$effect(() => {
+  if (root_path) root_folder_picker_dialog_state.open = false;
+});
 
-  const user_activity = new LazyStore("user_activity.json");
-  let recent_paths: string[] = $state([]);
+const user_activity = new LazyStore("user_activity.json");
+let recent_paths: string[] = $state([]);
 
-  onMount(async () => {
-    recent_paths = (await user_activity.get<string[]>("recent_paths")) ?? [];
-  });
+onMount(async () => {
+  recent_paths = (await user_activity.get<string[]>("recent_paths")) ?? [];
+});
 </script>
 
 <dialog

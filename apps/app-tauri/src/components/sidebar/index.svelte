@@ -1,17 +1,17 @@
 <script lang="ts">
-  import FileManager from "@/components/sidebar/file_manager/index.svelte";
-  import BottomSidebar from "@/components/sidebar/bottom_sidebar.svelte";
-  import type { FileNode } from "@/types";
+import FileManager from "@/components/sidebar/file_manager/index.svelte";
+import BottomSidebar from "@/components/sidebar/bottom_sidebar.svelte";
+import type { FileNode } from "@/types";
 
-  let {
-    root_path = $bindable(),
-    opened_filenode = $bindable(),
-  }: {
-    root_path: string | undefined;
-    opened_filenode: FileNode | undefined;
-  } = $props();
-  let left_x: number | undefined = $state(undefined);
-  let is_resizing = $state(false);
+let {
+  root_path = $bindable(),
+  opened_filenode = $bindable(),
+}: {
+  root_path: string | undefined;
+  opened_filenode: FileNode | undefined;
+} = $props();
+let left_x: number | undefined = $state(undefined);
+let is_resizing = $state(false);
 </script>
 
 <svelte:window

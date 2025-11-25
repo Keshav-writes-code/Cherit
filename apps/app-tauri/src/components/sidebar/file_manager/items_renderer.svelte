@@ -1,6 +1,6 @@
 <script module lang="ts">
-  let expanded_nodes_ever: { [key: string]: boolean } = $state({});
-  let expanded_state: { [key: string]: boolean } = $state({});
+let expanded_nodes_ever: { [key: string]: boolean } = $state({});
+let expanded_state: { [key: string]: boolean } = $state({});
 </script>
 
 <script lang="ts">

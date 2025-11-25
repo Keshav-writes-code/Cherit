@@ -9,5 +9,8 @@
     "build": "bun run build --workspace app-tauri",
     "dev:website": "bun run dev --workspace website",
     "build:website": "bun run build --workspace website"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.7"
   }
 }
