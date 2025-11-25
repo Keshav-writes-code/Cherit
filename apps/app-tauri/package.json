@@ -1,0 +1,47 @@
+{
+  "name": "cherit",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+  },
+  "devDependencies": {
+    "@0x-jerry/unocss-preset-daisyui": "0.2.3",
+    "@iconify-json/famicons": "^1.2.2",
+    "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "@tauri-apps/cli": "^2.9.4",
+    "@tsconfig/svelte": "^5.0.6",
+    "@types/node": "^24.10.1",
+    "@unocss/preset-typography": "^66.5.9",
+    "@unocss/preset-wind4": "^66.5.9",
+    "svelte": "^5.43.14",
+    "svelte-check": "^4.3.4",
+    "typescript": "~5.9.3",
+    "unocss": "^66.5.9",
+    "vite": "^7.2.4"
+  },
+  "dependencies": {
+    "@codemirror/lang-markdown": "^6.5.0",
+    "@codemirror/language-data": "^6.5.2",
+    "@codemirror/view": "^6.38.8",
+    "@iconify-json/carbon": "^1.2.14",
+    "@iconify-json/tabler": "^1.2.23",
+    "@lezer/markdown": "^1.6.0",
+    "@prosemark/core": "^0.0.4",
+    "@prosemark/render-html": "^0.0.5",
+    "@tauri-apps/plugin-dialog": "~2.4.2",
+    "@tauri-apps/plugin-fs": "~2.4.4",
+    "@tauri-apps/plugin-store": "~2.4.1",
+    "@unocss/preset-icons": "^66.5.9",
+    "@unocss/preset-mini": "^66.5.9",
+    "@unocss/reset": "^66.5.9",
+    "@unocss/transformer-variant-group": "^66.5.9",
+    "daisyui": "5.4.7",
+    "svelte-animated-details": "^1.0.2",
+    "svelte-sonner": "^1.0.6"
+  }
+}
