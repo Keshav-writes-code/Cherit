@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "my-monorepo",
+      "name": "cherit",
     },
     "apps/app-tauri": {
       "name": "cherit",
