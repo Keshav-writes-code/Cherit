@@ -26,7 +26,9 @@
   },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.5.0",
+    "@codemirror/language": "^6.11.3",
     "@codemirror/language-data": "^6.5.2",
+    "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.38.8",
     "@iconify-json/carbon": "^1.2.14",
     "@iconify-json/tabler": "^1.2.23",
