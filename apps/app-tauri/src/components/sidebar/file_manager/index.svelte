@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    build_file_tree_from_fs,
+    build_file_tree_cross_platform,
     sort_file_tree,
   } from './file_tree_functions';
   import ItemsRender from './items_renderer.svelte';
@@ -16,15 +16,15 @@
   } = $props();
 
   let file_tree: FileNode[] = $state([]);
-  let prev_root_folder: string | URL | undefined = $state();
-  let focused_directory: string | URL | undefined = $derived(root_path);
+  let prev_root_folder: RootPath = $state();
+  let focused_directory: RootPath = $derived(root_path);
   $effect(() => {
     sort_file_tree(file_tree);
   });
   let collapsed_state: boolean = $state(true);
   $effect(() => {
     if (!root_path) return;
-    build_file_tree_from_fs(root_path)
+    build_file_tree_cross_platform(root_path)
       .then((v) => {
         file_tree = v;
         prev_root_folder = root_path;

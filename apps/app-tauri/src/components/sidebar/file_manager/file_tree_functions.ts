@@ -50,6 +50,14 @@ export async function build_file_tree_from_fs_android(
   );
 }
 
+export async function build_file_tree_cross_platform(
+  dirPath: string | AndroidFsUri
+): Promise<FileNode[]> {
+  if (current_platform == 'android') {
+    return await build_file_tree_from_fs_android(dirPath as AndroidFsUri);
+  } else {
+    return await build_file_tree_from_fs(dirPath as string);
+  }
 }
 export function sort_file_tree(nodes: FileNode[]): FileNode[] {
   // Sort array in-place
