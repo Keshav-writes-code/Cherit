@@ -1,14 +1,18 @@
 ---
 import "virtual:uno.css";
+import "daisyui/theme/business.css";
+import "daisyui/theme/dim.css";
 import "daisyui/theme/dark.css";
+import "daisyui/theme/black.css";
 type Props = {
   class?: string;
+  theme?: string;
 };
-const { class: classes }: Props = Astro.props;
+const { class: classes, theme = "dark" }: Props = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme={theme}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
