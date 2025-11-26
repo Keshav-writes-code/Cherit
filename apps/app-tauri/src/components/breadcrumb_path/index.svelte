@@ -3,35 +3,40 @@
   let {
     filenode,
     root_path,
-  }: { filenode: FileNode | undefined; root_path: RootPath } = $props();
-  function getPathSegments(filePath: string, rootPath: string): string[] {
-    const relative = filePath.replace(
-      rootPath.endsWith('/') ? rootPath : rootPath + '/',
-      ''
-    );
-    return relative.split('/').filter(Boolean);
-  }
-  let file_path_array: string[] = $state([]);
-  $effect(() => {
-    if (!filenode || !root_path) {
-      file_path_array = [];
-      return;
+    class: classes = 'text-xs',
+  }: {
+    filenode: FileNode | undefined;
+    root_path: RootPath;
+    class?: string;
+  } = $props();
+
+  let segments = $derived.by(() => {
+    if (!filenode) return [];
+
+    let root =
+      (typeof root_path === 'object' ? root_path?.uri : root_path) || '';
+    let file = filenode.path;
+
+    // Fix Android: Extract only the decoded ID (last segment) to ignore 'tree' vs 'document' prefix mismatch
+    if (file.startsWith('content:')) {
+      file = decodeURIComponent(file.split('/').pop() || '');
+      root = decodeURIComponent(root.split('/').pop() || '');
     }
-    const root_string =
-      root_path instanceof URL ? root_path.toString() : root_path;
-    file_path_array = getPathSegments(filenode.path, root_string);
+
+    // Remove root from file path and split
+    return file.replace(root, '').split('/').filter(Boolean);
   });
 </script>
 
-<div class="breadcrumbs text-xs">
+<div class="{classes} breadcrumbs">
   <ul>
-    {#each file_path_array as segment}
+    {#each segments as seg, i}
       <li
-        class={segment != file_path_array[file_path_array.length - 1]
+        class={i < segments.length - 1
           ? 'text-[color-mix(in_srgb,var(--color-base-content)_80%,black)]'
           : ''}
       >
-        {segment.split('.md')[0]}
+        {seg.replace(/\.md$/, '')}
       </li>
     {/each}
   </ul>
