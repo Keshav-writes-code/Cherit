@@ -13,14 +13,14 @@
 </script>
 
 <div
-  class="drawer lg:drawer-open selection:bg-[rgb(from_var(--color-accent)_r_g_b_/_0.2)] isolate"
+  class="drawer h-full lg:drawer-open selection:bg-[rgb(from_var(--color-accent)_r_g_b_/_0.2)] isolate"
 >
   <RootFolderSelector bind:root_path />
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
   <div
     class="
-    {current_platform_type == 'mobile' && 'mt-10'}
-    drawer-content flex flex-col items-center h-full"
+    {current_platform_type == 'mobile' && 'pt-10'}
+    drawer-content flex overflow-y-auto flex-col items-center h-full"
   >
     <TitleBar {root_path} filenode={opened_filenode} />
     <TextEditior bind:filenode={opened_filenode} {root_path} />
