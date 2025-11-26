@@ -121,8 +121,7 @@
                 onclick={async () => {
                   const uri = await AndroidFs.showOpenDirPicker();
                   if (!uri) return;
-                  const path = await AndroidFs.getFsPath(uri);
-                  root_path = path;
+                  root_path = uri;
                 }}
               >
                 <div class="size-6 i-tabler:folder-open"></div>

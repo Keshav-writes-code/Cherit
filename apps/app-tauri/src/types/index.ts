@@ -1,4 +1,4 @@
-import type { FsPath } from 'tauri-plugin-android-fs-api';
+import type { AndroidFsUri } from 'tauri-plugin-android-fs-api';
 
 export interface FileNode {
   name: string;
@@ -6,4 +6,4 @@ export interface FileNode {
   isDirectory: boolean;
   children: FileNode[];
 }
-export type RootPath = string | FsPath | undefined;
+export type RootPath = string | AndroidFsUri | undefined;
