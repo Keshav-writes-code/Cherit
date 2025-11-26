@@ -1,4 +1,4 @@
-name: 'publish'
+name: 'tauri-build-release'
 
 on:
   workflow_dispatch:
@@ -81,7 +81,7 @@ jobs:
       - name: setup Android signing
         if: matrix.mobile == 'android'
         run: |
-          cd src-tauri/gen/android
+          cd apps/app-tauri/src-tauri/gen/android
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" > keystore.properties
           echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" >> keystore.properties
           base64 -d <<< "${{ secrets.ANDROID_KEY_BASE64 }}" > $RUNNER_TEMP/keystore.jks
