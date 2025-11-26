@@ -1,14 +1,14 @@
 <script lang="ts">
-import TextEditior from "@/components/text_editor/index.svelte";
-import RootFolderSelector from "@/components/root_folder_selector/index.svelte";
-import TitleBar from "@/components/titlebar/index.svelte";
-import Sidebar from "@/components/sidebar/index.svelte";
-import type { FileNode } from "@/types";
-import { Toaster } from "svelte-sonner";
+  import TextEditior from '@/components/text_editor/index.svelte';
+  import RootFolderSelector from '@/components/root_folder_selector/index.svelte';
+  import TitleBar from '@/components/titlebar/index.svelte';
+  import Sidebar from '@/components/sidebar/index.svelte';
+  import type { FileNode } from '@/types';
+  import { Toaster } from 'svelte-sonner';
 
-// NOTE: GLobal Variables
-let root_path: string | undefined = $state();
-let opened_filenode: FileNode | undefined = $state();
+  // NOTE: GLobal Variables
+  let root_path: string | undefined = $state();
+  let opened_filenode: FileNode | undefined = $state();
 </script>
 
 <div
@@ -33,11 +33,11 @@ let opened_filenode: FileNode | undefined = $state();
   closeButton
   toastOptions={{
     classes: {
-      toast: "mt-10",
-      error: "alert alert-error alert-soft",
-      success: "alert alert-success alert-soft",
-      warning: "alert alert-warning alert-soft",
-      info: "alert alert-info alert-soft",
+      toast: 'mt-10',
+      error: 'alert alert-error alert-soft',
+      success: 'alert alert-success alert-soft',
+      warning: 'alert alert-warning alert-soft',
+      info: 'alert alert-info alert-soft',
     },
   }}
   duration={2000}

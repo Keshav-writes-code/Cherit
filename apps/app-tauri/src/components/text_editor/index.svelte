@@ -1,31 +1,32 @@
 <script lang="ts">
-import BreadCrumb from "@/components/breadcrumb_path/index.svelte";
-import { readTextFile, rename, writeTextFile } from "@tauri-apps/plugin-fs";
-import type { FileNode } from "@/types";
-import Prosemark from "./prosemark.svelte";
-import { toast } from "svelte-sonner";
-let {
-  filenode = $bindable(),
-  root_path,
-}: { filenode: FileNode | undefined; root_path: string | undefined } = $props();
-let text_content: string | undefined = $state();
-let current_file_name: string | undefined = $state();
-let is_file_named_changed: boolean = $state(false);
+  import BreadCrumb from '@/components/breadcrumb_path/index.svelte';
+  import { readTextFile, rename, writeTextFile } from '@tauri-apps/plugin-fs';
+  import type { FileNode } from '@/types';
+  import Prosemark from './prosemark.svelte';
+  import { toast } from 'svelte-sonner';
+  let {
+    filenode = $bindable(),
+    root_path,
+  }: { filenode: FileNode | undefined; root_path: string | undefined } =
+    $props();
+  let text_content: string | undefined = $state();
+  let current_file_name: string | undefined = $state();
+  let is_file_named_changed: boolean = $state(false);
 
-$effect(() => {
-  if (!filenode) return;
-  readTextFile(filenode.path)
-    .then((res) => {
-      text_content = res || "\n";
-      current_file_name = filenode?.name;
-    })
-    .catch((err) => {
-      toast.error(err);
-      filenode = undefined;
-      text_content = undefined;
-      current_file_name = undefined;
-    });
-});
+  $effect(() => {
+    if (!filenode) return;
+    readTextFile(filenode.path)
+      .then((res) => {
+        text_content = res || '\n';
+        current_file_name = filenode?.name;
+      })
+      .catch((err) => {
+        toast.error(err);
+        filenode = undefined;
+        text_content = undefined;
+        current_file_name = undefined;
+      });
+  });
 </script>
 
 <BreadCrumb {filenode} {root_path} />
@@ -36,7 +37,7 @@ $effect(() => {
       oninput={(e) => {
         current_file_name = current_file_name?.replace(
           /[^A-Za-z0-9 _.\-()]/g,
-          "",
+          ''
         );
         is_file_named_changed = current_file_name != filenode?.name;
       }}
@@ -44,7 +45,7 @@ $effect(() => {
         if (!is_file_named_changed) return;
         if (!current_file_name || !filenode) return;
         const new_file_path =
-          filenode.path.replace(/[^/\\]+$/, current_file_name) + ".md";
+          filenode.path.replace(/[^/\\]+$/, current_file_name) + '.md';
         try {
           await rename(filenode.path, new_file_path);
           filenode.path = new_file_path;

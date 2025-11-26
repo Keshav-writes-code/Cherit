@@ -1,7 +1,7 @@
 <script lang="ts">
-import { root_folder_picker_dialog_state } from "@/misc_global_states.svelte";
+  import { root_folder_picker_dialog_state } from '@/misc_global_states.svelte';
 
-let { root_path }: { root_path: string | undefined } = $props();
+  let { root_path }: { root_path: string | undefined } = $props();
 </script>
 
 <div
@@ -15,7 +15,7 @@ let { root_path }: { root_path: string | undefined } = $props();
         }}
       >
         <div class=" i-famicons:chevron-expand size-4"></div>
-        {root_path?.split("/").filter(Boolean).pop()}
+        {root_path?.split('/').filter(Boolean).pop()}
       </button>
     </li>
   </ul>

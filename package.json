@@ -8,9 +8,13 @@
     "dev": "bun run dev --workspace app-tauri",
     "build": "bun run build --workspace app-tauri",
     "dev:website": "bun run dev --workspace website",
-    "build:website": "bun run build --workspace website"
+    "build:website": "bun run build --workspace website",
+    "format": "prettier --write .",
+    "check-format": "prettier --check ."
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.7"
+    "prettier": "^3.6.2",
+    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-svelte": "^3.4.0"
   }
 }

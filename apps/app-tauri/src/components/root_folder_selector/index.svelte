@@ -1,22 +1,22 @@
 <script lang="ts">
-import {
-  current_platform_type,
-  root_folder_picker_dialog_state,
-} from "@/misc_global_states.svelte";
-import { open } from "@tauri-apps/plugin-dialog";
-import { LazyStore } from "@tauri-apps/plugin-store";
-import { onMount } from "svelte";
-let { root_path = $bindable() }: { root_path: string | undefined } = $props();
-$effect(() => {
-  if (root_path) root_folder_picker_dialog_state.open = false;
-});
+  import {
+    current_platform_type,
+    root_folder_picker_dialog_state,
+  } from '@/misc_global_states.svelte';
+  import { open } from '@tauri-apps/plugin-dialog';
+  import { LazyStore } from '@tauri-apps/plugin-store';
+  import { onMount } from 'svelte';
+  let { root_path = $bindable() }: { root_path: string | undefined } = $props();
+  $effect(() => {
+    if (root_path) root_folder_picker_dialog_state.open = false;
+  });
 
-const user_activity = new LazyStore("user_activity.json");
-let recent_paths: string[] = $state([]);
+  const user_activity = new LazyStore('user_activity.json');
+  let recent_paths: string[] = $state([]);
 
-onMount(async () => {
-  recent_paths = (await user_activity.get<string[]>("recent_paths")) ?? [];
-});
+  onMount(async () => {
+    recent_paths = (await user_activity.get<string[]>('recent_paths')) ?? [];
+  });
 </script>
 
 <dialog
@@ -64,7 +64,7 @@ onMount(async () => {
             </li>
           {/each}
         </ul>
-      {:else if current_platform_type == "desktop"}
+      {:else if current_platform_type == 'desktop'}
         <div
           class="color-purple/60 i-tabler:folder-heart size-15 mx-auto mt-20"
         ></div>
@@ -87,7 +87,7 @@ onMount(async () => {
         <p class="text-base-content/60">Version {__APP_VERSION__}</p>
       </div>
       <div class="w-full flex justify-between mt-20 b-b-neutral/30 pb-3 b-b-1">
-        {#if current_platform_type == "desktop"}
+        {#if current_platform_type == 'desktop'}
           <div>
             <p class="leading-relaxed">Open Folder as Vault</p>
             <p class="text-sm text-base-content/60">
@@ -106,15 +106,20 @@ onMount(async () => {
               root_path = folder;
               if (!recent_paths.includes(folder)) {
                 recent_paths = [folder, ...recent_paths].slice(0, 10);
-                await user_activity.set("recent_paths", recent_paths);
+                await user_activity.set('recent_paths', recent_paths);
                 await user_activity.save();
               }
             }}>Open</button
           >
-        {:else if current_platform_type == "mobile"}
+        {:else if current_platform_type == 'mobile'}
           <ul class="menu menu-xl w-full rounded-box">
             <li>
-              <button class="grid grid-cols-[auto_auto_1fr]">
+              <button
+                class="grid grid-cols-[auto_auto_1fr]"
+                onclick={() => {
+                  console.log('Hello');
+                }}
+              >
                 <div class="size-6 i-tabler:folder-open"></div>
                 Open folder as vault
                 <div

@@ -1,10 +1,10 @@
 <script>
-import { current_platform_type } from "@/misc_global_states.svelte";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-const appWindow = getCurrentWindow();
+  import { current_platform_type } from '@/misc_global_states.svelte';
+  import { getCurrentWindow } from '@tauri-apps/api/window';
+  const appWindow = getCurrentWindow();
 </script>
 
-{#if current_platform_type !== "mobile"}
+{#if current_platform_type !== 'mobile'}
   <div
     class="  w-full h-10 z-12 flex justify-between bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] relative"
     data-tauri-drag-region

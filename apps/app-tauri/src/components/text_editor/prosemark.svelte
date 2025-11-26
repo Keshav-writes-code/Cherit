@@ -1,62 +1,62 @@
 <script lang="ts">
-import { EditorView } from "@codemirror/view";
-import { EditorState } from "@codemirror/state";
-import { markdown } from "@codemirror/lang-markdown";
-import { GFM } from "@lezer/markdown";
+  import { EditorView } from '@codemirror/view';
+  import { EditorState } from '@codemirror/state';
+  import { markdown } from '@codemirror/lang-markdown';
+  import { GFM } from '@lezer/markdown';
 
-import {
-  prosemarkBasicSetup,
-  prosemarkBaseThemeSetup,
-  prosemarkMarkdownSyntaxExtensions,
-  softIndentExtension,
-} from "@prosemark/core";
-import { htmlBlockExtension } from "@prosemark/render-html";
-import { languages } from "@codemirror/language-data";
-import { indentUnit } from "@codemirror/language";
-import { obsidian_theme } from "./obsidian_theme";
-let {
-  text_content,
-  write_to_file,
-}: {
-  text_content: string | undefined;
-  write_to_file: (markdown_content_state: string) => void;
-} = $props();
-let element: HTMLDivElement | undefined = $state();
-let editor: EditorView | undefined = $state();
-let is_contents_changed = $state(false);
-$effect(() => {
-  let newEditor: EditorView | undefined;
-  if (text_content && element) {
-    newEditor = new EditorView({
-      doc: text_content,
-      parent: element,
-      extensions: [
-        EditorView.lineWrapping,
-        EditorState.tabSize.of(8),
-        indentUnit.of("\t"),
-        softIndentExtension,
-        obsidian_theme,
-        EditorView.updateListener.of((update) => {
-          if (update.docChanged && !is_contents_changed) {
-            is_contents_changed = true;
-          }
-        }),
-        markdown({
-          codeLanguages: languages,
-          extensions: [GFM, prosemarkMarkdownSyntaxExtensions],
-        }),
-        prosemarkBasicSetup(),
-        prosemarkBaseThemeSetup(),
-        htmlBlockExtension,
-      ],
-    });
-  }
-  editor = newEditor;
+  import {
+    prosemarkBasicSetup,
+    prosemarkBaseThemeSetup,
+    prosemarkMarkdownSyntaxExtensions,
+    softIndentExtension,
+  } from '@prosemark/core';
+  import { htmlBlockExtension } from '@prosemark/render-html';
+  import { languages } from '@codemirror/language-data';
+  import { indentUnit } from '@codemirror/language';
+  import { obsidian_theme } from './obsidian_theme';
+  let {
+    text_content,
+    write_to_file,
+  }: {
+    text_content: string | undefined;
+    write_to_file: (markdown_content_state: string) => void;
+  } = $props();
+  let element: HTMLDivElement | undefined = $state();
+  let editor: EditorView | undefined = $state();
+  let is_contents_changed = $state(false);
+  $effect(() => {
+    let newEditor: EditorView | undefined;
+    if (text_content && element) {
+      newEditor = new EditorView({
+        doc: text_content,
+        parent: element,
+        extensions: [
+          EditorView.lineWrapping,
+          EditorState.tabSize.of(8),
+          indentUnit.of('\t'),
+          softIndentExtension,
+          obsidian_theme,
+          EditorView.updateListener.of((update) => {
+            if (update.docChanged && !is_contents_changed) {
+              is_contents_changed = true;
+            }
+          }),
+          markdown({
+            codeLanguages: languages,
+            extensions: [GFM, prosemarkMarkdownSyntaxExtensions],
+          }),
+          prosemarkBasicSetup(),
+          prosemarkBaseThemeSetup(),
+          htmlBlockExtension,
+        ],
+      });
+    }
+    editor = newEditor;
 
-  return () => {
-    newEditor?.destroy();
-  };
-});
+    return () => {
+      newEditor?.destroy();
+    };
+  });
 </script>
 
 <div
@@ -100,7 +100,7 @@ $effect(() => {
     --pm-syntax-invalid: oklch(64.62% 0.203 29.2);
     --pm-cursor-color: black;
   }
-  :root[data-theme="dark"] {
+  :root[data-theme='dark'] {
     --pm-header-mark-color: oklch(60.3% 0 0);
     --pm-link-color: oklch(58.8% 0.158 241.966);
     --pm-muted-color: oklch(55.4% 0.046 257.417);

@@ -1,8 +1,8 @@
-import { readDir } from "@tauri-apps/plugin-fs";
-import { type FileNode } from "@/types";
+import { readDir } from '@tauri-apps/plugin-fs';
+import { type FileNode } from '@/types';
 
 export async function build_file_tree_from_fs(
-  dirPath: string,
+  dirPath: string
 ): Promise<FileNode[]> {
   const entries = await readDir(dirPath);
 
@@ -10,17 +10,17 @@ export async function build_file_tree_from_fs(
     entries
       .filter(
         (entry) =>
-          (entry.isDirectory && !entry.name.startsWith(".")) ||
-          entry.name.endsWith(".md"),
+          (entry.isDirectory && !entry.name.startsWith('.')) ||
+          entry.name.endsWith('.md')
       )
       .map(async (entry) => ({
-        name: entry.name.replace(/\.md$/, ""),
+        name: entry.name.replace(/\.md$/, ''),
         path: `${dirPath}/${entry.name}`,
         isDirectory: entry.isDirectory,
         children: entry.isDirectory
           ? await build_file_tree_from_fs(`${dirPath}/${entry.name}`)
           : [],
-      })),
+      }))
   );
 
   return nodes;
@@ -31,7 +31,7 @@ export function sort_file_tree(nodes: FileNode[]): FileNode[] {
     if (a.isDirectory !== b.isDirectory) return a.isDirectory ? -1 : 1;
     return a.name.localeCompare(b.name, undefined, {
       numeric: true,
-      sensitivity: "base",
+      sensitivity: 'base',
     });
   });
 
@@ -47,7 +47,7 @@ export function sort_file_tree(nodes: FileNode[]): FileNode[] {
 export function insert_node_in_place(
   roots: FileNode[],
   new_node: FileNode,
-  offset = "",
+  offset = ''
 ): FileNode {
   const rel_path = new_node.path.startsWith(offset)
     ? new_node.path.slice(offset.length)
@@ -55,10 +55,10 @@ export function insert_node_in_place(
   const parts = rel_path.split(/[/\\]/).filter(Boolean).slice(0, -1);
 
   let level = roots;
-  let current_path = offset.replace(/[/\\]+$/, "");
+  let current_path = offset.replace(/[/\\]+$/, '');
 
   for (const part of parts) {
-    current_path += "/" + part;
+    current_path += '/' + part;
     let node = level.find((n) => n.isDirectory && n.name === part);
 
     if (!node) {
@@ -68,7 +68,7 @@ export function insert_node_in_place(
           path: current_path,
           isDirectory: true,
           children: [],
-        }),
+        })
       );
     }
 
@@ -79,7 +79,7 @@ export function insert_node_in_place(
   return new_node;
 }
 export const get_parent_path = (p: string) =>
-  p.split("/").slice(0, -1).join("/");
+  p.split('/').slice(0, -1).join('/');
 export const exists = (file_tree: FileNode[], p: string) =>
   file_tree.some(function f(n) {
     return n.path === p || n.children?.some(f);

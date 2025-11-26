@@ -1,4 +1,4 @@
-name: "publish"
+name: 'publish'
 
 on:
   workflow_dispatch:
@@ -16,17 +16,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: "macos-latest" # for Arm based macs (M1 and above).
-            args: "--target aarch64-apple-darwin"
-          - platform: "macos-latest" # for Intel based macs.
-            args: "--target x86_64-apple-darwin"
-          - platform: "ubuntu-22.04"
-            args: ""
-          - platform: "windows-latest"
-            args: ""
-          - platform: "ubuntu-latest"
-            args: "--apk true --target aarch64"
-            mobile: "android"
+          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest' # for Intel based macs.
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04'
+            args: ''
+          - platform: 'windows-latest'
+            args: ''
+          - platform: 'ubuntu-latest'
+            args: '--apk true --target aarch64'
+            mobile: 'android'
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
@@ -63,8 +63,8 @@ jobs:
         if: matrix.mobile == 'android'
         uses: actions/setup-java@v5
         with:
-          java-version: "17" # Maybe 17
-          distribution: "temurin"
+          java-version: '17' # Maybe 17
+          distribution: 'temurin'
       - name: Setup Android SDK
         if: matrix.mobile == 'android'
         uses: android-actions/setup-android@v3
@@ -99,8 +99,8 @@ jobs:
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         with:
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: "App v__VERSION__"
-          releaseBody: "See the assets to download this version and install."
+          releaseName: 'App v__VERSION__'
+          releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}

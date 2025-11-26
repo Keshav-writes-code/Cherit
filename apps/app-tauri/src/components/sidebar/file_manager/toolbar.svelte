@@ -1,22 +1,22 @@
 <script lang="ts">
-import { type FileNode } from "@/types";
-import { create, mkdir } from "@tauri-apps/plugin-fs";
-import { exists, insert_node_in_place } from "./file_tree_functions";
-let {
-  collapsed_state = $bindable(),
-  file_tree = $bindable(),
-  opened_filenode = $bindable(),
-  hover_newfile_button = $bindable(),
-  root_path,
-  focused_directory,
-}: {
-  collapsed_state: boolean;
-  file_tree: FileNode[];
-  root_path: string | undefined;
-  focused_directory: string | undefined;
-  opened_filenode: FileNode | undefined;
-  hover_newfile_button: boolean;
-} = $props();
+  import { type FileNode } from '@/types';
+  import { create, mkdir } from '@tauri-apps/plugin-fs';
+  import { exists, insert_node_in_place } from './file_tree_functions';
+  let {
+    collapsed_state = $bindable(),
+    file_tree = $bindable(),
+    opened_filenode = $bindable(),
+    hover_newfile_button = $bindable(),
+    root_path,
+    focused_directory,
+  }: {
+    collapsed_state: boolean;
+    file_tree: FileNode[];
+    root_path: string | undefined;
+    focused_directory: string | undefined;
+    opened_filenode: FileNode | undefined;
+    hover_newfile_button: boolean;
+  } = $props();
 </script>
 
 <div
@@ -30,7 +30,7 @@ let {
     onmouseleave={() => (hover_newfile_button = false)}
     onclick={async () => {
       let i = 0,
-        name = "Untitled";
+        name = 'Untitled';
       while (exists(file_tree, `${focused_directory}/${name}.md`))
         name = `Untitled ${++i}`;
 
@@ -44,7 +44,7 @@ let {
           isDirectory: false,
           children: [],
         },
-        root_path,
+        root_path
       );
       opened_filenode = node;
     }}
@@ -55,7 +55,7 @@ let {
     class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
     onclick={async () => {
       let i = 0,
-        name = "Untitled";
+        name = 'Untitled';
       while (exists(file_tree, `${focused_directory}/${name}`))
         name = `Untitled ${++i}`;
 
@@ -69,7 +69,7 @@ let {
           isDirectory: true,
           children: [],
         },
-        root_path,
+        root_path
       );
     }}
     ><div class="i-tabler:folder-plus size-5"></div>

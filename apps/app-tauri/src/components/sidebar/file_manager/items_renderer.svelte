@@ -1,15 +1,15 @@
 <script module lang="ts">
-let expanded_nodes_ever: { [key: string]: boolean } = $state({});
-let expanded_state: { [key: string]: boolean } = $state({});
+  let expanded_nodes_ever: { [key: string]: boolean } = $state({});
+  let expanded_state: { [key: string]: boolean } = $state({});
 </script>
 
 <script lang="ts">
-  import type { FileNode } from "@/types";
-  import ItemsRenderer from "./items_renderer.svelte";
-  import { blur, fly } from "svelte/transition";
-  import { backOut } from "svelte/easing";
-  import animatedDetails from "svelte-animated-details";
-  import { get_parent_path } from "./file_tree_functions";
+  import type { FileNode } from '@/types';
+  import ItemsRenderer from './items_renderer.svelte';
+  import { blur, fly } from 'svelte/transition';
+  import { backOut } from 'svelte/easing';
+  import animatedDetails from 'svelte-animated-details';
+  import { get_parent_path } from './file_tree_functions';
   let {
     opened_filenode = $bindable(),
     focused_directory = $bindable(),
@@ -73,7 +73,7 @@ let expanded_state: { [key: string]: boolean } = $state({});
                 }
               }}
               onkeydown={(e: KeyboardEvent) => {
-                if (e.key !== " ") return;
+                if (e.key !== ' ') return;
                 expanded_nodes_ever[node.path] = true;
               }}
             >
@@ -144,7 +144,7 @@ let expanded_state: { [key: string]: boolean } = $state({});
     content: none;
   }
   :global(summary::before) {
-    content: "";
+    content: '';
     width: 0.375rem;
     height: 0.375rem;
     box-shadow: inset 2px 2px
@@ -155,9 +155,9 @@ let expanded_state: { [key: string]: boolean } = $state({});
     transition-duration: 0.2s;
   }
   :global(
-      .menu :where(li > details[open] > summary):before,
-      .menu :where(li > .menu-dropdown-toggle.menu-dropdown-show):before
-    ) {
+    .menu :where(li > details[open] > summary):before,
+    .menu :where(li > .menu-dropdown-toggle.menu-dropdown-show):before
+  ) {
     rotate: 225deg;
   }
 </style>
