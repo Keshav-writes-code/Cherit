@@ -18,6 +18,9 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2.4.1", features = [] }
 
 [dependencies]
+tauri-plugin-android-fs = { version = "23", features = [
+  "legacy_storage_permission",
+] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"

@@ -35,6 +35,7 @@
         "daisyui": "5.4.7",
         "svelte-animated-details": "^1.0.2",
         "svelte-sonner": "^1.0.6",
+        "tauri-plugin-android-fs-api": "^23.0.0",
       },
       "devDependencies": {
         "@0x-jerry/unocss-preset-daisyui": "0.2.3",
@@ -597,6 +598,8 @@
     "svelte-check": ["svelte-check@4.3.4", "", { "dependencies": { "@jridgewell/trace-mapping": "^0.3.25", "chokidar": "^4.0.1", "fdir": "^6.2.0", "picocolors": "^1.0.0", "sade": "^1.7.4" }, "peerDependencies": { "svelte": "^4.0.0 || ^5.0.0-next.0", "typescript": ">=5.0.0" }, "bin": { "svelte-check": "bin/svelte-check" } }, "sha512-DVWvxhBrDsd+0hHWKfjP99lsSXASeOhHJYyuKOFYJcP7ThfSCKgjVarE8XfuMWpS5JV3AlDf+iK1YGGo2TACdw=="],
 
     "svelte-sonner": ["svelte-sonner@1.0.6", "", { "dependencies": { "runed": "^0.28.0" }, "peerDependencies": { "svelte": "^5.0.0" } }, "sha512-cOB6fKVPnJ/wuqHV4dqoTJ/l/g7n3V8goUHqnhIV2wyv55DdoCI1D3VQSBIs7Iy8pkH5ZaNPB8T53jFfXE/6og=="],
+
+    "tauri-plugin-android-fs-api": ["tauri-plugin-android-fs-api@23.0.0", "", { "dependencies": { "@tauri-apps/api": "^2.0.0" } }, "sha512-oOiQFcC6bibnoKj1wewq9JtTp02zzLOHrXkkrrlrVFHsY6RpM7Bpn4eIqYAcGX1bcWAPoLdgJdqK7mPtINSuVA=="],
 
     "tinyexec": ["tinyexec@1.0.2", "", {}, "sha512-W/KYk+NFhkmsYpuHq5JykngiOCnxeVL8v8dFnqxSD8qEEdRfXk1SDM6JzNqcERbcGYj9tMrDQBYV9cjgnunFIg=="],
 
