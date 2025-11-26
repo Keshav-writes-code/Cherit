@@ -24,7 +24,7 @@
     root_path: RootPath;
     collapsed_state: boolean;
     is_root?: boolean;
-    focused_directory: string | URL | undefined;
+    focused_directory: RootPath;
     hover_newfile_button: boolean;
   } = $props();
   $effect(() => {
