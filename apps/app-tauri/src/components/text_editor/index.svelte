@@ -4,6 +4,7 @@
   import type { FileNode, RootPath } from '@/types';
   import Prosemark from './prosemark.svelte';
   import { toast } from 'svelte-sonner';
+  import { current_platform_type } from '@/misc_global_states.svelte';
   let {
     filenode = $bindable(),
     root_path,
@@ -31,7 +32,9 @@
   });
 </script>
 
-<BreadCrumb {filenode} {root_path} />
+{#if current_platform_type == 'desktop'}
+  <BreadCrumb {filenode} {root_path} />
+{/if}
 <div class="w-full px-8 flex justify-center flex-1 overflow-auto">
   <div class="max-w-170 w-full font-sans">
     <input
