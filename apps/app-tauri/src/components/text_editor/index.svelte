@@ -1,14 +1,16 @@
 <script lang="ts">
   import BreadCrumb from '@/components/breadcrumb_path/index.svelte';
   import { readTextFile, rename, writeTextFile } from '@tauri-apps/plugin-fs';
-  import type { FileNode } from '@/types';
+  import type { FileNode, RootPath } from '@/types';
   import Prosemark from './prosemark.svelte';
   import { toast } from 'svelte-sonner';
   let {
     filenode = $bindable(),
     root_path,
-  }: { filenode: FileNode | undefined; root_path: string | undefined } =
-    $props();
+  }: {
+    filenode: FileNode | undefined;
+    root_path: RootPath;
+  } = $props();
   let text_content: string | undefined = $state();
   let current_file_name: string | undefined = $state();
   let is_file_named_changed: boolean = $state(false);

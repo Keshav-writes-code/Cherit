@@ -4,18 +4,20 @@
     sort_file_tree,
   } from './file_tree_functions';
   import ItemsRender from './items_renderer.svelte';
-  import { type FileNode } from '@/types';
+  import { type FileNode, type RootPath } from '@/types';
   import Toolbar from './toolbar.svelte';
   import { toast } from 'svelte-sonner';
   let {
     opened_filenode = $bindable(),
     root_path = $bindable(),
-  }: { opened_filenode: FileNode | undefined; root_path: string | undefined } =
-    $props();
+  }: {
+    opened_filenode: FileNode | undefined;
+    root_path: RootPath;
+  } = $props();
 
   let file_tree: FileNode[] = $state([]);
-  let prev_root_folder: string | undefined = $state();
-  let focused_directory: string | undefined = $derived(root_path);
+  let prev_root_folder: string | URL | undefined = $state();
+  let focused_directory: string | URL | undefined = $derived(root_path);
   $effect(() => {
     sort_file_tree(file_tree);
   });
@@ -29,6 +31,7 @@
       })
       .catch((e) => {
         toast.error('Error loading file tree: \n' + e);
+        console.error(e);
         root_path = prev_root_folder;
       });
   });

@@ -3,11 +3,11 @@
   import RootFolderSelector from '@/components/root_folder_selector/index.svelte';
   import TitleBar from '@/components/titlebar/index.svelte';
   import Sidebar from '@/components/sidebar/index.svelte';
-  import type { FileNode } from '@/types';
+  import type { FileNode, RootPath } from '@/types';
   import { Toaster } from 'svelte-sonner';
 
   // NOTE: GLobal Variables
-  let root_path: string | undefined = $state();
+  let root_path: RootPath = $state();
   let opened_filenode: FileNode | undefined = $state();
 </script>
 

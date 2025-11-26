@@ -3,10 +3,12 @@
     current_platform_type,
     root_folder_picker_dialog_state,
   } from '@/misc_global_states.svelte';
+  import type { RootPath } from '@/types';
   import { open } from '@tauri-apps/plugin-dialog';
   import { LazyStore } from '@tauri-apps/plugin-store';
   import { onMount } from 'svelte';
-  let { root_path = $bindable() }: { root_path: string | undefined } = $props();
+  import { AndroidFs } from 'tauri-plugin-android-fs-api';
+  let { root_path = $bindable() }: { root_path: RootPath } = $props();
   $effect(() => {
     if (root_path) root_folder_picker_dialog_state.open = false;
   });
@@ -116,8 +118,11 @@
             <li>
               <button
                 class="grid grid-cols-[auto_auto_1fr]"
-                onclick={() => {
-                  console.log('Hello');
+                onclick={async () => {
+                  const uri = await AndroidFs.showOpenDirPicker();
+                  if (!uri) return;
+                  const path = await AndroidFs.getFsPath(uri);
+                  root_path = path;
                 }}
               >
                 <div class="size-6 i-tabler:folder-open"></div>

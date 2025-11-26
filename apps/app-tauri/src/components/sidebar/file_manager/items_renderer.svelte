@@ -4,7 +4,7 @@
 </script>
 
 <script lang="ts">
-  import type { FileNode } from '@/types';
+  import type { FileNode, RootPath } from '@/types';
   import ItemsRenderer from './items_renderer.svelte';
   import { blur, fly } from 'svelte/transition';
   import { backOut } from 'svelte/easing';
@@ -21,10 +21,10 @@
   }: {
     opened_filenode: FileNode | undefined;
     file_tree: FileNode[];
-    root_path: string | undefined;
+    root_path: RootPath;
     collapsed_state: boolean;
     is_root?: boolean;
-    focused_directory: string | undefined;
+    focused_directory: string | URL | undefined;
     hover_newfile_button: boolean;
   } = $props();
   $effect(() => {

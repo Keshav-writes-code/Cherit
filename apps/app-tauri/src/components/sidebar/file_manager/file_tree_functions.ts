@@ -1,26 +1,73 @@
-import { readDir } from '@tauri-apps/plugin-fs';
+import { readDir, type DirEntry } from '@tauri-apps/plugin-fs';
 import { type FileNode } from '@/types';
+import { current_platform } from '@/misc_global_states.svelte';
+import { AndroidFs } from 'tauri-plugin-android-fs-api';
+import type {
+  AndroidEntryMetadataWithUri,
+  AndroidFsUri,
+} from 'tauri-plugin-android-fs-api';
 
 export async function build_file_tree_from_fs(
-  dirPath: string
+  dirPath: string | AndroidFsUri
 ): Promise<FileNode[]> {
-  const entries = await readDir(dirPath);
+  let entries: (DirEntry | AndroidEntryMetadataWithUri)[];
+
+  // 1. Fetch entries based on platform
+  if (current_platform == 'android') {
+    if (typeof dirPath === 'string')
+      throw new Error('Android platform requires AndroidFsUri, not string');
+    entries = await AndroidFs.readDir(dirPath);
+  } else {
+    if (typeof dirPath !== 'string') {
+      throw new Error('Desktop platform requires a string path');
+    }
+    entries = await readDir(dirPath);
+  }
+
+  // 2. Helper to check directory status safely across both types
+  const isEntryDirectory = (entry: DirEntry | AndroidEntryMetadataWithUri) => {
+    // Check if it's the standard Tauri DirEntry
+    if ('isDirectory' in entry) {
+      return entry.isDirectory;
+    }
+    // Otherwise it is Android Metadata which uses 'type'
+    return entry.type === 'Dir';
+  };
 
   const nodes = await Promise.all(
     entries
-      .filter(
-        (entry) =>
-          (entry.isDirectory && !entry.name.startsWith('.')) ||
-          entry.name.endsWith('.md')
-      )
-      .map(async (entry) => ({
-        name: entry.name.replace(/\.md$/, ''),
-        path: `${dirPath}/${entry.name}`,
-        isDirectory: entry.isDirectory,
-        children: entry.isDirectory
-          ? await build_file_tree_from_fs(`${dirPath}/${entry.name}`)
-          : [],
-      }))
+      .filter((entry) => {
+        const isDir = isEntryDirectory(entry);
+        return (
+          (isDir && !entry.name.startsWith('.')) || entry.name.endsWith('.md')
+        );
+      })
+      .map(async (entry) => {
+        const isDir = isEntryDirectory(entry);
+
+        let nextPathForRecursion: string | AndroidFsUri;
+        let pathStringForUi: string;
+
+        if ('uri' in entry) {
+          // Android: The entry already contains the URI for itself
+          nextPathForRecursion = entry.uri;
+          pathStringForUi = entry.uri.uri; // Extract string representation for UI/FileNode
+        } else {
+          // Desktop: Construct string path manually
+          const combined = `${dirPath}/${entry.name}`;
+          nextPathForRecursion = combined;
+          pathStringForUi = combined;
+        }
+
+        return {
+          name: entry.name.replace(/\.md$/, ''),
+          path: pathStringForUi,
+          isDirectory: isDir,
+          children: isDir
+            ? await build_file_tree_from_fs(nextPathForRecursion)
+            : [],
+        };
+      })
   );
 
   return nodes;
@@ -47,15 +94,21 @@ export function sort_file_tree(nodes: FileNode[]): FileNode[] {
 export function insert_node_in_place(
   roots: FileNode[],
   new_node: FileNode,
-  offset = ''
+  offset: string | URL = ''
 ): FileNode {
-  const rel_path = new_node.path.startsWith(offset)
-    ? new_node.path.slice(offset.length)
+  // Normalize offset to string (handles URL objects)
+  const offset_str = offset.toString();
+
+  const rel_path = new_node.path.startsWith(offset_str)
+    ? new_node.path.slice(offset_str.length)
     : new_node.path;
+
+  // Use generic regex to handle both forward and backslashes
   const parts = rel_path.split(/[/\\]/).filter(Boolean).slice(0, -1);
 
   let level = roots;
-  let current_path = offset.replace(/[/\\]+$/, '');
+  // Strip trailing slashes from the base path for consistent concatenation
+  let current_path = offset_str.replace(/[/\\]+$/, '');
 
   for (const part of parts) {
     current_path += '/' + part;
@@ -64,7 +117,7 @@ export function insert_node_in_place(
     if (!node) {
       level.push(
         (node = {
-          name: part,
+          name: part, // Note: You might want decodeURIComponent(part) here for UI display
           path: current_path,
           isDirectory: true,
           children: [],

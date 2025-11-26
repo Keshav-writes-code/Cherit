@@ -1,10 +1,9 @@
 <script lang="ts">
-  import type { FileNode } from '@/types';
+  import type { FileNode, RootPath } from '@/types';
   let {
     filenode,
     root_path,
-  }: { filenode: FileNode | undefined; root_path: string | undefined } =
-    $props();
+  }: { filenode: FileNode | undefined; root_path: RootPath } = $props();
   function getPathSegments(filePath: string, rootPath: string): string[] {
     const relative = filePath.replace(
       rootPath.endsWith('/') ? rootPath : rootPath + '/',
@@ -18,7 +17,9 @@
       file_path_array = [];
       return;
     }
-    file_path_array = getPathSegments(filenode.path, root_path);
+    const root_string =
+      root_path instanceof URL ? root_path.toString() : root_path;
+    file_path_array = getPathSegments(filenode.path, root_string);
   });
 </script>
 

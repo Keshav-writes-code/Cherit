@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type FileNode } from '@/types';
+  import { type FileNode, type RootPath } from '@/types';
   import { create, mkdir } from '@tauri-apps/plugin-fs';
   import { exists, insert_node_in_place } from './file_tree_functions';
   let {
@@ -12,8 +12,8 @@
   }: {
     collapsed_state: boolean;
     file_tree: FileNode[];
-    root_path: string | undefined;
-    focused_directory: string | undefined;
+    root_path: RootPath;
+    focused_directory: RootPath;
     opened_filenode: FileNode | undefined;
     hover_newfile_button: boolean;
   } = $props();
