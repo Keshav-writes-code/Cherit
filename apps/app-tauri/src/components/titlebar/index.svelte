@@ -1,6 +1,13 @@
-<script>
+<script lang="ts">
   import { current_platform_type } from '@/misc_global_states.svelte';
   import { getCurrentWindow } from '@tauri-apps/api/window';
+  import Breadcrumb from '@/components/breadcrumb_path/index.svelte';
+  import type { FileNode, RootPath } from '@/types';
+
+  const {
+    root_path,
+    filenode,
+  }: { root_path: RootPath; filenode: FileNode | undefined } = $props();
   const appWindow = getCurrentWindow();
 </script>
 
@@ -44,6 +51,27 @@
         title="close"
       >
         <div class="i-tabler:x size-4"></div>
+      </button>
+    </div>
+  </div>
+{:else}
+  <div class=" w-full h-10 grid grid-cols-[1fr_auto_1fr] items-center px-3">
+    <label
+      for="my-drawer-3"
+      class="btn btn-ghost text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] min-h-none max-h-none h-full w-10 p-none drawer-button"
+    >
+      <div
+        class="i-tabler:layout-sidebar-filled color-[var(--color-primary)] size-7.5"
+      ></div>
+    </label>
+    <Breadcrumb class="h-min text-lg" {filenode} {root_path} />
+    <div class="justify-self-end">
+      <button
+        class="  btn btn-ghost text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] min-h-none max-h-none h-full w-10 p-none"
+      >
+        <div
+          class="i-tabler:dots-vertical color-[var(--color-primary)] size-7.5"
+        ></div>
       </button>
     </div>
   </div>

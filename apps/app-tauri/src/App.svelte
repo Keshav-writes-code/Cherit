@@ -5,6 +5,7 @@
   import Sidebar from '@/components/sidebar/index.svelte';
   import type { FileNode, RootPath } from '@/types';
   import { Toaster } from 'svelte-sonner';
+  import { current_platform_type } from './misc_global_states.svelte';
 
   // NOTE: GLobal Variables
   let root_path: RootPath = $state();
@@ -16,8 +17,12 @@
 >
   <RootFolderSelector bind:root_path />
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
-  <div class="drawer-content flex flex-col items-center h-screen">
-    <TitleBar />
+  <div
+    class="
+    {current_platform_type == 'mobile' && 'mt-10'}
+    drawer-content flex flex-col items-center h-full"
+  >
+    <TitleBar {root_path} filenode={opened_filenode} />
     <TextEditior bind:filenode={opened_filenode} {root_path} />
   </div>
   <div class="drawer-side is-drawer-close:overflow-visible">
