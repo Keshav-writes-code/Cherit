@@ -6,6 +6,9 @@ on:
     branches:
       - main
       - staging
+    paths:
+      - 'apps/tauri-app/**'
+      - '.github/workflows/tauri-build-release.yml'
 
 jobs:
   publish-tauri:
@@ -98,6 +101,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         with:
+          projectPath: 'apps/app-tauri'
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'App v__VERSION__'
           releaseBody: 'See the assets to download this version and install.'
