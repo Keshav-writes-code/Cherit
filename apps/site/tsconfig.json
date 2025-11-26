@@ -2,9 +2,9 @@
   "extends": "astro/tsconfigs/strict",
   "exclude": ["src-tauri", "dist"],
   "compilerOptions": {
-    "baseUrl": ".",          // Base is the root of the project
+    "baseUrl": ".", // Base is the root of the project
     "paths": {
-      "@/*": ["src/*"]       // @ maps to the src/ directory
+      "@/*": ["src/*"] // @ maps to the src/ directory
     }
   }
 }

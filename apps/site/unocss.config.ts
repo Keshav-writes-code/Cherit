@@ -1,12 +1,27 @@
 // uno.config.ts
-import { defineConfig } from "unocss";
-import { transformerVariantGroup } from "unocss";
-import { presetIcons } from "unocss";
-import { presetMini } from "unocss";
+
 import { presetDaisyui } from "@0x-jerry/unocss-preset-daisyui";
-import { presetWebFonts } from "unocss";
 import { createLocalFontProcessor } from "@unocss/preset-web-fonts/local";
+import {
+  defineConfig,
+  presetIcons,
+  presetMini,
+  presetWebFonts,
+  transformerVariantGroup,
+} from "unocss";
 export default defineConfig({
+  shortcuts: {
+    "section-container":
+      "flex flex-col justify-center items-center px-6 py-24 relative overflow-hidden",
+    "animate-on-scroll":
+      "opacity-0 translate-y-10 transition-all duration-1000 ease-out",
+    visible: "opacity-100 translate-y-0",
+    "bento-card":
+      "bg-base-200/50 backdrop-blur-md rounded-3xl p-8 hover:bg-base-200 transition-colors border border-base-content/5",
+    "text-gradient":
+      "bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent",
+    blob: "absolute bg-primary/20 rounded-full blur-3xl -z-10",
+  },
   rules: [
     ["capitalize", { "text-transform": "capitalize" }],
     ["isolate", { isolation: "isolate" }],
