@@ -2,75 +2,54 @@ import { readDir, type DirEntry } from '@tauri-apps/plugin-fs';
 import { type FileNode } from '@/types';
 import { current_platform } from '@/misc_global_states.svelte';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
-import type {
-  AndroidEntryMetadataWithUri,
-  AndroidFsUri,
-} from 'tauri-plugin-android-fs-api';
+import type { AndroidFsUri } from 'tauri-plugin-android-fs-api';
 
 export async function build_file_tree_from_fs(
-  dirPath: string | AndroidFsUri
+  dirPath: string
 ): Promise<FileNode[]> {
-  let entries: (DirEntry | AndroidEntryMetadataWithUri)[];
-
-  // 1. Fetch entries based on platform
-  if (current_platform == 'android') {
-    if (typeof dirPath === 'string')
-      throw new Error('Android platform requires AndroidFsUri, not string');
-    entries = await AndroidFs.readDir(dirPath);
-  } else {
-    if (typeof dirPath !== 'string') {
-      throw new Error('Desktop platform requires a string path');
-    }
-    entries = await readDir(dirPath);
-  }
-
-  // 2. Helper to check directory status safely across both types
-  const isEntryDirectory = (entry: DirEntry | AndroidEntryMetadataWithUri) => {
-    // Check if it's the standard Tauri DirEntry
-    if ('isDirectory' in entry) {
-      return entry.isDirectory;
-    }
-    // Otherwise it is Android Metadata which uses 'type'
-    return entry.type === 'Dir';
-  };
+  const entries = await readDir(dirPath);
 
   const nodes = await Promise.all(
     entries
-      .filter((entry) => {
-        const isDir = isEntryDirectory(entry);
-        return (
-          (isDir && !entry.name.startsWith('.')) || entry.name.endsWith('.md')
-        );
-      })
-      .map(async (entry) => {
-        const isDir = isEntryDirectory(entry);
-
-        let nextPathForRecursion: string | AndroidFsUri;
-        let pathStringForUi: string;
-
-        if ('uri' in entry) {
-          // Android: The entry already contains the URI for itself
-          nextPathForRecursion = entry.uri;
-          pathStringForUi = entry.uri.uri; // Extract string representation for UI/FileNode
-        } else {
-          // Desktop: Construct string path manually
-          const combined = `${dirPath}/${entry.name}`;
-          nextPathForRecursion = combined;
-          pathStringForUi = combined;
-        }
-
-        return {
-          name: entry.name.replace(/\.md$/, ''),
-          path: pathStringForUi,
-          isDirectory: isDir,
-          children: isDir
-            ? await build_file_tree_from_fs(nextPathForRecursion)
-            : [],
-        };
-      })
+      .filter(
+        (entry) =>
+          (entry.isDirectory && !entry.name.startsWith('.')) ||
+          entry.name.endsWith('.md')
+      )
+      .map(async (entry) => ({
+        name: entry.name.replace(/\.md$/, ''),
+        path: `${dirPath}/${entry.name}`,
+        isDirectory: entry.isDirectory,
+        children: entry.isDirectory
+          ? await build_file_tree_from_fs(`${dirPath}/${entry.name}`)
+          : [],
+      }))
   );
 
   return nodes;
+}
+export async function build_file_tree_from_fs_android(
+  dirPath: AndroidFsUri
+): Promise<FileNode[]> {
+  const entries = await AndroidFs.readDir(dirPath);
+
+  return Promise.all(
+    entries
+      .filter(
+        (e) =>
+          (e.type === 'Dir' && !e.name.startsWith('.')) ||
+          e.name.endsWith('.md')
+      )
+      .map(async (e) => ({
+        name: e.name.replace(/\.md$/, ''),
+        path: e.uri.uri,
+        isDirectory: e.type === 'Dir',
+        children:
+          e.type === 'Dir' ? await build_file_tree_from_fs_android(e.uri) : [],
+      }))
+  );
+}
+
 }
 export function sort_file_tree(nodes: FileNode[]): FileNode[] {
   // Sort array in-place
