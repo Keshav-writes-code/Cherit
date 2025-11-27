@@ -35,9 +35,6 @@ import BaseLayout from "@/layout/BaseLayout.astro";
       <div
         class="animate-on-scroll w-full max-w-4xl mx-auto flex flex-col items-center"
       >
-        <div class="badge badge-outline badge-lg mb-6 text-accent">
-          v2.0 is now live
-        </div>
         <h1
           class="text-6xl md:text-8xl font-bold mb-6 tracking-tight leading-tight text-center"
         >
@@ -165,9 +162,10 @@ import BaseLayout from "@/layout/BaseLayout.astro";
             class="bento-card h-full flex flex-col relative overflow-hidden p-0 min-h-[320px]"
           >
             <div class="p-8 pb-0 z-10">
-              <iconify-icon
-                icon="tabler:markdown"
-                class="text-5xl mb-4 text-accent"></iconify-icon>
+              <div
+                class="i-tabler:markdown color-[var(--color-accent)] mb-4 text-accent size-8"
+              >
+              </div>
               <h3 class="text-3xl font-bold">Markdown Native</h3>
               <p class="text-base-content/60 mt-2 max-w-md">
                 Write in standard Markdown. We render it beautifully in
@@ -226,9 +224,10 @@ import BaseLayout from "@/layout/BaseLayout.astro";
           <div
             class="bento-card flex-1 animate-on-scroll delay-100 flex flex-col justify-center min-h-[150px]"
           >
-            <iconify-icon
-              icon="tabler:wifi-off"
-              class="text-4xl mb-2 text-warning"></iconify-icon>
+            <div
+              class="i-tabler:wifi-off size-8 color-[var(--color-warning)] mb-2"
+            >
+            </div>
             <h3 class="text-xl font-bold">Offline First</h3>
             <p class="text-sm text-base-content/60 mt-1">
               No internet? No problem.
@@ -239,8 +238,10 @@ import BaseLayout from "@/layout/BaseLayout.astro";
           <div
             class="bento-card flex-1 animate-on-scroll delay-200 flex flex-col justify-center min-h-[150px]"
           >
-            <iconify-icon icon="tabler:database" class="text-4xl mb-2 text-info"
-            ></iconify-icon>
+            <div
+              class="i-tabler:database size-8 mb-2 color-[var(--color-info)]"
+            >
+            </div>
             <h3 class="text-xl font-bold">Local Data</h3>
             <p class="text-sm text-base-content/60 mt-1">You own your data.</p>
           </div>
@@ -402,51 +403,9 @@ import BaseLayout from "@/layout/BaseLayout.astro";
   </section>
 
   <!-- Screen 6: Technical Specs -->
-  <section
-    class="flex flex-col justify-center items-center px-6 py-12 bg-base-100 relative overflow-hidden"
-  >
-    <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
-      <div class="animate-on-scroll">
-        <h2 class="text-4xl font-bold mb-6">Built for longevity.</h2>
-        <ul class="space-y-4">
-          <li class="flex items-start gap-4">
-            <div class="mt-1 bg-primary/20 p-2 rounded-lg text-primary">
-              <iconify-icon icon="tabler:file-code"></iconify-icon>
-            </div>
-            <div>
-              <h4 class="font-bold">Human Readable</h4>
-              <p class="text-sm opacity-60">
-                JSON & Markdown. No proprietary databases.
-              </p>
-            </div>
-          </li>
-          <li class="flex items-start gap-4">
-            <div class="mt-1 bg-secondary/20 p-2 rounded-lg text-secondary">
-              <iconify-icon icon="tabler:git-branch"></iconify-icon>
-            </div>
-            <div>
-              <h4 class="font-bold">Version Control</h4>
-              <p class="text-sm opacity-60">Integrated Git support.</p>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div
-        class="mockup-code bg-black text-gray-300 animate-on-scroll shadow-2xl"
-      >
-        <pre
-          data-prefix="$"><code>curl -sL https://cherit.app/install.sh | bash</code></pre>
-        <pre
-          data-prefix=">"
-          class="text-success"><code>Installing Cherit Core v2.0...</code></pre>
-        <pre data-prefix="$"><code>cherit --new "My First Note"</code></pre>
-      </div>
-    </div>
-  </section>
-
   <!-- Screen 7: Privacy & Ownership -->
   <section
-    class="flex flex-col justify-center items-center px-6 pt-0 pb-24 relative overflow-hidden"
+    class="flex flex-col justify-center items-center px-6 pt-23 pb-24 relative overflow-hidden"
   >
     <div class="blob w-[500px] h-[500px] right-0 bg-secondary/10"></div>
 
@@ -477,36 +436,6 @@ import BaseLayout from "@/layout/BaseLayout.astro";
   </section>
 
   <!-- Screen 8: Testimonials -->
-  <section class="section-container bg-base-200">
-    <div class="container mx-auto">
-      <h2 class="text-center text-3xl font-bold mb-12 animate-on-scroll">
-        Loved by Thinkers
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-on-scroll">
-        <div class="card bg-base-100 p-6 shadow-xl border border-white/5">
-          <p class="text-sm italic mb-4">
-            "I switched from Notion. Cherit opens instantly. The speed is
-            addictive."
-          </p>
-          <div class="font-bold text-xs">— Sarah Jenkins, Dev</div>
-        </div>
-        <div class="card bg-base-100 p-6 shadow-xl border border-white/5">
-          <p class="text-sm italic mb-4">
-            "The context indentation feature changed how I organize my novel
-            chapters."
-          </p>
-          <div class="font-bold text-xs">— David Chen, Author</div>
-        </div>
-        <div class="card bg-base-100 p-6 shadow-xl border border-white/5">
-          <p class="text-sm italic mb-4">
-            "Finally, a note app that doesn't try to be a web browser."
-          </p>
-          <div class="font-bold text-xs">— Mike Ross, Student</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- Screen 9: Pricing (Modified - Free) -->
   <section class="section-container py-24">
     <div class="container mx-auto max-w-xl text-center animate-on-scroll">
@@ -680,17 +609,23 @@ import BaseLayout from "@/layout/BaseLayout.astro";
 </BaseLayout>
 <script>
   /** Canvas Animation (Starry Network) */
-  const canvas = document.getElementById("hero-canvas");
-  const ctx = canvas.getContext("2d");
-  let width, height;
-  let particles = [];
+  const canvas = document.getElementById(
+    "hero-canvas",
+  ) as HTMLCanvasElement | null;
+  const ctx = canvas?.getContext("2d");
 
-  function resize() {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
-  }
+  let width: number;
+  let height: number;
+  let particles: Particle[] = [];
 
   class Particle {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    size: number;
+    opacity: number;
+
     constructor() {
       this.x = Math.random() * width;
       this.y = Math.random() * height;
@@ -699,7 +634,8 @@ import BaseLayout from "@/layout/BaseLayout.astro";
       this.size = Math.random() * 2;
       this.opacity = Math.random() * 0.5 + 0.1;
     }
-    update() {
+
+    update(): void {
       this.x += this.vx;
       this.y += this.vy;
       if (this.x < 0) this.x = width;
@@ -707,7 +643,9 @@ import BaseLayout from "@/layout/BaseLayout.astro";
       if (this.y < 0) this.y = height;
       if (this.y > height) this.y = 0;
     }
-    draw() {
+
+    draw(): void {
+      if (!ctx) return;
       ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -715,25 +653,38 @@ import BaseLayout from "@/layout/BaseLayout.astro";
     }
   }
 
-  function initParticles() {
-    particles = [];
-    const count = Math.min(window.innerWidth / 10, 100);
-    for (let i = 0; i < count; i++) particles.push(new Particle());
+  function resize(): void {
+    if (!canvas) return;
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
   }
 
-  function animate() {
+  function initParticles(): void {
+    particles = [];
+    const count = Math.min(window.innerWidth / 10, 100);
+    for (let i = 0; i < count; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function animate(): void {
+    if (!ctx || !canvas) return;
     ctx.clearRect(0, 0, width, height);
+
     particles.forEach((p) => {
       p.update();
       p.draw();
     });
+
     ctx.strokeStyle = "rgba(255,255,255,0.03)";
     ctx.lineWidth = 1;
+
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x;
         const dy = particles[i].y - particles[j].y;
         const dist = Math.sqrt(dx * dx + dy * dy);
+
         if (dist < 100) {
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
@@ -745,13 +696,16 @@ import BaseLayout from "@/layout/BaseLayout.astro";
     requestAnimationFrame(animate);
   }
 
-  window.addEventListener("resize", () => {
+  // Only initialize if canvas exists
+  if (canvas) {
+    window.addEventListener("resize", () => {
+      resize();
+      initParticles();
+    });
     resize();
     initParticles();
-  });
-  resize();
-  initParticles();
-  animate();
+    animate();
+  }
 
   /** Scroll Observer */
   document.addEventListener("DOMContentLoaded", () => {
@@ -766,6 +720,7 @@ import BaseLayout from "@/layout/BaseLayout.astro";
       },
       { threshold: 0.1 },
     );
+
     document
       .querySelectorAll(".animate-on-scroll")
       .forEach((el) => observer.observe(el));
