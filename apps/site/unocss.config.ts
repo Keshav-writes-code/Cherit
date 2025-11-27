@@ -5,10 +5,12 @@ import { createLocalFontProcessor } from "@unocss/preset-web-fonts/local";
 import {
   defineConfig,
   presetIcons,
-  presetMini,
   presetWebFonts,
   transformerVariantGroup,
+  presetTypography,
+  presetWind4,
 } from "unocss";
+
 export default defineConfig({
   shortcuts: {
     "section-container":
@@ -27,9 +29,14 @@ export default defineConfig({
     ["isolate", { isolation: "isolate" }],
   ],
   presets: [
-    presetMini(),
+    presetWind4({
+      preflights: {
+        reset: false,
+      },
+    }),
     presetIcons(),
     presetDaisyui(),
+    presetTypography(),
     presetWebFonts({
       provider: "bunny",
       fonts: {
@@ -40,7 +47,7 @@ export default defineConfig({
       processors: createLocalFontProcessor({
         cacheDir: "node_modules/.cache/unocss/fonts",
         fontAssetsDir: "public/assets/fonts",
-        fontServeBaseUrl: "cherit/assets/fonts",
+        fontServeBaseUrl: "/cherit/assets/fonts",
       }),
     }),
   ],
