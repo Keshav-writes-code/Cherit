@@ -5,7 +5,7 @@ import BaseLayout from "@/layout/BaseLayout.astro";
 <BaseLayout theme="dark" class="">
   <!-- Navbar -->
   <div
-    class="navbar fixed top-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/5 px-6 lg:px-12"
+    class="navbar fixed top-0 z-50 bg-black/80 backdrop-blur-lg b-b-1 b-white/20 px-6 lg:px-12"
   >
     <div class="flex-1">
       <a class="btn btn-ghost text-2xl tracking-tighter font-bold">
@@ -175,43 +175,20 @@ import BaseLayout from "@/layout/BaseLayout.astro";
 
             <!-- Code Editor Mockup - Positioned absolutely to stick to bottom-right -->
             <div
-              class="absolute bottom-0 right-0 w-3/4 translate-x-12 translate-y-6 group-hover:translate-y-2 group-hover:translate-x-8 transition-all duration-500 ease-out"
+              class="absolute bottom-0 group-hover:z-20 right-0 w-3/4 translate-x-12 translate-y-6 group-hover:translate-y-2 group-hover:translate-x-8 transition-all duration-500 ease-out"
             >
               <div
-                class="bg-base-300 rounded-tl-xl overflow-hidden border-t border-l border-white/5 shadow-2xl"
+                class="mockup-window h-50 w-full border border-base-300 bg-base-200"
               >
-                <!-- Window Header -->
                 <div
-                  class="bg-base-100 px-4 py-3 flex items-center gap-2 border-b border-white/5"
+                  class="px-4 pt-4 flex flex-col border-t border-base-300 h-80 prose prose-sm prose-invert"
                 >
-                  <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span class="ml-4 text-xs text-base-content/40 font-mono"
-                    >idea.md</span
-                  >
-                </div>
-                <!-- Editor Content -->
-                <div class="p-6 font-mono text-sm leading-7 opacity-90">
-                  <div class="flex gap-4">
-                    <span class="text-base-content/20 select-none">1</span>
-                    <span class="text-accent font-bold"># Project Alpha</span>
-                  </div>
-                  <div class="flex gap-4">
-                    <span class="text-base-content/20 select-none">2</span>
-                    <span class="text-base-content/70"
-                      >- [x] Launch website</span
-                    >
-                  </div>
-                  <div class="flex gap-4">
-                    <span class="text-base-content/20 select-none">3</span>
-                    <span
-                      >- [ ] <span
-                        class="text-base-content font-bold bg-primary/20 text-primary px-1 rounded"
-                        >Profit</span
-                      ></span
-                    >
-                  </div>
+                  <h1 class="mb-0"># Its all</h1>
+                  <ul>
+                    <li>Markdown</li>
+                    <li>Latex</li>
+                    <li>Tables</li>
+                  </ul>
                 </div>
               </div>
             </div>
