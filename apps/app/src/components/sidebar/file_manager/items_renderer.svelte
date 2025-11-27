@@ -38,23 +38,7 @@
     {#each file_tree as node (node.path)}
       <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
         {#if node.isDirectory}
-          {@const is_focused_and_collapsed_and_hover =
-            expanded_state[node.path] === false &&
-            node.path === focused_directory &&
-            hover_newfile_button}
-          <details
-            open={!collapsed_state}
-            class="w-full overflow-visible {!is_focused_and_collapsed_and_hover &&
-              'overflow-y-clip'}"
-            use:animatedDetails={{
-              duration: 100 - 10 + 10 * node.children.length,
-            }}
-          >
-            {@render folder_button(node, is_focused_and_collapsed_and_hover)}
-            {#if expanded_nodes_ever[node.path] || false || !collapsed_state}
-              {@render folder_node(node.children)}
-            {/if}
-          </details>
+          {@render folder_item_expandable(node)}
         {:else}
           {@render file_button(node)}
         {/if}
@@ -77,29 +61,32 @@
   </p>
 {/if}
 
+{#snippet folder_item_expandable(node: FileNode)}
+  {@const is_focused_and_collapsed_and_hover =
+    expanded_state[node.path] === false &&
+    node.path === focused_directory &&
+    hover_newfile_button}
+  <details
+    open={!collapsed_state}
+    class="w-full overflow-visible {!is_focused_and_collapsed_and_hover &&
+      'overflow-y-clip'}"
+    use:animatedDetails={{
+      duration: 100 - 10 + 10 * node.children.length,
+    }}
+  >
+    {@render folder_button(node, is_focused_and_collapsed_and_hover)}
+    {#if expanded_nodes_ever[node.path] || false || !collapsed_state}
+      {@render folder_node(node.children)}
+    {/if}
+  </details>
+{/snippet}
 {#snippet folder_node(nodes: FileNode[])}
   {#if nodes.length}
     <ul class="flex before:content-none flex-col gap-0.5 pt-0.5">
       {#each nodes as node (node.path)}
         <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
           {#if node.isDirectory}
-            {@const is_focused_and_collapsed_and_hover =
-              expanded_state[node.path] === false &&
-              node.path === focused_directory &&
-              hover_newfile_button}
-            <details
-              open={!collapsed_state}
-              class="w-full overflow-visible {!is_focused_and_collapsed_and_hover &&
-                'overflow-y-clip'}"
-              use:animatedDetails={{
-                duration: 100 - 10 + 10 * node.children.length,
-              }}
-            >
-              {@render folder_button(node, is_focused_and_collapsed_and_hover)}
-              {#if expanded_nodes_ever[node.path] || false || !collapsed_state}
-                {@render folder_node(node.children)}
-              {/if}
-            </details>
+            {@render folder_item_expandable(node)}
           {:else}
             {@render file_button(node)}
           {/if}
