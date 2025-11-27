@@ -40,7 +40,7 @@ export default defineConfig({
       processors: createLocalFontProcessor({
         cacheDir: "node_modules/.cache/unocss/fonts",
         fontAssetsDir: "public/assets/fonts",
-        fontServeBaseUrl: "/assets/fonts",
+        fontServeBaseUrl: "cherit/assets/fonts",
       }),
     }),
   ],
