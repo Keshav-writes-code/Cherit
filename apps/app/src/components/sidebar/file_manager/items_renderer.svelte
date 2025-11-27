@@ -4,6 +4,7 @@
   import { backOut } from 'svelte/easing';
   import animatedDetails from 'svelte-animated-details';
   import { get_parent_path } from './file_tree_functions';
+
   let {
     opened_filenode = $bindable(),
     focused_directory = $bindable(),
@@ -11,6 +12,7 @@
     root_path,
     collapsed_state,
     hover_newfile_button,
+    on_move,
   }: {
     opened_filenode: FileNode | undefined;
     file_tree: FileNode[];
@@ -18,21 +20,72 @@
     collapsed_state: boolean;
     focused_directory: RootPath;
     hover_newfile_button: boolean;
+    on_move: (node: FileNode, new_parent_path: string) => void;
   } = $props();
+
   let expanded_nodes_ever: { [key: string]: boolean } = $state({});
   let expanded_state: { [key: string]: boolean } = $state({});
+
+  let dragged_node: FileNode | null = $state(null);
+  let drop_target: string | null = $state(null);
 
   $effect(() => {
     if (collapsed_state) return;
     expanded_nodes_ever = {};
   });
+
+  function handle_drag_start(e: DragEvent, node: FileNode) {
+    dragged_node = node;
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', node.path);
+    }
+  }
+
+  function handle_drag_over(e: DragEvent, target_path: string) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!dragged_node) return;
+
+    const current_parent = get_parent_path(dragged_node.path);
+    if (dragged_node.path === target_path) return;
+    if (current_parent === target_path) return;
+    if (target_path.startsWith(dragged_node.path)) return;
+
+    drop_target = target_path;
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+  }
+
+  function handle_drop(e: DragEvent, target_path: string) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (dragged_node && drop_target === target_path) {
+      on_move(dragged_node, target_path);
+    }
+    reset_dnd();
+  }
+
+  function reset_dnd() {
+    dragged_node = null;
+    drop_target = null;
+  }
 </script>
 
 {#if root_path && file_tree.length}
   <ul
+    ondragover={(e) => {
+      if (typeof root_path === 'string' && e.currentTarget === e.target) {
+        handle_drag_over(e, root_path);
+      }
+    }}
+    ondrop={(e) => {
+      if (typeof root_path === 'string') handle_drop(e, root_path);
+    }}
     class="
       {focused_directory == root_path &&
       'shadow-[inset_0_0_0_1px_var(--color-accent)]'}
+      {drop_target === root_path &&
+      'bg-accent/10 outline-dashed outline-2 outline-accent'} 
       menu menu-sm h-full rounded-box relative w-full select-none overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide flex before:content-none flex-col gap-0.5 pt-0.5"
   >
     {#each file_tree as node (node.path)}
@@ -44,7 +97,9 @@
         {/if}
       </li>
     {/each}
+
     {@render focus_directory_button(file_tree[0].path)}
+
     <button
       aria-label="Set Focus to root"
       class="min-h-30% grow"
@@ -61,79 +116,6 @@
   </p>
 {/if}
 
-{#snippet folder_item_expandable(node: FileNode)}
-  {@const is_focused_and_collapsed_and_hover =
-    expanded_state[node.path] === false &&
-    node.path === focused_directory &&
-    hover_newfile_button}
-  <details
-    open={!collapsed_state}
-    class="w-full overflow-visible {!is_focused_and_collapsed_and_hover &&
-      'overflow-y-clip'}"
-    use:animatedDetails={{
-      duration: 100 - 10 + 10 * node.children.length,
-    }}
-  >
-    {@render folder_button(node, is_focused_and_collapsed_and_hover)}
-    {#if expanded_nodes_ever[node.path] || false || !collapsed_state}
-      {@render folder_node(node.children)}
-    {/if}
-  </details>
-{/snippet}
-{#snippet folder_node(nodes: FileNode[])}
-  {#if nodes.length}
-    <ul class="flex before:content-none flex-col gap-0.5 pt-0.5">
-      {#each nodes as node (node.path)}
-        <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
-          {#if node.isDirectory}
-            {@render folder_item_expandable(node)}
-          {:else}
-            {@render file_button(node)}
-          {/if}
-        </li>
-      {/each}
-      {@render focus_directory_button(nodes[0].path)}
-    </ul>
-  {/if}
-{/snippet}
-{#snippet folder_button(
-  node: FileNode,
-  is_focused_and_collapsed_and_hover: boolean
-)}
-  <summary
-    class=" {is_focused_and_collapsed_and_hover &&
-      'outline-solid outline-2 outline-accent'} py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
-    onmousedown={() => {
-      expanded_nodes_ever[node.path] = true;
-    }}
-    onclick={(e) => {
-      expanded_state[node.path] = !expanded_state[node.path];
-      if (e.target === e.currentTarget) {
-        focused_directory = node.path;
-      }
-    }}
-    onkeydown={(e: KeyboardEvent) => {
-      if (e.key !== ' ') return;
-      expanded_nodes_ever[node.path] = true;
-    }}
-  >
-    {node.name}
-  </summary>
-{/snippet}
-{#snippet file_button(node: FileNode)}
-  <button
-    class="{opened_filenode?.path === node.path
-      ? 'bg-base-content/10'
-      : ''} py-0.75 w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
-    onclick={(e) => {
-      opened_filenode = node;
-      if (e.target === e.currentTarget) {
-        focused_directory = get_parent_path(node.path);
-      }
-    }}
-    >{node.name}
-  </button>
-{/snippet}
 {#snippet focus_directory_button(path: string)}
   <button
     aria-label="Set focused directory"
@@ -147,6 +129,106 @@
         : 'bg-[rgb(from_var(--color-base-content)_r_g_b_/_0.1)]'}
         "
     ></span>
+  </button>
+{/snippet}
+
+{#snippet folder_item_expandable(node: FileNode)}
+  {@const is_focused_and_collapsed_and_hover =
+    expanded_state[node.path] === false &&
+    node.path === focused_directory &&
+    hover_newfile_button}
+  <details
+    open={!collapsed_state}
+    class="w-full overflow-visible {!is_focused_and_collapsed_and_hover &&
+      'overflow-y-clip'}
+    "
+    use:animatedDetails={{
+      duration: 100 - 10 + 10 * node.children.length,
+    }}
+  >
+    {@render folder_button(node, is_focused_and_collapsed_and_hover)}
+    {#if expanded_nodes_ever[node.path] || false || !collapsed_state}
+      {@render folder_node(node.children, node.path)}
+    {/if}
+  </details>
+{/snippet}
+
+{#snippet folder_node(nodes: FileNode[], parent_path: string)}
+  {#if nodes.length}
+    <ul
+      ondragover={(e) => handle_drag_over(e, parent_path)}
+      ondrop={(e) => handle_drop(e, parent_path)}
+      class="
+        flex before:content-none flex-col gap-0.5 pt-0.5 rounded-lg transition-all
+        {drop_target === parent_path &&
+        'bg-accent/10 outline-dashed outline-2 outline-accent min-h-[2rem]'}
+      "
+    >
+      {#each nodes as node (node.path)}
+        <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
+          {#if node.isDirectory}
+            {@render folder_item_expandable(node)}
+          {:else}
+            {@render file_button(node)}
+          {/if}
+        </li>
+      {/each}
+      {@render focus_directory_button(nodes[0].path)}
+    </ul>
+  {/if}
+{/snippet}
+
+{#snippet folder_button(
+  node: FileNode,
+  is_focused_and_collapsed_and_hover: boolean
+)}
+  <summary
+    draggable="true"
+    ondragstart={(e) => handle_drag_start(e, node)}
+    ondragover={(e) => handle_drag_over(e, node.path)}
+    ondrop={(e) => handle_drop(e, node.path)}
+    ondragend={reset_dnd}
+    class="
+      {is_focused_and_collapsed_and_hover &&
+      'outline-solid outline-2 outline-accent'} 
+      {drop_target === node.path &&
+      (!expanded_state[node.path] || node.children.length === 0) &&
+      'bg-accent/20 duration-0 outline-dashed outline-2 outline-accent z-50 '}
+      py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] rounded-md transition-colors"
+    onmousedown={() => {
+      expanded_nodes_ever[node.path] = true;
+    }}
+    onclick={(e) => {
+      if (drop_target) return;
+      expanded_state[node.path] = !expanded_state[node.path];
+      if (e.target === e.currentTarget) {
+        focused_directory = node.path;
+      }
+    }}
+    onkeydown={(e: KeyboardEvent) => {
+      if (e.key !== ' ') return;
+      expanded_nodes_ever[node.path] = true;
+    }}
+  >
+    {node.name}
+  </summary>
+{/snippet}
+
+{#snippet file_button(node: FileNode)}
+  <button
+    draggable="true"
+    ondragstart={(e) => handle_drag_start(e, node)}
+    ondragend={reset_dnd}
+    class="{opened_filenode?.path === node.path ? 'bg-base-content/10' : ''} 
+      {dragged_node?.path === node.path ? 'opacity-50' : ''}
+      py-0.75 w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
+    onclick={(e) => {
+      opened_filenode = node;
+      if (e.target === e.currentTarget) {
+        focused_directory = get_parent_path(node.path);
+      }
+    }}
+    >{node.name}
   </button>
 {/snippet}
 
