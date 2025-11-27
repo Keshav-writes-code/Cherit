@@ -77,59 +77,6 @@
   </p>
 {/if}
 
-{#snippet focus_directory_button(path: string)}
-  <button
-    aria-label="Set focused directory"
-    class=" w-2 flex hover:bg-accent absolute start--1.75 top-3 bottom-3 transition-all rounded-0.7"
-    onclick={() => (focused_directory = get_parent_path(path))}
-  >
-    <span
-      class="w-1px h-full m-auto transition-all
-        {get_parent_path(path) == focused_directory
-        ? 'bg-[var(--color-accent)] '
-        : 'bg-[rgb(from_var(--color-base-content)_r_g_b_/_0.1)]'}
-        "
-    ></span>
-  </button>
-{/snippet}
-{#snippet file_button(node: FileNode)}
-  <button
-    class="{opened_filenode?.path === node.path
-      ? 'bg-base-content/10'
-      : ''} py-0.75 w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
-    onclick={(e) => {
-      opened_filenode = node;
-      if (e.target === e.currentTarget) {
-        focused_directory = get_parent_path(node.path);
-      }
-    }}
-    >{node.name}
-  </button>
-{/snippet}
-{#snippet folder_button(
-  node: FileNode,
-  is_focused_and_collapsed_and_hover: boolean
-)}
-  <summary
-    class=" {is_focused_and_collapsed_and_hover &&
-      'outline-solid outline-2 outline-accent'} py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
-    onmousedown={() => {
-      expanded_nodes_ever[node.path] = true;
-    }}
-    onclick={(e) => {
-      expanded_state[node.path] = !expanded_state[node.path];
-      if (e.target === e.currentTarget) {
-        focused_directory = node.path;
-      }
-    }}
-    onkeydown={(e: KeyboardEvent) => {
-      if (e.key !== ' ') return;
-      expanded_nodes_ever[node.path] = true;
-    }}
-  >
-    {node.name}
-  </summary>
-{/snippet}
 {#snippet folder_node(nodes: FileNode[])}
   {#if nodes.length}
     <ul class="flex before:content-none flex-col gap-0.5 pt-0.5">
@@ -161,6 +108,59 @@
       {@render focus_directory_button(nodes[0].path)}
     </ul>
   {/if}
+{/snippet}
+{#snippet folder_button(
+  node: FileNode,
+  is_focused_and_collapsed_and_hover: boolean
+)}
+  <summary
+    class=" {is_focused_and_collapsed_and_hover &&
+      'outline-solid outline-2 outline-accent'} py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)]"
+    onmousedown={() => {
+      expanded_nodes_ever[node.path] = true;
+    }}
+    onclick={(e) => {
+      expanded_state[node.path] = !expanded_state[node.path];
+      if (e.target === e.currentTarget) {
+        focused_directory = node.path;
+      }
+    }}
+    onkeydown={(e: KeyboardEvent) => {
+      if (e.key !== ' ') return;
+      expanded_nodes_ever[node.path] = true;
+    }}
+  >
+    {node.name}
+  </summary>
+{/snippet}
+{#snippet file_button(node: FileNode)}
+  <button
+    class="{opened_filenode?.path === node.path
+      ? 'bg-base-content/10'
+      : ''} py-0.75 w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
+    onclick={(e) => {
+      opened_filenode = node;
+      if (e.target === e.currentTarget) {
+        focused_directory = get_parent_path(node.path);
+      }
+    }}
+    >{node.name}
+  </button>
+{/snippet}
+{#snippet focus_directory_button(path: string)}
+  <button
+    aria-label="Set focused directory"
+    class=" w-2 flex hover:bg-accent absolute start--1.75 top-3 bottom-3 transition-all rounded-0.7"
+    onclick={() => (focused_directory = get_parent_path(path))}
+  >
+    <span
+      class="w-1px h-full m-auto transition-all
+        {get_parent_path(path) == focused_directory
+        ? 'bg-[var(--color-accent)] '
+        : 'bg-[rgb(from_var(--color-base-content)_r_g_b_/_0.1)]'}
+        "
+    ></span>
+  </button>
 {/snippet}
 
 <style>
