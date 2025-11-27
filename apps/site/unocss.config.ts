@@ -17,7 +17,7 @@ export default defineConfig({
       "opacity-0 translate-y-10 transition-all duration-1000 ease-out",
     visible: "opacity-100 translate-y-0",
     "bento-card":
-      "bg-base-200/50 backdrop-blur-md rounded-3xl p-8 hover:bg-base-200 transition-colors border border-base-content/5",
+      "bg-base-200/50 backdrop-blur-md shadow-lg rounded-3xl p-8 hover:bg-base-200 transition-colors b-1 b-[color-mix(in_srgb,var(--color-base-content)_20%,black)] ",
     "text-gradient":
       "bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent",
     blob: "absolute bg-primary/20 rounded-full blur-3xl -z-10",
