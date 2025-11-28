@@ -4,6 +4,7 @@
   import { backOut } from 'svelte/easing';
   import animatedDetails from 'svelte-animated-details';
   import { get_parent_path } from './file_tree_functions';
+  import { context_menu } from '@/stores/context_menu.svelte';
 
   let {
     opened_filenode = $bindable(),
@@ -33,7 +34,27 @@
     if (collapsed_state) return;
     expanded_nodes_ever = {};
   });
-
+  function handle_node_right_click(e: MouseEvent, node: FileNode) {
+    context_menu.open(e, [
+      {
+        label: 'Rename',
+        icon_class: 'i-tabler:pencil size-4',
+        action: () => navigator.clipboard.writeText(node.path),
+      },
+      {
+        label: 'Delete',
+        type: 'danger',
+        icon_class: 'i-tabler:trash size-4',
+        action: () => console.log('Deleting', node.path),
+      },
+      { label: '', divider: true },
+      {
+        label: 'Open in system explorer',
+        icon_class: 'i-tabler:arrow-up-right size-4',
+        action: () => navigator.clipboard.writeText(node.path),
+      },
+    ]);
+  }
   function handle_drag_start(e: DragEvent, node: FileNode) {
     dragged_node = node;
     if (e.dataTransfer) {
@@ -80,6 +101,9 @@
     }}
     ondrop={(e) => {
       if (typeof root_path === 'string') handle_drop(e, root_path);
+    }}
+    onscroll={() => {
+      context_menu.close();
     }}
     class="
       {focused_directory == root_path &&
@@ -188,6 +212,7 @@
     ondragover={(e) => handle_drag_over(e, node.path)}
     ondrop={(e) => handle_drop(e, node.path)}
     ondragend={reset_dnd}
+    oncontextmenu={(e) => handle_node_right_click(e, node)}
     class="
       {is_focused_and_collapsed_and_hover &&
       'outline-solid outline-2 outline-accent'} 
@@ -219,6 +244,7 @@
     draggable="true"
     ondragstart={(e) => handle_drag_start(e, node)}
     ondragend={reset_dnd}
+    oncontextmenu={(e) => handle_node_right_click(e, node)}
     class="{opened_filenode?.path === node.path ? 'bg-base-content/10' : ''} 
       {dragged_node?.path === node.path ? 'opacity-50' : ''}
       py-0.75 w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
