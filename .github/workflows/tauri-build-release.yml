@@ -13,7 +13,7 @@ on:
 
 jobs:
   publish-tauri:
-    environment: prod
+    environment: production
     permissions:
       contents: write
     strategy:
