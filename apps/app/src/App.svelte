@@ -3,6 +3,7 @@
   import RootFolderSelector from '@/components/root_folder_selector/index.svelte';
   import TitleBar from '@/components/titlebar/index.svelte';
   import Sidebar from '@/components/sidebar/index.svelte';
+  import GlobalContextMenu from '@/components/context_menu/index.svelte';
   import type { FileNode, RootPath } from '@/types';
   import { Toaster } from 'svelte-sonner';
   import { current_platform_type } from './misc_global_states.svelte';
@@ -31,6 +32,7 @@
     <Sidebar bind:opened_filenode bind:root_path />
   </div>
 </div>
+<GlobalContextMenu />
 <Toaster
   position="top-right"
   richColors
