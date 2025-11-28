@@ -1,7 +1,7 @@
 import { platform } from '@tauri-apps/plugin-os';
 
 export let root_folder_picker_dialog_state: { open: boolean } = $state({
-  open: true,
+  open: false,
 });
 
 const PLATFORM_TYPE_MAP = {

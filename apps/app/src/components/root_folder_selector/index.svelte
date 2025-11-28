@@ -18,6 +18,8 @@
 
   onMount(async () => {
     recent_paths = (await user_activity.get<string[]>('recent_paths')) ?? [];
+    if (recent_paths.length) root_path = recent_paths[0];
+    else root_folder_picker_dialog_state.open = true;
   });
 </script>
 
@@ -32,6 +34,15 @@
     {current_platform_type == 'mobile' && 'size-100% lt-sm:flex-col-reverse '}
     modal-box p-0 max-w-none flex max-w-250"
   >
+    <form method="dialog">
+      <button
+        class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+        onclick={() => (root_folder_picker_dialog_state.open = false)}
+      >
+        ✕
+      </button>
+    </form>
+
     <div class="min-w-70 bg-base-content/10">
       {#if recent_paths.length}
         <ul
