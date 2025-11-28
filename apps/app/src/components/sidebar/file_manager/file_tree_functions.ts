@@ -1,4 +1,4 @@
-import { readDir, type DirEntry } from '@tauri-apps/plugin-fs';
+import { readDir, rename } from '@tauri-apps/plugin-fs';
 import { type FileNode } from '@/types';
 import { current_platform } from '@/misc_global_states.svelte';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
@@ -59,6 +59,7 @@ export async function build_file_tree_cross_platform(
     return await build_file_tree_from_fs(dirPath as string);
   }
 }
+
 export function sort_file_tree(nodes: FileNode[]): FileNode[] {
   // Sort array in-place
   nodes.sort((a, b) => {
@@ -118,6 +119,44 @@ export function insert_node_in_place(
   level.push(new_node);
   return new_node;
 }
+
+export async function move_node(
+  node: FileNode,
+  new_parent_path: string,
+  tree: FileNode[]
+) {
+  const new_path = new_parent_path
+    ? `${new_parent_path}/${node.name}`
+    : node.name;
+
+  await rename(node.path, new_path);
+
+  const remove = (list: FileNode[]) => {
+    const i = list.findIndex((n) => n === node);
+    if (i > -1) list.splice(i, 1);
+    else list.forEach((n) => remove(n.children));
+  };
+  remove(tree);
+
+  const update = (n: FileNode, p: string) => {
+    n.path = p;
+    n.children.forEach((c) => update(c, `${p}/${c.name}`));
+  };
+  update(node, new_path);
+
+  if (!new_parent_path) tree.push(node);
+  else {
+    const find = (list: FileNode[]): FileNode | undefined => {
+      for (const n of list) {
+        if (n.path === new_parent_path) return n;
+        const res = find(n.children);
+        if (res) return res;
+      }
+    };
+    find(tree)?.children.push(node);
+  }
+}
+
 export const get_parent_path = (p: string) =>
   p.split('/').slice(0, -1).join('/');
 export const exists = (file_tree: FileNode[], p: string) =>

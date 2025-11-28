@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     build_file_tree_cross_platform,
+    move_node,
     sort_file_tree,
   } from './file_tree_functions';
   import ItemsRender from './items_renderer.svelte';
@@ -54,5 +55,8 @@
     {collapsed_state}
     {file_tree}
     {root_path}
+    on_move={async (node, path) => {
+      await move_node(node, path, file_tree);
+    }}
   />
 </div>
