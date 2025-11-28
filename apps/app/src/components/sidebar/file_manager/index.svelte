@@ -56,7 +56,12 @@
     {file_tree}
     {root_path}
     on_move={async (node, path) => {
-      await move_node(node, path, file_tree);
+      try {
+        await move_node(node, path, file_tree);
+      } catch (e) {
+        toast.error('Error Moving File: \n' + e);
+        console.error(e);
+      }
     }}
   />
 </div>
