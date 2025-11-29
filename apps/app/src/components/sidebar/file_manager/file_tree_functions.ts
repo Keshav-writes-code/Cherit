@@ -1,4 +1,4 @@
-import { create, readDir, rename } from '@tauri-apps/plugin-fs';
+import { create, mkdir, readDir, rename } from '@tauri-apps/plugin-fs';
 import { type FileNode, type RootPath } from '@/types';
 import { current_platform } from '@/misc_global_states.svelte';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
@@ -53,7 +53,6 @@ export async function build_file_tree_from_fs_android(
       }))
   );
 }
-
 export async function build_file_tree_cross_platform(
   dirPath: string
 ): Promise<FileNode[]> {
@@ -162,36 +161,76 @@ export async function add_new_note(
 ) {
   let i = 0;
   let name = 'Untitled';
+  let new_file_path;
   if (current_platform == 'android') {
     while (exists(tree, focused_path + encodeURIComponent(`/${name}.md`)))
       name = `Untitled ${++i}`;
-    AndroidFs.createNewFile(
+    await AndroidFs.createNewFile(
       { uri: focused_path, documentTopTreeUri: get_parent_path(focused_path) },
       `${name}.md`,
       'plain/text'
     );
-    insert_node_in_place(
-      tree,
-      {
-        name,
-        path: focused_path + encodeURIComponent(`/${name}.md`),
-        isDirectory: false,
-        children: [],
-      },
-      root_path
-    );
+    new_file_path = focused_path + encodeURIComponent(`/${name}.md`);
   } else {
     while (exists(tree, `${focused_path}/${name}.md`)) name = `Untitled ${++i}`;
-    create(`${focused_path}/${name}.md`);
+    await create(`${focused_path}/${name}.md`);
+    new_file_path = `${focused_path}/${name}.md`;
   }
+  insert_node_in_place(
+    tree,
+    {
+      name,
+      path: new_file_path,
+      is_directory: false,
+      children: [],
+    },
+    root_path
+  );
 }
-
+export async function add_new_folder(
+  tree: FileNode[],
+  focused_path: string,
+  root_path: string
+) {
+  let i = 0;
+  let name = 'Untitled';
+  let new_file_path;
+  if (current_platform == 'android') {
+    while (exists(tree, focused_path + encodeURIComponent(`/${name}`), true))
+      name = `Untitled ${++i}`;
+    await AndroidFs.createDirAll(
+      { uri: focused_path, documentTopTreeUri: get_parent_path(focused_path) },
+      name
+    );
+    new_file_path = focused_path + encodeURIComponent(`/${name}`);
+  } else {
+    while (exists(tree, `${focused_path}/${name}`, true))
+      name = `Untitled ${++i}`;
+    await mkdir(`${focused_path}/${name}`);
+    new_file_path = `${focused_path}/${name}`;
+  }
+  insert_node_in_place(
+    tree,
+    {
+      name,
+      path: new_file_path,
+      is_directory: true,
+      children: [],
+    },
+    root_path
+  );
+}
 export const get_parent_path = (p: string) => {
   const s = p.startsWith('content://') ? '%2F' : '/';
   const c = p.endsWith(s) ? p.slice(0, -s.length) : p;
   return c.slice(0, Math.max(0, c.lastIndexOf(s))) || (s === '/' ? '/' : '');
 };
-export const exists = (file_tree: FileNode[], p: string) =>
+
+export const exists = (
+  file_tree: FileNode[],
+  p: string,
+  is_directory: boolean = false
+) =>
   file_tree.some(function f(n) {
     return n.path === p || n.children?.some(f);
   });

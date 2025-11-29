@@ -2,6 +2,7 @@
   import { type FileNode, type RootPath } from '@/types';
   import { mkdir } from '@tauri-apps/plugin-fs';
   import {
+    add_new_folder,
     add_new_note,
     exists,
     insert_node_in_place,
@@ -42,23 +43,9 @@
     aria-label="New Folder Button"
     class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
     onclick={async () => {
-      let i = 0,
-        name = 'Untitled';
-      while (exists(file_tree, `${focused_directory}/${name}`))
-        name = `Untitled ${++i}`;
+      if (!focused_directory || !root_path) return;
 
-      const new_folder_path = `${focused_directory}/${name}`;
-      await mkdir(new_folder_path);
-      insert_node_in_place(
-        file_tree,
-        {
-          name,
-          path: new_folder_path,
-          isDirectory: true,
-          children: [],
-        },
-        root_path
-      );
+      await add_new_folder(file_tree, focused_directory, root_path);
     }}
     ><div class="i-tabler:folder-plus size-5"></div>
   </button>
