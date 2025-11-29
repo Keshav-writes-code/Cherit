@@ -1,5 +1,5 @@
 import { readDir, rename } from '@tauri-apps/plugin-fs';
-import { type FileNode } from '@/types';
+import { type FileNode, type RootPath } from '@/types';
 import { current_platform } from '@/misc_global_states.svelte';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
 import type { AndroidFsUri } from 'tauri-plugin-android-fs-api';
@@ -29,10 +29,12 @@ export async function build_file_tree_from_fs(
   return nodes;
 }
 export async function build_file_tree_from_fs_android(
-  dirPath: AndroidFsUri
+  dirPath: string
 ): Promise<FileNode[]> {
-  const entries = await AndroidFs.readDir(dirPath);
-
+  const entries = await AndroidFs.readDir({
+    uri: dirPath,
+    documentTopTreeUri: get_parent_path(dirPath),
+  });
   return Promise.all(
     entries
       .filter(
@@ -45,18 +47,20 @@ export async function build_file_tree_from_fs_android(
         path: e.uri.uri,
         isDirectory: e.type === 'Dir',
         children:
-          e.type === 'Dir' ? await build_file_tree_from_fs_android(e.uri) : [],
+          e.type === 'Dir'
+            ? await build_file_tree_from_fs_android(e.uri.uri)
+            : [],
       }))
   );
 }
 
 export async function build_file_tree_cross_platform(
-  dirPath: string | AndroidFsUri
+  dirPath: string
 ): Promise<FileNode[]> {
   if (current_platform == 'android') {
-    return await build_file_tree_from_fs_android(dirPath as AndroidFsUri);
+    return await build_file_tree_from_fs_android(dirPath);
   } else {
-    return await build_file_tree_from_fs(dirPath as string);
+    return await build_file_tree_from_fs(dirPath);
   }
 }
 
@@ -157,8 +161,11 @@ export async function move_node(
   }
 }
 
-export const get_parent_path = (p: string) =>
-  p.split('/').slice(0, -1).join('/');
+export const get_parent_path = (p: string) => {
+  const s = p.startsWith('content://') ? '%2F' : '/';
+  const c = p.endsWith(s) ? p.slice(0, -s.length) : p;
+  return c.slice(0, Math.max(0, c.lastIndexOf(s))) || (s === '/' ? '/' : '');
+};
 export const exists = (file_tree: FileNode[], p: string) =>
   file_tree.some(function f(n) {
     return n.path === p || n.children?.some(f);

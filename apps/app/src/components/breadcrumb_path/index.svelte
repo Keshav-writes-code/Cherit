@@ -13,8 +13,7 @@
   let segments = $derived.by(() => {
     if (!filenode) return [];
 
-    let root =
-      (typeof root_path === 'object' ? root_path?.uri : root_path) || '';
+    let root = root_path || '';
     let file = filenode.path;
 
     // Fix Android: Extract only the decoded ID (last segment) to ignore 'tree' vs 'document' prefix mismatch

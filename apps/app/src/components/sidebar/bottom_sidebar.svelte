@@ -15,7 +15,7 @@
         }}
       >
         <div class=" i-famicons:chevron-expand size-4"></div>
-        {decodeURIComponent(root_path?.toString() ?? '')
+        {decodeURIComponent(root_path ?? '')
           .split('/')
           .filter(Boolean)
           .pop()}
