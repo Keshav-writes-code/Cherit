@@ -183,9 +183,9 @@
       ondragover={(e) => handle_drag_over(e, parent_path)}
       ondrop={(e) => handle_drop(e, parent_path)}
       class="
-        flex before:content-none flex-col gap-0.5 pt-0.5 rounded-lg transition-all
+        flex before:content-none flex-col gap-0.5 pt-0.5 rounded-lg
         {drop_target === parent_path &&
-        'bg-accent/10 outline-dashed outline-2 outline-accent min-h-[2rem]'}
+        'bg-accent/10 outline-dashed outline-2 outline-accent '}
       "
     >
       {#each nodes as node (node.path)}
