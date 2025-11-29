@@ -1,4 +1,4 @@
-import { readDir, rename } from '@tauri-apps/plugin-fs';
+import { create, readDir, rename } from '@tauri-apps/plugin-fs';
 import { type FileNode, type RootPath } from '@/types';
 import { current_platform } from '@/misc_global_states.svelte';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
@@ -86,40 +86,32 @@ export function sort_file_tree(nodes: FileNode[]): FileNode[] {
 export function insert_node_in_place(
   roots: FileNode[],
   new_node: FileNode,
-  offset: string | URL = ''
+  offset: string = ''
 ): FileNode {
-  // Normalize offset to string (handles URL objects)
   const offset_str = offset.toString();
-
   const rel_path = new_node.path.startsWith(offset_str)
     ? new_node.path.slice(offset_str.length)
     : new_node.path;
-
-  // Use generic regex to handle both forward and backslashes
-  const parts = rel_path.split(/[/\\]/).filter(Boolean).slice(0, -1);
-
+  const parts = rel_path
+    .split(/(?:%2F|[/\\])/)
+    .filter(Boolean)
+    .slice(0, -1);
   let level = roots;
-  // Strip trailing slashes from the base path for consistent concatenation
-  let current_path = offset_str.replace(/[/\\]+$/, '');
-
+  let current_path = offset_str.replace(/(?:%2F|[/\\])+$/, '');
   for (const part of parts) {
     current_path += '/' + part;
     let node = level.find((n) => n.isDirectory && n.name === part);
-
-    if (!node) {
+    if (!node)
       level.push(
         (node = {
-          name: part, // Note: You might want decodeURIComponent(part) here for UI display
+          name: part,
           path: current_path,
           isDirectory: true,
           children: [],
         })
       );
-    }
-
     level = node.children;
   }
-
   level.push(new_node);
   return new_node;
 }
@@ -158,6 +150,37 @@ export async function move_node(
       }
     };
     find(tree)?.children.push(node);
+  }
+}
+
+export async function add_new_note(
+  tree: FileNode[],
+  focused_path: string,
+  root_path: string
+) {
+  let i = 0;
+  let name = 'Untitled';
+  if (current_platform == 'android') {
+    while (exists(tree, focused_path + encodeURIComponent(`/${name}.md`)))
+      name = `Untitled ${++i}`;
+    AndroidFs.createNewFile(
+      { uri: focused_path, documentTopTreeUri: get_parent_path(focused_path) },
+      `${name}.md`,
+      'plain/text'
+    );
+    insert_node_in_place(
+      tree,
+      {
+        name,
+        path: focused_path + encodeURIComponent(`/${name}.md`),
+        isDirectory: false,
+        children: [],
+      },
+      root_path
+    );
+  } else {
+    while (exists(tree, `${focused_path}/${name}.md`)) name = `Untitled ${++i}`;
+    create(`${focused_path}/${name}.md`);
   }
 }
 

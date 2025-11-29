@@ -1,7 +1,11 @@
 <script lang="ts">
   import { type FileNode, type RootPath } from '@/types';
-  import { create, mkdir } from '@tauri-apps/plugin-fs';
-  import { exists, insert_node_in_place } from './file_tree_functions';
+  import { mkdir } from '@tauri-apps/plugin-fs';
+  import {
+    add_new_note,
+    exists,
+    insert_node_in_place,
+  } from './file_tree_functions';
   let {
     collapsed_state = $bindable(),
     file_tree = $bindable(),
@@ -29,24 +33,8 @@
     onmouseenter={() => (hover_newfile_button = true)}
     onmouseleave={() => (hover_newfile_button = false)}
     onclick={async () => {
-      let i = 0,
-        name = 'Untitled';
-      while (exists(file_tree, `${focused_directory}/${name}.md`))
-        name = `Untitled ${++i}`;
-
-      const new_file_path = `${focused_directory}/${name}.md`;
-      await create(new_file_path);
-      const node = insert_node_in_place(
-        file_tree,
-        {
-          name,
-          path: new_file_path,
-          isDirectory: false,
-          children: [],
-        },
-        root_path
-      );
-      opened_filenode = node;
+      if (!focused_directory || !root_path) return;
+      await add_new_note(file_tree, focused_directory, root_path);
     }}
     ><div class="i-tabler:edit size-5"></div>
   </button>
