@@ -29,7 +29,7 @@ jobs:
           - platform: 'windows-latest'
             args: ''
           - platform: 'ubuntu-latest'
-            args: '--apk true --target aarch64'
+            args: '--apk true --split-per-abi true'
             mobile: 'android'
     runs-on: ${{ matrix.platform }}
     steps:
@@ -87,7 +87,6 @@ jobs:
           echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" >> keystore.properties
           base64 -d <<< "${{ secrets.ANDROID_KEY_BASE64 }}" > $RUNNER_TEMP/keystore.jks
           echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
-
 
       # ------------ Desktop OS ----------------
       - name: install dependencies (ubuntu only)
