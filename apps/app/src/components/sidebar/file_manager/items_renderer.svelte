@@ -114,7 +114,7 @@
   >
     {#each file_tree as node (node.path)}
       <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
-        {#if node.isDirectory}
+        {#if node.is_directory}
           {@render folder_item_expandable(node)}
         {:else}
           {@render file_button(node)}
@@ -188,7 +188,7 @@
     >
       {#each nodes as node (node.path)}
         <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
-          {#if node.isDirectory}
+          {#if node.is_directory}
             {@render folder_item_expandable(node)}
           {:else}
             {@render file_button(node)}

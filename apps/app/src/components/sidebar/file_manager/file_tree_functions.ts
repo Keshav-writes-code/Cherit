@@ -19,7 +19,7 @@ export async function build_file_tree_from_fs(
       .map(async (entry) => ({
         name: entry.name.replace(/\.md$/, ''),
         path: `${dirPath}/${entry.name}`,
-        isDirectory: entry.isDirectory,
+        is_directory: entry.isDirectory,
         children: entry.isDirectory
           ? await build_file_tree_from_fs(`${dirPath}/${entry.name}`)
           : [],
@@ -45,7 +45,7 @@ export async function build_file_tree_from_fs_android(
       .map(async (e) => ({
         name: e.name.replace(/\.md$/, ''),
         path: e.uri.uri,
-        isDirectory: e.type === 'Dir',
+        is_directory: e.type === 'Dir',
         children:
           e.type === 'Dir'
             ? await build_file_tree_from_fs_android(e.uri.uri)
@@ -67,7 +67,7 @@ export async function build_file_tree_cross_platform(
 export function sort_file_tree(nodes: FileNode[]): FileNode[] {
   // Sort array in-place
   nodes.sort((a, b) => {
-    if (a.isDirectory !== b.isDirectory) return a.isDirectory ? -1 : 1;
+    if (a.is_directory !== b.is_directory) return a.is_directory ? -1 : 1;
     return a.name.localeCompare(b.name, undefined, {
       numeric: true,
       sensitivity: 'base',
@@ -106,7 +106,7 @@ export function insert_node_in_place(
         (node = {
           name: part,
           path: current_path,
-          isDirectory: true,
+          is_directory: true,
           children: [],
         })
       );
