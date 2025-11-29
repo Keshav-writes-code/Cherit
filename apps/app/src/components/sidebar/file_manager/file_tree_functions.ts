@@ -100,7 +100,9 @@ export function insert_node_in_place(
   let current_path = offset_str.replace(/(?:%2F|[/\\])+$/, '');
   for (const part of parts) {
     current_path += '/' + part;
-    let node = level.find((n) => n.isDirectory && n.name === part);
+    let node = level.find(
+      (n) => n.is_directory && n.name === decodeURIComponent(part)
+    );
     if (!node)
       level.push(
         (node = {
