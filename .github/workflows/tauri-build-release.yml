@@ -29,7 +29,7 @@ jobs:
           - platform: 'windows-latest'
             args: ''
           - platform: 'ubuntu-latest'
-            args: '--apk true --split-per-abi true'
+            args: '--apk true --split-per-abi'
             mobile: 'android'
     runs-on: ${{ matrix.platform }}
     steps:
