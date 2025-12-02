@@ -229,8 +229,13 @@ export const get_parent_path = (p: string) => {
 export const exists = (
   file_tree: FileNode[],
   p: string,
-  is_directory: boolean = false
-) =>
-  file_tree.some(function f(n) {
-    return n.path === p || n.children?.some(f);
-  });
+  _is_directory: boolean = false
+): boolean => {
+  const stack = [...file_tree];
+  while (stack.length > 0) {
+    const n = stack.pop()!;
+    if (n.path === p) return true;
+    if (n.children?.length) stack.push(...n.children);
+  }
+  return false;
+};
