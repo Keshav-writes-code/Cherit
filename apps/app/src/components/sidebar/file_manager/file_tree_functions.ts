@@ -238,7 +238,8 @@ export const exists = (
 ): boolean => {
   const stack = [...file_tree];
   while (stack.length > 0) {
-    const n = stack.pop()!;
+    const n = stack.pop();
+    if (!n) continue;
     if (n.path === p) return true;
     if (n.children?.length) stack.push(...n.children);
   }
