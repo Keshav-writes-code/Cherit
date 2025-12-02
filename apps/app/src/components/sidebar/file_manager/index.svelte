@@ -2,7 +2,6 @@
   import {
     build_file_tree_cross_platform,
     move_node,
-    sort_file_tree,
   } from './file_tree_functions';
   import ItemsRender from './items_renderer.svelte';
   import { type FileNode, type RootPath } from '@/types';
@@ -19,9 +18,6 @@
   let file_tree: FileNode[] = $state([]);
   let prev_root_folder: RootPath = $state();
   let focused_directory: RootPath = $derived(root_path);
-  $effect(() => {
-    sort_file_tree(file_tree);
-  });
   let collapsed_state: boolean = $state(true);
   $effect(() => {
     if (!root_path) return;

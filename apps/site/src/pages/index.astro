@@ -656,13 +656,15 @@ import BaseLayout from "@/layout/BaseLayout.astro";
     ctx.strokeStyle = "rgba(255,255,255,0.03)";
     ctx.lineWidth = 1;
 
+    // Use squared distance to avoid expensive Math.sqrt
+    const maxDistSq = 100 * 100;
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x;
         const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const distSq = dx * dx + dy * dy;
 
-        if (dist < 100) {
+        if (distSq < maxDistSq) {
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);

@@ -56,11 +56,13 @@ export async function build_file_tree_from_fs_android(
 export async function build_file_tree_cross_platform(
   dirPath: string
 ): Promise<FileNode[]> {
+  let tree: FileNode[];
   if (current_platform == 'android') {
-    return await build_file_tree_from_fs_android(dirPath);
+    tree = await build_file_tree_from_fs_android(dirPath);
   } else {
-    return await build_file_tree_from_fs(dirPath);
+    tree = await build_file_tree_from_fs(dirPath);
   }
+  return sort_file_tree(tree);
 }
 
 export function sort_file_tree(nodes: FileNode[]): FileNode[] {
@@ -152,6 +154,7 @@ export async function move_node(
     };
     find(tree)?.children.push(node);
   }
+  sort_file_tree(tree);
 }
 
 export async function add_new_note(
@@ -186,6 +189,7 @@ export async function add_new_note(
     },
     root_path
   );
+  sort_file_tree(tree);
 }
 export async function add_new_folder(
   tree: FileNode[],
@@ -219,6 +223,7 @@ export async function add_new_folder(
     },
     root_path
   );
+  sort_file_tree(tree);
 }
 export const get_parent_path = (p: string) => {
   const s = p.startsWith('content://') ? '%2F' : '/';
@@ -229,8 +234,13 @@ export const get_parent_path = (p: string) => {
 export const exists = (
   file_tree: FileNode[],
   p: string,
-  is_directory: boolean = false
-) =>
-  file_tree.some(function f(n) {
-    return n.path === p || n.children?.some(f);
-  });
+  _is_directory: boolean = false
+): boolean => {
+  const stack = [...file_tree];
+  while (stack.length > 0) {
+    const n = stack.pop()!;
+    if (n.path === p) return true;
+    if (n.children?.length) stack.push(...n.children);
+  }
+  return false;
+};
