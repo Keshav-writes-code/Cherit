@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     current_platform_type,
+    document_top_tree_uri,
     root_folder_picker_dialog_state,
   } from '@/misc_global_states.svelte';
   import type { RootPath } from '@/types';
@@ -132,6 +133,7 @@
                 onclick={async () => {
                   const uri = await AndroidFs.showOpenDirPicker();
                   if (!uri) return;
+                  document_top_tree_uri.uri = uri.documentTopTreeUri;
                   root_path = uri.uri;
                 }}
               >

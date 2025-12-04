@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    build_file_tree_cross_platform,
+    build_file_tree_from_fs,
     move_node,
     sort_file_tree,
   } from './file_tree_functions';
@@ -25,7 +25,7 @@
   let collapsed_state: boolean = $state(true);
   $effect(() => {
     if (!root_path) return;
-    build_file_tree_cross_platform(root_path)
+    build_file_tree_from_fs(root_path)
       .then((v) => {
         file_tree = v;
         prev_root_folder = root_path;

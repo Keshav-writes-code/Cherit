@@ -1,14 +1,57 @@
-import { create, mkdir, readDir, rename } from '@tauri-apps/plugin-fs';
-import { type FileNode, type RootPath } from '@/types';
-import { current_platform } from '@/misc_global_states.svelte';
-import { AndroidFs } from 'tauri-plugin-android-fs-api';
-import type { AndroidFsUri } from 'tauri-plugin-android-fs-api';
+import {
+  create,
+  mkdir,
+  readDir,
+  rename,
+  type DirEntry,
+} from '@tauri-apps/plugin-fs';
+import { type FileNode } from '@/types';
+import {
+  current_platform,
+  document_top_tree_uri,
+} from '@/misc_global_states.svelte';
+import {
+  AndroidFs,
+  type AndroidEntryMetadataWithUri,
+} from 'tauri-plugin-android-fs-api';
+import { join } from '@tauri-apps/api/path';
 
 export async function build_file_tree_from_fs(
-  dirPath: string
+  dir_path: string
 ): Promise<FileNode[]> {
-  const entries = await readDir(dirPath);
+  let entries: DirEntry[] | AndroidEntryMetadataWithUri[] | undefined;
+  let base_nodes: FileNode[] | undefined;
 
+  if (current_platform == 'android') {
+    if (!document_top_tree_uri.uri)
+      throw new Error('Document top tree URI is not set');
+    entries = await AndroidFs.readDir({
+      uri: dir_path,
+      documentTopTreeUri: document_top_tree_uri.uri,
+    });
+    base_nodes = await transform_android_entries_to_filenode(entries, dir_path);
+  } else {
+    entries = await readDir(dir_path);
+    base_nodes = await transform_entries_to_filenode(entries, dir_path);
+  }
+
+  const nodes = await Promise.all(
+    base_nodes.map(async (n) => {
+      if (!n.is_directory) return n;
+      const children = await build_file_tree_from_fs(n.path);
+      return {
+        ...n,
+        children,
+      };
+    })
+  );
+
+  return nodes;
+}
+export async function transform_entries_to_filenode(
+  entries: DirEntry[],
+  base_dir_path: string
+): Promise<FileNode[]> {
   const nodes = await Promise.all(
     entries
       .filter(
@@ -18,49 +61,32 @@ export async function build_file_tree_from_fs(
       )
       .map(async (entry) => ({
         name: entry.name.replace(/\.md$/, ''),
-        path: `${dirPath}/${entry.name}`,
+        path: await join(base_dir_path, entry.name),
         is_directory: entry.isDirectory,
-        children: entry.isDirectory
-          ? await build_file_tree_from_fs(`${dirPath}/${entry.name}`)
-          : [],
+        children: [],
       }))
   );
-
   return nodes;
 }
-export async function build_file_tree_from_fs_android(
-  dirPath: string
+export async function transform_android_entries_to_filenode(
+  entries: AndroidEntryMetadataWithUri[],
+  base_dir_path: string
 ): Promise<FileNode[]> {
-  const entries = await AndroidFs.readDir({
-    uri: dirPath,
-    documentTopTreeUri: get_parent_path(dirPath),
-  });
-  return Promise.all(
+  const nodes = await Promise.all(
     entries
       .filter(
-        (e) =>
-          (e.type === 'Dir' && !e.name.startsWith('.')) ||
-          e.name.endsWith('.md')
+        (entry) =>
+          (entry.type === 'Dir' && !entry.name.startsWith('.')) ||
+          entry.name.endsWith('.md')
       )
-      .map(async (e) => ({
-        name: e.name.replace(/\.md$/, ''),
-        path: e.uri.uri,
-        is_directory: e.type === 'Dir',
-        children:
-          e.type === 'Dir'
-            ? await build_file_tree_from_fs_android(e.uri.uri)
-            : [],
+      .map(async (entry) => ({
+        name: entry.name.replace(/\.md$/, ''),
+        path: `${base_dir_path}%2F${entry.name}`,
+        is_directory: entry.type === 'Dir',
+        children: [],
       }))
   );
-}
-export async function build_file_tree_cross_platform(
-  dirPath: string
-): Promise<FileNode[]> {
-  if (current_platform == 'android') {
-    return await build_file_tree_from_fs_android(dirPath);
-  } else {
-    return await build_file_tree_from_fs(dirPath);
-  }
+  return nodes;
 }
 
 export function sort_file_tree(nodes: FileNode[]): FileNode[] {
