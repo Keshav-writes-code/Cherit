@@ -81,7 +81,7 @@ export async function transform_android_entries_to_filenode(
       )
       .map(async (entry) => ({
         name: entry.name.replace(/\.md$/, ''),
-        path: `${base_dir_path}%2F${entry.name}`,
+        path: `${base_dir_path}%2F${encodeURIComponent(entry.name)}`,
         is_directory: entry.type === 'Dir',
         children: [],
       }))
