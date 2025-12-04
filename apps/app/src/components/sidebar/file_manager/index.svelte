@@ -36,14 +36,14 @@
         root_path = prev_root_folder;
       });
   });
-  let hover_newfile_button: boolean = $state(false);
+  let hover_newnode_button: boolean = $state(false);
 </script>
 
 <div class=" flex min-h-0 flex-1 flex-col w-full bg-base-200">
   <Toolbar
     bind:collapsed_state
     bind:opened_filenode
-    bind:hover_newfile_button
+    bind:hover_newnode_button
     {focused_directory}
     {root_path}
     bind:file_tree
@@ -51,7 +51,7 @@
   <ItemsRender
     bind:opened_filenode
     bind:focused_directory
-    {hover_newfile_button}
+    {hover_newnode_button}
     {collapsed_state}
     {file_tree}
     {root_path}

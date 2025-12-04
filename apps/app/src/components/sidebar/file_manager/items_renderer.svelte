@@ -12,7 +12,7 @@
     file_tree,
     root_path,
     collapsed_state,
-    hover_newfile_button,
+    hover_newnode_button,
     on_move,
   }: {
     opened_filenode: FileNode | undefined;
@@ -20,7 +20,7 @@
     root_path: RootPath;
     collapsed_state: boolean;
     focused_directory: RootPath;
-    hover_newfile_button: boolean;
+    hover_newnode_button: boolean;
     on_move: (node: FileNode, new_parent_path: string) => void;
   } = $props();
 
@@ -160,7 +160,7 @@
   {@const is_focused_and_collapsed_and_hover =
     expanded_state[node.path] === false &&
     node.path === focused_directory &&
-    hover_newfile_button}
+    hover_newnode_button}
   <details
     open={!collapsed_state}
     class="w-full {!is_focused_and_collapsed_and_hover && 'overflow-y-clip'} "

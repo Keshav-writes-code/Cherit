@@ -5,7 +5,7 @@
     collapsed_state = $bindable(),
     file_tree = $bindable(),
     opened_filenode = $bindable(),
-    hover_newfile_button = $bindable(),
+    hover_newnode_button = $bindable(),
     root_path,
     focused_directory,
   }: {
@@ -14,8 +14,9 @@
     root_path: RootPath;
     focused_directory: RootPath;
     opened_filenode: FileNode | undefined;
-    hover_newfile_button: boolean;
+    hover_newnode_button: boolean;
   } = $props();
+  $inspect(focused_directory);
 </script>
 
 <div
@@ -25,8 +26,8 @@
     aria-label="New File Button"
     class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
     disabled={!focused_directory}
-    onmouseenter={() => (hover_newfile_button = true)}
-    onmouseleave={() => (hover_newfile_button = false)}
+    onmouseenter={() => (hover_newnode_button = true)}
+    onmouseleave={() => (hover_newnode_button = false)}
     onclick={async () => {
       if (!focused_directory || !root_path) return;
       await add_new_note(file_tree, focused_directory, root_path);
@@ -36,6 +37,8 @@
   <button
     aria-label="New Folder Button"
     class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
+    onmouseenter={() => (hover_newnode_button = true)}
+    onmouseleave={() => (hover_newnode_button = false)}
     onclick={async () => {
       if (!focused_directory || !root_path) return;
 
