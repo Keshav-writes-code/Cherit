@@ -18,6 +18,7 @@
     "@types/node": "^24.10.1",
     "@unocss/preset-typography": "^66.5.9",
     "@unocss/preset-wind4": "^66.5.9",
+    "lightningcss": "^1.30.2",
     "svelte": "^5.43.14",
     "svelte-check": "^4.3.4",
     "typescript": "~5.9.3",
