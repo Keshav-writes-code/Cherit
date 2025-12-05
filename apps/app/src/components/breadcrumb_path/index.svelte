@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { get_relative_path_parts } from '@/lib/file_tree_functions';
   import type { FileNode, GenericPath } from '@/types';
   let {
     filenode,
@@ -11,19 +12,9 @@
   } = $props();
 
   let segments = $derived.by(() => {
-    if (!filenode) return [];
-
-    let root = root_path?.path || '';
-    let file = filenode.path;
-
-    // Fix Android: Extract only the decoded ID (last segment) to ignore 'tree' vs 'document' prefix mismatch
-    if (file.startsWith('content:')) {
-      file = decodeURIComponent(file.split('/').pop() || '');
-      root = decodeURIComponent(root.split('/').pop() || '');
-    }
-
-    // Remove root from file path and split
-    return file.replace(root, '').split('/').filter(Boolean);
+    if (!filenode || !root_path) return [];
+    const res = get_relative_path_parts(filenode.path, root_path.path);
+    return res;
   });
 </script>
 

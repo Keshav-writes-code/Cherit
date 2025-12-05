@@ -269,3 +269,11 @@ export const exists = (
   }
   return false;
 };
+export function get_relative_path_parts(
+  path: string,
+  offset: string = ''
+): string[] {
+  const p = decodeURIComponent(path);
+  const o = decodeURIComponent(offset);
+  return p.replace(o, '').split(/[/\\]/).filter(Boolean);
+}

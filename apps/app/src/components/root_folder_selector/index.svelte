@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { get_relative_path_parts } from '@/lib/file_tree_functions';
   import { check_recent_path_schema } from '@/lib/user_activity';
   import {
+    current_platform,
     current_platform_type,
     root_folder_picker_dialog_state,
   } from '@/misc_global_states.svelte';
@@ -74,6 +76,12 @@
             <div class=" i-tabler:trash-filled size-4"></div>
           </button>
           {#each recent_paths as { path, document_top_tree_uri }}
+            {@const path_parts = get_relative_path_parts(
+              path,
+              current_platform == 'android'
+                ? 'content://com.android.externalstorage.documents/tree/primary%3A'
+                : ''
+            )}
             <li class="w-full">
               <button
                 onclick={() => {
@@ -85,12 +93,12 @@
                 flex w-full gap-0 flex-col items-baseline"
               >
                 <p class="text-sm text-base-content/80">
-                  {path.split(/[\\/]/).filter(Boolean).pop()!}
+                  {path_parts.slice(-1)[0]}
                 </p>
                 <p
-                  class="text-xs text-ellipsis overflow-hidden whitespace-nowrap flex flex-row-reverse items-start min-w-0 w-full text-base-content/60"
+                  class="text-xs text-ellipsis overflow-hidden whitespace-nowrap min-w-0 w-full text-base-content/60"
                 >
-                  {path}
+                  {path_parts.join('/')}
                 </p>
               </button>
             </li>
