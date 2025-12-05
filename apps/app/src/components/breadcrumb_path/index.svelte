@@ -1,19 +1,19 @@
 <script lang="ts">
-  import type { FileNode, RootPath } from '@/types';
+  import type { FileNode, GenericPath } from '@/types';
   let {
     filenode,
     root_path,
     class: classes = 'text-xs',
   }: {
     filenode: FileNode | undefined;
-    root_path: RootPath;
+    root_path: GenericPath;
     class?: string;
   } = $props();
 
   let segments = $derived.by(() => {
     if (!filenode) return [];
 
-    let root = root_path || '';
+    let root = root_path?.path || '';
     let file = filenode.path;
 
     // Fix Android: Extract only the decoded ID (last segment) to ignore 'tree' vs 'document' prefix mismatch

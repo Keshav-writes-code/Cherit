@@ -1,15 +1,15 @@
 <script lang="ts">
   import {
     current_platform_type,
-    document_top_tree_uri,
     root_folder_picker_dialog_state,
   } from '@/misc_global_states.svelte';
-  import type { RootPath } from '@/types';
+  import type { GenericPath } from '@/types';
   import { open } from '@tauri-apps/plugin-dialog';
   import { LazyStore } from '@tauri-apps/plugin-store';
   import { onMount } from 'svelte';
   import { AndroidFs } from 'tauri-plugin-android-fs-api';
-  let { root_path = $bindable() }: { root_path: RootPath } = $props();
+  let { root_path = $bindable() }: { root_path: GenericPath | undefined } =
+    $props();
   $effect(() => {
     if (root_path) root_folder_picker_dialog_state.open = false;
   });
@@ -19,7 +19,8 @@
 
   onMount(async () => {
     recent_paths = (await user_activity.get<string[]>('recent_paths')) ?? [];
-    if (recent_paths.length) root_path = recent_paths[0];
+    if (recent_paths.length)
+      root_path = { path: recent_paths[0], document_top_tree_uri: null };
     else root_folder_picker_dialog_state.open = true;
   });
 </script>
@@ -63,11 +64,14 @@
             <li>
               <button
                 onclick={() => {
-                  root_path = path;
+                  root_path = {
+                    path,
+                    document_top_tree_uri: null,
+                  };
                   root_folder_picker_dialog_state.open = false;
                 }}
                 class="
-                {root_path == path && 'bg-base-100'}
+                {root_path?.path == path && 'bg-base-100'}
                 flex gap-0 flex-col items-baseline"
               >
                 <p class="text-sm text-base-content/80">
@@ -117,7 +121,10 @@
                 recursive: true,
               });
               if (!folder) return;
-              root_path = folder;
+              root_path = {
+                path: folder,
+                document_top_tree_uri: null,
+              };
               if (!recent_paths.includes(folder)) {
                 recent_paths = [folder, ...recent_paths].slice(0, 10);
                 await user_activity.set('recent_paths', recent_paths);
@@ -133,8 +140,10 @@
                 onclick={async () => {
                   const uri = await AndroidFs.showOpenDirPicker();
                   if (!uri) return;
-                  document_top_tree_uri.uri = uri.documentTopTreeUri;
-                  root_path = uri.uri;
+                  root_path = {
+                    path: uri.uri,
+                    document_top_tree_uri: uri.documentTopTreeUri,
+                  };
                 }}
               >
                 <div class="size-6 i-tabler:folder-open"></div>

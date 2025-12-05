@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { FileNode, RootPath } from '@/types';
+  import type { FileNode, GenericPath } from '@/types';
   import { blur, fly } from 'svelte/transition';
   import { backOut } from 'svelte/easing';
   import animatedDetails from 'svelte-animated-details';
@@ -17,9 +17,9 @@
   }: {
     opened_filenode: FileNode | undefined;
     file_tree: FileNode[];
-    root_path: RootPath;
+    root_path: GenericPath | undefined;
     collapsed_state: boolean;
-    focused_directory: RootPath;
+    focused_directory: string | undefined;
     hover_newnode_button: boolean;
     on_move: (node: FileNode, new_parent_path: string) => void;
   } = $props();
@@ -106,9 +106,9 @@
       context_menu.close();
     }}
     class="
-      {focused_directory == root_path &&
+      {focused_directory == root_path.path &&
       'shadow-[inset_0_0_0_1px_var(--color-accent)]'}
-      {drop_target === root_path &&
+      {drop_target === root_path.path &&
       'bg-accent/10 outline-dashed outline-2 outline-accent'} 
       menu menu-sm h-full rounded-box relative w-full select-none overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide flex before:content-none flex-col gap-0.5 pt-0.5"
   >
@@ -127,7 +127,7 @@
     <button
       aria-label="Set Focus to root"
       class="min-h-30% grow"
-      onclick={() => (focused_directory = root_path)}
+      onclick={() => (focused_directory = root_path.path)}
     >
     </button>
   </ul>
@@ -252,7 +252,8 @@
         focused_directory = get_parent_path(node.path);
       }
     }}
-    >{node.name}
+  >
+    {node.name}
   </button>
 {/snippet}
 

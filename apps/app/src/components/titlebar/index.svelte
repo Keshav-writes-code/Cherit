@@ -2,12 +2,13 @@
   import { current_platform_type } from '@/misc_global_states.svelte';
   import { getCurrentWindow } from '@tauri-apps/api/window';
   import Breadcrumb from '@/components/breadcrumb_path/index.svelte';
-  import type { FileNode, RootPath } from '@/types';
+  import type { FileNode, GenericPath } from '@/types';
 
   const {
     root_path,
     filenode,
-  }: { root_path: RootPath; filenode: FileNode | undefined } = $props();
+  }: { root_path: GenericPath | undefined; filenode: FileNode | undefined } =
+    $props();
   const appWindow = getCurrentWindow();
 </script>
 

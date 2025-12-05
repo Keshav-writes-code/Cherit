@@ -4,4 +4,7 @@ export interface FileNode {
   is_directory: boolean;
   children: FileNode[];
 }
-export type RootPath = string | undefined;
+export type GenericPath = {
+  path: string;
+  document_top_tree_uri: string | null;
+};

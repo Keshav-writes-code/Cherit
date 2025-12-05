@@ -1,7 +1,7 @@
 <script lang="ts">
   import BreadCrumb from '@/components/breadcrumb_path/index.svelte';
   import { readTextFile, rename, writeTextFile } from '@tauri-apps/plugin-fs';
-  import type { FileNode, RootPath } from '@/types';
+  import type { FileNode, GenericPath } from '@/types';
   import Prosemark from './prosemark.svelte';
   import { toast } from 'svelte-sonner';
   import { current_platform_type } from '@/misc_global_states.svelte';
@@ -10,7 +10,7 @@
     root_path,
   }: {
     filenode: FileNode | undefined;
-    root_path: RootPath;
+    root_path: GenericPath | undefined;
   } = $props();
   let text_content: string | undefined = $state();
   let current_file_name: string | undefined = $state();

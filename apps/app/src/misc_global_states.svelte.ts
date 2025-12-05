@@ -20,6 +20,3 @@ const PLATFORM_TYPE_MAP = {
 export const current_platform = platform();
 export const current_platform_type: 'desktop' | 'mobile' =
   PLATFORM_TYPE_MAP[current_platform as keyof typeof PLATFORM_TYPE_MAP];
-export let document_top_tree_uri: { uri: string | null | undefined } = {
-  uri: undefined,
-};

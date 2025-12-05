@@ -4,12 +4,12 @@
   import TitleBar from '@/components/titlebar/index.svelte';
   import Sidebar from '@/components/sidebar/index.svelte';
   import GlobalContextMenu from '@/components/context_menu/index.svelte';
-  import type { FileNode, RootPath } from '@/types';
+  import type { FileNode, GenericPath } from '@/types';
   import { Toaster } from 'svelte-sonner';
   import { current_platform_type } from './misc_global_states.svelte';
 
   // NOTE: GLobal Variables
-  let root_path: RootPath = $state();
+  let root_path: GenericPath | undefined = $state();
   let opened_filenode: FileNode | undefined = $state();
 </script>
 

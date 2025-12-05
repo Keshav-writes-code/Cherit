@@ -1,7 +1,7 @@
 <script lang="ts">
   import { root_folder_picker_dialog_state } from '@/misc_global_states.svelte';
-  import type { RootPath } from '@/types';
-  let { root_path }: { root_path: RootPath } = $props();
+  import type { GenericPath } from '@/types';
+  let { root_path }: { root_path: GenericPath | undefined } = $props();
 </script>
 
 <div
@@ -15,7 +15,7 @@
         }}
       >
         <div class=" i-famicons:chevron-expand size-4"></div>
-        {decodeURIComponent(root_path ?? '')
+        {decodeURIComponent(root_path?.path ?? '')
           .split('/')
           .filter(Boolean)
           .pop()}

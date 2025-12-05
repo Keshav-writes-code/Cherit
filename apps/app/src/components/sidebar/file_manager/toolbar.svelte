@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type FileNode, type RootPath } from '@/types';
+  import { type FileNode, type GenericPath } from '@/types';
   import { add_new_folder, add_new_note } from '@/lib/file_tree_functions';
   let {
     collapsed_state = $bindable(),
@@ -11,8 +11,8 @@
   }: {
     collapsed_state: boolean;
     file_tree: FileNode[];
-    root_path: RootPath;
-    focused_directory: RootPath;
+    root_path: GenericPath | undefined;
+    focused_directory: string | undefined;
     opened_filenode: FileNode | undefined;
     hover_newnode_button: boolean;
   } = $props();

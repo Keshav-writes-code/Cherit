@@ -5,40 +5,41 @@ import {
   rename,
   type DirEntry,
 } from '@tauri-apps/plugin-fs';
-import { type FileNode } from '@/types';
-import {
-  current_platform,
-  document_top_tree_uri,
-} from '@/misc_global_states.svelte';
+import { type FileNode, type GenericPath } from '@/types';
+import { current_platform } from '@/misc_global_states.svelte';
 import {
   AndroidFs,
   type AndroidEntryMetadataWithUri,
 } from 'tauri-plugin-android-fs-api';
 import { join } from '@tauri-apps/api/path';
 
-export async function build_file_tree_from_fs(
-  dir_path: string
-): Promise<FileNode[]> {
+export async function build_file_tree_from_fs({
+  path,
+  document_top_tree_uri,
+}: GenericPath): Promise<FileNode[]> {
   let entries: DirEntry[] | AndroidEntryMetadataWithUri[] | undefined;
   let base_nodes: FileNode[] | undefined;
 
   if (current_platform == 'android') {
-    if (!document_top_tree_uri.uri)
+    if (!document_top_tree_uri)
       throw new Error('Document top tree URI is not set');
     entries = await AndroidFs.readDir({
-      uri: dir_path,
-      documentTopTreeUri: document_top_tree_uri.uri,
+      uri: path,
+      documentTopTreeUri: document_top_tree_uri,
     });
-    base_nodes = await transform_android_entries_to_filenode(entries, dir_path);
+    base_nodes = await transform_android_entries_to_filenode(entries, path);
   } else {
-    entries = await readDir(dir_path);
-    base_nodes = await transform_entries_to_filenode(entries, dir_path);
+    entries = await readDir(path);
+    base_nodes = await transform_entries_to_filenode(entries, path);
   }
 
   const nodes = await Promise.all(
     base_nodes.map(async (n) => {
       if (!n.is_directory) return n;
-      const children = await build_file_tree_from_fs(n.path);
+      const children = await build_file_tree_from_fs({
+        path: n.path,
+        document_top_tree_uri,
+      });
       return {
         ...n,
         children,
@@ -131,7 +132,10 @@ export function insert_node_in_place(
       level.push(
         (node = {
           name: part,
-          path: current_path,
+          path:
+            current_platform == 'android'
+              ? encodeURIComponent(current_path)
+              : current_path,
           is_directory: true,
           children: [],
         })
@@ -182,7 +186,7 @@ export async function move_node(
 export async function add_new_note(
   tree: FileNode[],
   focused_path: string,
-  root_path: string
+  { path: root_path, document_top_tree_uri }: GenericPath
 ) {
   let i = 0;
   let name = 'Untitled';
@@ -191,7 +195,7 @@ export async function add_new_note(
     while (exists(tree, focused_path + encodeURIComponent(`/${name}.md`)))
       name = `Untitled ${++i}`;
     await AndroidFs.createNewFile(
-      { uri: focused_path, documentTopTreeUri: get_parent_path(focused_path) },
+      { uri: focused_path, documentTopTreeUri: document_top_tree_uri },
       `${name}.md`,
       'plain/text'
     );
@@ -215,7 +219,7 @@ export async function add_new_note(
 export async function add_new_folder(
   tree: FileNode[],
   focused_path: string,
-  root_path: string
+  { path: root_path, document_top_tree_uri }: GenericPath
 ) {
   let i = 0;
   let name = 'Untitled';
@@ -224,7 +228,7 @@ export async function add_new_folder(
     while (exists(tree, focused_path + encodeURIComponent(`/${name}`), true))
       name = `Untitled ${++i}`;
     await AndroidFs.createDirAll(
-      { uri: focused_path, documentTopTreeUri: get_parent_path(focused_path) },
+      { uri: focused_path, documentTopTreeUri: document_top_tree_uri },
       name
     );
     new_file_path = focused_path + encodeURIComponent(`/${name}`);

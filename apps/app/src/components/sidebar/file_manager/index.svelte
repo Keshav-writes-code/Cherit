@@ -5,7 +5,7 @@
     sort_file_tree,
   } from '@/lib/file_tree_functions';
   import ItemsRender from './items_renderer.svelte';
-  import { type FileNode, type RootPath } from '@/types';
+  import { type FileNode, type GenericPath } from '@/types';
   import Toolbar from './toolbar.svelte';
   import { toast } from 'svelte-sonner';
   let {
@@ -13,12 +13,12 @@
     root_path = $bindable(),
   }: {
     opened_filenode: FileNode | undefined;
-    root_path: RootPath;
+    root_path: GenericPath | undefined;
   } = $props();
 
   let file_tree: FileNode[] = $state([]);
-  let prev_root_folder: RootPath = $state();
-  let focused_directory: RootPath = $derived(root_path);
+  let prev_root_folder: GenericPath | undefined = $state();
+  let focused_directory: string | undefined = $derived(root_path?.path);
   $effect(() => {
     sort_file_tree(file_tree);
   });
