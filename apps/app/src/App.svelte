@@ -14,7 +14,7 @@
 </script>
 
 <div
-  class="drawer h-full lg:drawer-open selection:bg-[rgb(from_var(--color-accent)_r_g_b_/_0.2)] isolate"
+  class="drawer select-none h-full lg:drawer-open selection:bg-[rgb(from_var(--color-accent)_r_g_b_/_0.2)] isolate"
 >
   <RootFolderSelector bind:root_path />
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
