@@ -2,6 +2,11 @@
 
 <p align="center"><img src="https://socialify.git.ci/Keshav-writes-code/Cherit/image?description=1&amp;logo=https%3A%2F%2Fraw.githubusercontent.com%2FKeshav-writes-code%2FCherit%2Fmain%2Fpublic%2Flogo_500.png&amp;name=1&amp;pattern=Plus&amp;theme=Auto" alt="project-image"></p>
 
+<div align="center">
+
+ [![tauri-build-release](https://github.com/Keshav-writes-code/Cherit/actions/workflows/tauri-build-release.yml/badge.svg?branch=dev)](https://github.com/Keshav-writes-code/Cherit/actions/workflows/tauri-build-release.yml)
+ 
+</div>
 ⚠️This is an early experimental build in the research phase. Core functionality is incomplete and not intended for any regular use.
 
 ## Project Screenshots :
