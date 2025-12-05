@@ -113,16 +113,15 @@ export function insert_node_in_place(
   new_node: FileNode,
   offset: string = ''
 ): FileNode {
-  const offset_str = offset.toString();
-  const rel_path = new_node.path.startsWith(offset_str)
-    ? new_node.path.slice(offset_str.length)
+  const rel_path = new_node.path.startsWith(offset)
+    ? new_node.path.slice(offset.length)
     : new_node.path;
   const parts = rel_path
     .split(/(?:%2F|[/\\])/)
     .filter(Boolean)
     .slice(0, -1);
   let level = roots;
-  let current_path = offset_str.replace(/(?:%2F|[/\\])+$/, '');
+  let current_path = offset.replace(/(?:%2F|[/\\])+$/, '');
   for (const part of parts) {
     current_path += '/' + part;
     let node = level.find(

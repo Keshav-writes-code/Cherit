@@ -3,7 +3,7 @@
     build_file_tree_from_fs,
     move_node,
     sort_file_tree,
-  } from './file_tree_functions';
+  } from '@/lib/file_tree_functions';
   import ItemsRender from './items_renderer.svelte';
   import { type FileNode, type RootPath } from '@/types';
   import Toolbar from './toolbar.svelte';
