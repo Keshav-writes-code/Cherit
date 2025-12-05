@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { check_recent_path_schema } from '@/lib/user_activity';
   import {
     current_platform_type,
     root_folder_picker_dialog_state,
@@ -15,13 +16,22 @@
   });
 
   const user_activity = new LazyStore('user_activity.json');
-  let recent_paths: string[] = $state([]);
+  let recent_paths: GenericPath[] = $state([]);
 
   onMount(async () => {
-    recent_paths = (await user_activity.get<string[]>('recent_paths')) ?? [];
-    if (recent_paths.length)
-      root_path = { path: recent_paths[0], document_top_tree_uri: null };
-    else root_folder_picker_dialog_state.open = true;
+    recent_paths =
+      (await user_activity.get<GenericPath[]>('recent_paths')) ?? [];
+    if (recent_paths.length) {
+      // Check for Older Data Schema
+      if (!check_recent_path_schema(recent_paths)) {
+        await user_activity.clear();
+        return (root_folder_picker_dialog_state.open = true);
+      }
+      root_path = {
+        path: recent_paths[0].path,
+        document_top_tree_uri: recent_paths[0].document_top_tree_uri,
+      };
+    } else root_folder_picker_dialog_state.open = true;
   });
 </script>
 
@@ -60,14 +70,11 @@
           >
             <div class=" i-tabler:trash-filled size-4"></div>
           </button>
-          {#each recent_paths as path}
+          {#each recent_paths as { path, document_top_tree_uri }}
             <li>
               <button
                 onclick={() => {
-                  root_path = {
-                    path,
-                    document_top_tree_uri: null,
-                  };
+                  root_path = { path, document_top_tree_uri };
                   root_folder_picker_dialog_state.open = false;
                 }}
                 class="
@@ -125,8 +132,11 @@
                 path: folder,
                 document_top_tree_uri: null,
               };
-              if (!recent_paths.includes(folder)) {
-                recent_paths = [folder, ...recent_paths].slice(0, 10);
+              if (!recent_paths.find((p) => p.path === folder)) {
+                recent_paths = [
+                  { path: folder, document_top_tree_uri: null },
+                  ...recent_paths,
+                ].slice(0, 10);
                 await user_activity.set('recent_paths', recent_paths);
                 await user_activity.save();
               }
@@ -144,6 +154,17 @@
                     path: uri.uri,
                     document_top_tree_uri: uri.documentTopTreeUri,
                   };
+                  if (!recent_paths.find((p) => p.path === uri.uri)) {
+                    recent_paths = [
+                      {
+                        path: uri.uri,
+                        document_top_tree_uri: uri.documentTopTreeUri,
+                      },
+                      ...recent_paths,
+                    ].slice(0, 10);
+                    await user_activity.set('recent_paths', recent_paths);
+                    await user_activity.save();
+                  }
                 }}
               >
                 <div class="size-6 i-tabler:folder-open"></div>
