@@ -48,7 +48,10 @@
   >
     <form method="dialog">
       <button
-        class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+        class="btn btn-sm btn-circle btn-ghost absolute
+        {current_platform_type == 'mobile'
+          ? 'top-12 right-4'
+          : 'top-2 right-2'} "
         onclick={() => (root_folder_picker_dialog_state.open = false)}
       >
         ✕
