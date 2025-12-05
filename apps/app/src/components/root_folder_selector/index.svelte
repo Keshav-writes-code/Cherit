@@ -74,7 +74,7 @@
             <div class=" i-tabler:trash-filled size-4"></div>
           </button>
           {#each recent_paths as { path, document_top_tree_uri }}
-            <li>
+            <li class="w-full">
               <button
                 onclick={() => {
                   root_path = { path, document_top_tree_uri };
@@ -82,12 +82,16 @@
                 }}
                 class="
                 {root_path?.path == path && 'bg-base-100'}
-                flex gap-0 flex-col items-baseline"
+                flex w-full gap-0 flex-col items-baseline"
               >
                 <p class="text-sm text-base-content/80">
                   {path.split(/[\\/]/).filter(Boolean).pop()!}
                 </p>
-                <p class="text-xs text-base-content/60">{path}</p>
+                <p
+                  class="text-xs text-ellipsis overflow-hidden whitespace-nowrap flex flex-row-reverse items-start min-w-0 w-full text-base-content/60"
+                >
+                  {path}
+                </p>
               </button>
             </li>
           {/each}
