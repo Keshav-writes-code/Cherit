@@ -16,7 +16,6 @@
     opened_filenode: FileNode | undefined;
     hover_newnode_button: boolean;
   } = $props();
-  $inspect(focused_directory);
 </script>
 
 <div
