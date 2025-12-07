@@ -10,6 +10,7 @@ import { current_platform } from '@/misc_global_states.svelte';
 import {
   AndroidFs,
   type AndroidEntryMetadataWithUri,
+  type AndroidFsUri,
 } from 'tauri-plugin-android-fs-api';
 import { join } from '@tauri-apps/api/path';
 
@@ -146,16 +147,83 @@ export function insert_node_in_place(
   return new_node;
 }
 
+async function copy_folder_recursively(
+  src_uri: AndroidFsUri,
+  dest_parent_uri: AndroidFsUri,
+  folder_name: string
+) {
+  const new_dir = await AndroidFs.createDirAll(dest_parent_uri, folder_name);
+
+  const entries = await AndroidFs.readDir(src_uri);
+
+  for (const entry of entries) {
+    if (entry.type === 'Dir') {
+      await copy_folder_recursively(entry.uri, new_dir, entry.name);
+    } else {
+      const new_file = await AndroidFs.createNewFile(
+        new_dir,
+        entry.name,
+        entry.mimeType
+      );
+      await AndroidFs.copyFile(entry.uri, new_file);
+    }
+  }
+}
+
+async function android_move_node(
+  node: FileNode,
+  parent_uri: string,
+  top_tree_uri: string
+) {
+  const parent_uri_obj: AndroidFsUri = {
+    uri: parent_uri,
+    documentTopTreeUri: top_tree_uri,
+  };
+  const node_uri_obj: AndroidFsUri = {
+    uri: node.path,
+    documentTopTreeUri: top_tree_uri,
+  };
+
+  if (node.is_directory) {
+    await copy_folder_recursively(node_uri_obj, parent_uri_obj, node.name);
+    await AndroidFs.removeDirAll(node_uri_obj);
+  } else {
+    const new_file = await AndroidFs.createNewFile(
+      parent_uri_obj,
+      node.name + (node.name.endsWith('.md') ? '' : '.md'),
+      null
+    );
+    await AndroidFs.copyFile(node_uri_obj, new_file);
+    await AndroidFs.removeFile(node_uri_obj);
+  }
+}
+
 export async function move_node(
   node: FileNode,
   new_parent_path: string,
-  tree: FileNode[]
+  tree: FileNode[],
+  root_info?: GenericPath
 ) {
-  const new_path = new_parent_path
-    ? `${new_parent_path}/${node.name}`
-    : node.name;
+  let new_path: string;
 
-  await rename(node.path, new_path);
+  if (current_platform === 'android') {
+    if (!root_info || !root_info.document_top_tree_uri) {
+      throw new Error('Document top tree URI is not set for Android operation');
+    }
+    const parent_uri = new_parent_path || root_info.path;
+    await android_move_node(
+      node,
+      parent_uri,
+      root_info.document_top_tree_uri
+    );
+    new_path = `${parent_uri}%2F${encodeURIComponent(node.name)}`;
+  } else {
+    new_path = new_parent_path
+      ? `${new_parent_path}/${node.name}`
+      : node.name;
+
+    await rename(node.path, new_path);
+  }
 
   const remove = (list: FileNode[]) => {
     const i = list.findIndex((n) => n === node);
