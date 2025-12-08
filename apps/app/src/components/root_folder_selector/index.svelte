@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { get_relative_path_parts } from '@/lib/file_tree_functions';
+  import { get_relative_path_parts } from '@/lib/file_tree';
   import { check_recent_path_schema } from '@/lib/user_activity';
   import {
     current_platform,

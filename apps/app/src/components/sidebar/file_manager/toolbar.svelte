@@ -1,6 +1,6 @@
 <script lang="ts">
   import { type FileNode, type GenericPath } from '@/types';
-  import { add_new_folder, add_new_note } from '@/lib/file_tree_functions';
+  import { add_new_folder, add_new_note } from '@/lib/file_tree';
   let {
     collapsed_state = $bindable(),
     file_tree = $bindable(),

@@ -3,7 +3,7 @@
   import { blur, fly } from 'svelte/transition';
   import { backOut } from 'svelte/easing';
   import animatedDetails from 'svelte-animated-details';
-  import { get_parent_path } from '@/lib/file_tree_functions';
+  import { get_parent_path } from '@/lib/file_tree';
   import { context_menu } from '@/stores/context_menu.svelte';
 
   let {

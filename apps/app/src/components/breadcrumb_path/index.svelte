@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { get_relative_path_parts } from '@/lib/file_tree_functions';
+  import { get_relative_path_parts } from '@/lib/file_tree';
   import type { FileNode, GenericPath } from '@/types';
   let {
     filenode,
