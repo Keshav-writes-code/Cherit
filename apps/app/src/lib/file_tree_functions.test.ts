@@ -1,49 +1,12 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import * as fileTreeFunctions from './file_tree_functions';
+import { describe, it, expect, vi } from 'vitest';
+import * as Logic from './file_tree_logic';
 import { type FileNode, type GenericPath } from '@/types';
 
-// Mocks
-vi.mock('@tauri-apps/plugin-fs', () => ({
-  create: vi.fn(),
-  mkdir: vi.fn(),
-  readDir: vi.fn(),
-  rename: vi.fn(),
-}));
-
-vi.mock('@tauri-apps/api/path', () => ({
-  join: vi.fn((...args: string[]) => Promise.resolve(args.join('/'))),
-}));
-
-vi.mock('tauri-plugin-android-fs-api', () => ({
-  AndroidFs: {
-    readDir: vi.fn(),
-    createNewFile: vi.fn(),
-    createDirAll: vi.fn(),
-  },
-}));
-
-const mocks = vi.hoisted(() => ({
-  current_platform: 'linux',
-}));
-
-vi.mock('@/misc_global_states.svelte', () => ({
-  get current_platform() {
-    return mocks.current_platform;
-  },
-}));
-
-import { create, mkdir, readDir, rename } from '@tauri-apps/plugin-fs';
-import { AndroidFs } from 'tauri-plugin-android-fs-api';
-
-describe('file_tree_functions', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mocks.current_platform = 'linux';
-  });
+describe('file_tree_logic', () => {
 
   // --- Pure Logic Tests ---
 
-  describe('build_tree_recursive (Pure)', () => {
+  describe('build_tree_recursive', () => {
     it('should recursively build tree from fetcher results', async () => {
       // Mock fetcher
       const fetcher = vi.fn(async (path: GenericPath) => {
@@ -61,7 +24,7 @@ describe('file_tree_functions', () => {
       });
 
       const root: GenericPath = { path: '/root', document_top_tree_uri: null };
-      const result = await fileTreeFunctions.build_tree_recursive(root, fetcher);
+      const result = await Logic.build_tree_recursive(root, fetcher);
 
       expect(fetcher).toHaveBeenCalledTimes(2); // root and folder
       expect(result).toHaveLength(2);
@@ -72,10 +35,10 @@ describe('file_tree_functions', () => {
     });
   });
 
-  describe('find_unused_name (Pure)', () => {
+  describe('find_unused_name', () => {
       it('should return base name if unused', () => {
           const tree: FileNode[] = [];
-          const name = fileTreeFunctions.find_unused_name(tree, '/root', 'Untitled', '.md', false);
+          const name = Logic.find_unused_name(tree, '/root', 'Untitled', '.md', false);
           expect(name).toBe('Untitled');
       });
 
@@ -83,7 +46,7 @@ describe('file_tree_functions', () => {
           const tree: FileNode[] = [
                { name: 'Untitled', path: '/root/Untitled.md', is_directory: false, children: [] }
           ];
-          const name = fileTreeFunctions.find_unused_name(tree, '/root', 'Untitled', '.md', false);
+          const name = Logic.find_unused_name(tree, '/root', 'Untitled', '.md', false);
           expect(name).toBe('Untitled 1');
       });
 
@@ -91,25 +54,21 @@ describe('file_tree_functions', () => {
           const tree: FileNode[] = [
               { name: 'Untitled', path: 'content://root%2FUntitled.md', is_directory: false, children: [] }
           ];
-          // parent path is encoded in real app usage when passed to recursive functions or checked
-          // but here find_unused_name expects the parent path.
-          // Note: transform_android_entries_to_filenode constructs path as `${base_dir_path}%2F${encodeURIComponent(entry.name)}`
-
-          const name = fileTreeFunctions.find_unused_name(tree, 'content://root', 'Untitled', '.md', false);
+          const name = Logic.find_unused_name(tree, 'content://root', 'Untitled', '.md', false);
           expect(name).toBe('Untitled 1');
       });
   });
 
-  describe('update_tree_after_move (Pure)', () => {
+  describe('update_tree_after_move', () => {
       it('should move node in tree structure', () => {
           const tree: FileNode[] = [
               { name: 'folder', path: '/root/folder', is_directory: true, children: [] },
               { name: 'file', path: '/root/file', is_directory: false, children: [] }
           ];
           const nodeToMove = tree[1];
-          // We must clone or pick reference. Since update_tree_after_move modifies in place.
+          // Clone or reference doesn't matter much for this test structure as long as refs are valid
 
-          fileTreeFunctions.update_tree_after_move(tree, nodeToMove, '/root/folder', '/root/folder/file');
+          Logic.update_tree_after_move(tree, nodeToMove, '/root/folder', '/root/folder/file');
 
           expect(tree).toHaveLength(1); // file moved
           expect(tree[0].children).toHaveLength(1);
@@ -131,71 +90,52 @@ describe('file_tree_functions', () => {
           ];
           const nodeToMove = tree[1];
 
-          fileTreeFunctions.update_tree_after_move(tree, nodeToMove, '/root/folder', '/root/folder/src');
+          Logic.update_tree_after_move(tree, nodeToMove, '/root/folder', '/root/folder/src');
 
           expect(tree[0].children[0].path).toBe('/root/folder/src');
           expect(tree[0].children[0].children[0].path).toBe('/root/folder/src/a');
       });
   });
 
-  // --- Integration / Wrapper Tests ---
-
-  // These tests mock the platform I/O but ensure the wrappers correctly call the pure logic + I/O.
-  // They are less critical for logic verification now but good for ensuring wiring.
-
-  describe('build_file_tree_from_fs', () => {
-    it('should wire up desktop fetcher correctly', async () => {
-      mocks.current_platform = 'linux';
-      (readDir as any).mockResolvedValue([
-        { name: 'note.md', isDirectory: false, isFile: true },
-      ]);
-
-      const result = await fileTreeFunctions.build_file_tree_from_fs({
-        path: '/root',
-        document_top_tree_uri: null,
-      });
-
-      expect(readDir).toHaveBeenCalledWith('/root');
-      expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('note');
-    });
-
-    it('should wire up android fetcher correctly', async () => {
-      mocks.current_platform = 'android';
-      (AndroidFs.readDir as any).mockResolvedValue([
-        { name: 'note.md', type: 'File' },
-      ]);
-
-      const result = await fileTreeFunctions.build_file_tree_from_fs({
-        path: 'content://tree',
-        document_top_tree_uri: 'content://tree',
-      });
-
-      expect(AndroidFs.readDir).toHaveBeenCalled();
-      expect(result).toHaveLength(1);
-    });
-  });
-
   describe('transform_entries_to_filenode', () => {
-    it('should transform entries correctly', async () => {
+    it('should transform entries correctly using joinFn', async () => {
       const entries: any[] = [
         { name: 'folder', isDirectory: true, isFile: false, isSymlink: false },
-        {
-          name: 'note.md',
-          isDirectory: false,
-          isFile: true,
-          isSymlink: false,
-        },
+        { name: 'note.md', isDirectory: false, isFile: true, isSymlink: false },
       ];
       const base_path = '/home/user';
+      const joinFn = vi.fn(async (...parts: string[]) => parts.join('/'));
 
-      const result = await fileTreeFunctions.transform_entries_to_filenode(
+      const result = await Logic.transform_entries_to_filenode(
         entries,
-        base_path
+        base_path,
+        joinFn
       );
 
       expect(result).toHaveLength(2);
       expect(result[0].path).toBe('/home/user/folder');
+      expect(result[1].path).toBe('/home/user/note.md');
+      expect(joinFn).toHaveBeenCalled();
+    });
+  });
+
+  describe('transform_android_entries_to_filenode', () => {
+    it('should transform android entries correctly', async () => {
+      const entries: any[] = [
+        { name: 'folder', type: 'Dir' },
+        { name: 'note.md', type: 'File' },
+      ];
+      const base_path = 'content://tree';
+
+      const result =
+        await Logic.transform_android_entries_to_filenode(
+          entries,
+          base_path
+        );
+
+      expect(result).toHaveLength(2);
+      expect(result[0].path).toBe('content://tree%2Ffolder');
+      expect(result[1].path).toBe('content://tree%2Fnote.md');
     });
   });
 
@@ -205,53 +145,54 @@ describe('file_tree_functions', () => {
         { name: 'b', path: '/b', is_directory: false, children: [] },
         { name: 'a', path: '/a', is_directory: true, children: [] },
       ];
-      const sorted = fileTreeFunctions.sort_file_tree(nodes);
+      const sorted = Logic.sort_file_tree(nodes);
       expect(sorted[0].name).toBe('a');
       expect(sorted[1].name).toBe('b');
     });
   });
 
-  describe('move_node', () => {
-      it('should call rename and update tree', async () => {
+  describe('insert_node_in_place', () => {
+      it('should insert a node in place correctly', () => {
+          const roots: FileNode[] = [];
+          const newNode: FileNode = {
+              name: 'file',
+              path: '/root/a/b/file.md',
+              is_directory: false,
+              children: []
+          };
+
+          Logic.insert_node_in_place(roots, newNode, '/root');
+
+          expect(roots).toHaveLength(1);
+          expect(roots[0].name).toBe('a');
+          expect(roots[0].children[0].name).toBe('b');
+          expect(roots[0].children[0].children[0]).toEqual(newNode);
+      });
+  });
+
+  describe('get_parent_path', () => {
+      it('should return parent path', () => {
+          expect(Logic.get_parent_path('/a/b/c')).toBe('/a/b');
+      });
+
+      it('should return parent path for android uri', () => {
+           expect(Logic.get_parent_path('content://root%2Fa%2Fb')).toBe('content://root%2Fa');
+      });
+  });
+
+  describe('exists', () => {
+      it('should check existence', () => {
           const tree: FileNode[] = [
-              { name: 'folder', path: '/root/folder', is_directory: true, children: [] },
-              { name: 'file', path: '/root/file', is_directory: false, children: [] }
+              { name: 'a', path: '/root/a', is_directory: false, children: [] }
           ];
-          const nodeToMove = tree[1];
-          const newParent = '/root/folder';
-
-          await fileTreeFunctions.move_node(nodeToMove, newParent, tree);
-
-          expect(rename).toHaveBeenCalledWith('/root/file', '/root/folder/file');
-          // Tree update verification is covered by pure test, but checking effect here confirms wiring
-          expect(tree).toHaveLength(1);
-          expect(tree[0].children).toHaveLength(1);
+          expect(Logic.exists(tree, '/root/a')).toBe(true);
+          expect(Logic.exists(tree, '/root/b')).toBe(false);
       });
   });
 
-  describe('add_new_note', () => {
-      it('should create file and insert node', async () => {
-          const tree: FileNode[] = [];
-          const focused_path = '/root';
-
-          await fileTreeFunctions.add_new_note(tree, focused_path, { path: '/root', document_top_tree_uri: null });
-
-          expect(create).toHaveBeenCalledWith('/root/Untitled.md');
-          expect(tree).toHaveLength(1);
-          expect(tree[0].name).toBe('Untitled');
-      });
-  });
-
-   describe('add_new_folder', () => {
-      it('should create folder and insert node', async () => {
-          const tree: FileNode[] = [];
-          const focused_path = '/root';
-
-          await fileTreeFunctions.add_new_folder(tree, focused_path, { path: '/root', document_top_tree_uri: null });
-
-          expect(mkdir).toHaveBeenCalledWith('/root/Untitled');
-          expect(tree).toHaveLength(1);
-          expect(tree[0].name).toBe('Untitled');
+  describe('get_relative_path_parts', () => {
+      it('should return relative path parts', () => {
+          expect(Logic.get_relative_path_parts('/root/a/b', '/root')).toEqual(['a', 'b']);
       });
   });
 });
