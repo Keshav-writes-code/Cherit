@@ -2,7 +2,7 @@ import { create, mkdir, rename } from '@tauri-apps/plugin-fs';
 import { type FileNode, type GenericPath } from '@/types';
 import { current_platform } from '@/misc_global_states.svelte';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
-import { exists } from './utils';
+import { exists, find_unused_name } from './utils';
 
 export function insert_node_in_place(
   roots: FileNode[],
@@ -83,12 +83,9 @@ export async function add_new_note(
   focused_path: string,
   { path: root_path, document_top_tree_uri }: GenericPath
 ) {
-  let i = 0;
-  let name = 'Untitled';
+  let name = find_unused_name('Untitled', focused_path, tree, false);
   let new_file_path;
   if (current_platform == 'android') {
-    while (exists(tree, focused_path + encodeURIComponent(`/${name}.md`)))
-      name = `Untitled ${++i}`;
     await AndroidFs.createNewFile(
       { uri: focused_path, documentTopTreeUri: document_top_tree_uri },
       `${name}.md`,
@@ -96,7 +93,6 @@ export async function add_new_note(
     );
     new_file_path = focused_path + encodeURIComponent(`/${name}.md`);
   } else {
-    while (exists(tree, `${focused_path}/${name}.md`)) name = `Untitled ${++i}`;
     await create(`${focused_path}/${name}.md`);
     new_file_path = `${focused_path}/${name}.md`;
   }
@@ -116,19 +112,16 @@ export async function add_new_folder(
   focused_path: string,
   { path: root_path, document_top_tree_uri }: GenericPath
 ) {
-  let i = 0;
-  let name = 'Untitled';
+  let name = find_unused_name('Untitled', focused_path, tree, true);
   let new_file_path;
+
   if (current_platform == 'android') {
-    while (exists(tree, focused_path + encodeURIComponent(`/${name}`)))
-      name = `Untitled ${++i}`;
     await AndroidFs.createDirAll(
       { uri: focused_path, documentTopTreeUri: document_top_tree_uri },
       name
     );
     new_file_path = focused_path + encodeURIComponent(`/${name}`);
   } else {
-    while (exists(tree, `${focused_path}/${name}`)) name = `Untitled ${++i}`;
     await mkdir(`${focused_path}/${name}`);
     new_file_path = `${focused_path}/${name}`;
   }
