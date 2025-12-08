@@ -19,18 +19,20 @@ export function insert_node_in_place(
   let level = roots;
   let current_path = offset.replace(/(?:%2F|[/\\])+$/, '');
   for (const part of parts) {
-    current_path += '/' + part;
+    if (current_platform === 'android') {
+      current_path += '%2F' + encodeURIComponent(decodeURIComponent(part));
+    } else {
+      current_path += '/' + part;
+    }
+
     let node = level.find(
       (n) => n.is_directory && n.name === decodeURIComponent(part)
     );
     if (!node)
       level.push(
         (node = {
-          name: part,
-          path:
-            current_platform == 'android'
-              ? encodeURIComponent(current_path)
-              : current_path,
+          name: decodeURIComponent(part),
+          path: current_path,
           is_directory: true,
           children: [],
         })
