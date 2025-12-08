@@ -120,7 +120,7 @@ export async function add_new_folder(
   let name = 'Untitled';
   let new_file_path;
   if (current_platform == 'android') {
-    while (exists(tree, focused_path + encodeURIComponent(`/${name}`), true))
+    while (exists(tree, focused_path + encodeURIComponent(`/${name}`)))
       name = `Untitled ${++i}`;
     await AndroidFs.createDirAll(
       { uri: focused_path, documentTopTreeUri: document_top_tree_uri },
@@ -128,8 +128,7 @@ export async function add_new_folder(
     );
     new_file_path = focused_path + encodeURIComponent(`/${name}`);
   } else {
-    while (exists(tree, `${focused_path}/${name}`, true))
-      name = `Untitled ${++i}`;
+    while (exists(tree, `${focused_path}/${name}`)) name = `Untitled ${++i}`;
     await mkdir(`${focused_path}/${name}`);
     new_file_path = `${focused_path}/${name}`;
   }

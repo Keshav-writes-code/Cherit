@@ -5,11 +5,7 @@ export const get_parent_path = (p: string) => {
   return c.slice(0, Math.max(0, c.lastIndexOf(s))) || (s === '/' ? '/' : '');
 };
 
-export const exists = (
-  file_tree: FileNode[],
-  p: string,
-  _is_directory: boolean = false
-): boolean => {
+export const exists = (file_tree: FileNode[], p: string): boolean => {
   const stack = [...file_tree];
   while (stack.length > 0) {
     const n = stack.pop();
