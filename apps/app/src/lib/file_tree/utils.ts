@@ -9,38 +9,35 @@ export const get_parent_path = (p: string) => {
 export function find_unused_name(
   base_name: string,
   parent_path: string,
+  root_path: string,
   tree: FileNode[],
   is_directory: boolean
 ): string {
   let i = 0;
-  if (current_platform == 'android') {
-    while (
-      exists(parent_path, encodeURIComponent(base_name), is_directory, tree)
-    )
-      base_name = `Untitled ${++i}`;
-  } else {
-    while (exists(parent_path, base_name, is_directory, tree))
-      base_name = `Untitled ${++i}`;
-  }
+  while (exists(parent_path, base_name, root_path, is_directory, tree))
+    base_name = `Untitled ${++i}`;
   return base_name;
 }
 export function exists(
   focused_path: string,
   node_name: string,
+  root_path: string,
   is_directory: boolean,
   tree: FileNode[]
 ): boolean {
-  const stack = [...tree];
+  const stack: FileNode[] = [
+    { name: '', path: root_path, is_directory: true, children: tree },
+  ];
   while (stack.length) {
-    const n = stack.pop();
-    if (n?.path == focused_path)
+    const node = stack.pop()!;
+    if (node.path === focused_path)
       return (
-        n.is_directory &&
-        n.children.some(
-          (child) => child.name === node_name && n.is_directory === is_directory
+        node.is_directory &&
+        node.children.some(
+          (c) => c.name === node_name && c.is_directory === is_directory
         )
       );
-    if (n?.is_directory && n.children.length) stack.push(...n.children);
+    if (node.is_directory && node.children.length) stack.push(...node.children);
   }
   return false;
 }
