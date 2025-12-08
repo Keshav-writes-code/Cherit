@@ -1,3 +1,5 @@
+/// <reference types="vitest/config" />
+
 import { defineConfig } from 'vite';
 import UnoCSS from 'unocss/vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
@@ -30,5 +32,8 @@ export default defineConfig({
   define: {
     __APP_NAME__: JSON.stringify(process.env.npm_package_name),
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+  },
+  test: {
+    include: ['./test'],
   },
 });

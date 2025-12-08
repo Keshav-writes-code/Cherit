@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+    "test": "vitest"
   },
   "devDependencies": {
     "@0x-jerry/unocss-preset-daisyui": "0.2.3",
@@ -23,7 +24,8 @@
     "svelte-check": "^4.3.4",
     "typescript": "~5.9.3",
     "unocss": "^66.5.9",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "vitest": "^4.0.14"
   },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.5.0",
