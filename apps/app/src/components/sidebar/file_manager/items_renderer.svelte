@@ -131,9 +131,6 @@
       </p>
     {/each}
 
-    {#if file_tree.length}
-      {@render focus_directory_button(file_tree[0].path, file_tree)}
-    {/if}
     <button
       aria-label="Set Focus to root"
       class="min-h-30% grow"
