@@ -16,13 +16,13 @@
     root_path: GenericPath | undefined;
   } = $props();
 
-  let file_tree: FileNode[] = $state([]);
+  let file_tree: FileNode[] | undefined = $state();
   let prev_root_folder: GenericPath | undefined = $state();
   let focused_directory: string | undefined = $derived(root_path?.path);
-  let focused_subtree: FileNode[] = $derived(file_tree);
+  let focused_subtree: FileNode[] | undefined = $derived(file_tree);
 
   $effect(() => {
-    sort_file_tree(file_tree);
+    if (file_tree) sort_file_tree(file_tree);
   });
   let collapsed_state: boolean = $state(true);
   $effect(() => {
@@ -60,6 +60,7 @@
     {file_tree}
     {root_path}
     on_move={async (node, path) => {
+      if (file_tree === undefined) return;
       try {
         await move_node(node, path, file_tree);
       } catch (e) {

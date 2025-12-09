@@ -11,7 +11,7 @@
     focused_subtree,
   }: {
     collapsed_state: boolean;
-    file_tree: FileNode[];
+    file_tree: FileNode[] | undefined;
     root_path: GenericPath | undefined;
     focused_directory: string | undefined;
     opened_filenode: FileNode | undefined;
@@ -31,7 +31,14 @@
     onmouseenter={() => (hover_newnode_button = true)}
     onmouseleave={() => (hover_newnode_button = false)}
     onclick={async () => {
-      if (!focused_directory || !root_path || is_processing) return;
+      if (
+        !focused_directory ||
+        !file_tree ||
+        !focused_subtree ||
+        !root_path ||
+        is_processing
+      )
+        return;
       is_processing = true;
       await add_new_note(
         file_tree,
@@ -50,7 +57,14 @@
     onmouseenter={() => (hover_newnode_button = true)}
     onmouseleave={() => (hover_newnode_button = false)}
     onclick={async () => {
-      if (!focused_directory || !root_path || is_processing) return;
+      if (
+        !focused_directory ||
+        !file_tree ||
+        !focused_subtree ||
+        !root_path ||
+        is_processing
+      )
+        return;
       is_processing = true;
       await add_new_folder(
         file_tree,

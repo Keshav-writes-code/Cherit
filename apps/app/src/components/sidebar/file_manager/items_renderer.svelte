@@ -17,7 +17,7 @@
     on_move,
   }: {
     opened_filenode: FileNode | undefined;
-    file_tree: FileNode[];
+    file_tree: FileNode[] | undefined;
     root_path: GenericPath | undefined;
     collapsed_state: boolean;
     focused_directory: string | undefined;
@@ -94,7 +94,7 @@
   }
 </script>
 
-{#if root_path && file_tree.length}
+{#if root_path && file_tree}
   <ul
     ondragover={(e) => {
       if (typeof root_path === 'string' && e.currentTarget === e.target) {
@@ -122,10 +122,18 @@
           {@render file_button(node, file_tree)}
         {/if}
       </li>
+    {:else}
+      <div
+        class="color-purple/60 i-tabler:file-text-spark size-15 mx-auto mt-20"
+      ></div>
+      <p class="text-base-content/40 text-pretty text-center mt-2 px-13">
+        created notes will show up here
+      </p>
     {/each}
 
-
+    {#if file_tree.length}
       {@render focus_directory_button(file_tree[0].path, file_tree)}
+    {/if}
     <button
       aria-label="Set Focus to root"
       class="min-h-30% grow"
@@ -136,12 +144,12 @@
     >
     </button>
   </ul>
-{:else if !file_tree.length}
+{:else if !file_tree}
   <div
-    class="color-purple/60 i-tabler:file-text-spark size-15 mx-auto mt-20"
+    class="color-[color-mix(in_srgb,var(--color-secondary)_50%,black)] i-tabler:folder-question size-15 mx-auto mt-20"
   ></div>
   <p class="text-base-content/40 text-pretty text-center mt-2 px-13">
-    created notes will show up here
+    Select a folder to get started
   </p>
 {/if}
 
