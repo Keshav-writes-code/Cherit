@@ -41,12 +41,11 @@ export async function move_node(
 }
 
 export async function add_new_note(
-  tree: FileNode[],
+  subtree: FileNode[],
   focused_path: string,
-  { path: root_path, document_top_tree_uri }: GenericPath,
-  subtree: FileNode[]
+  { path: root_path, document_top_tree_uri }: GenericPath
 ) {
-  let name = find_unused_name('Untitled', focused_path, root_path, tree, false);
+  let name = find_unused_name('Untitled', subtree, false);
   let new_file_path;
   if (current_platform == 'android') {
     await AndroidFs.createNewFile(
@@ -67,12 +66,11 @@ export async function add_new_note(
   });
 }
 export async function add_new_folder(
-  tree: FileNode[],
+  subtree: FileNode[],
   focused_path: string,
-  { path: root_path, document_top_tree_uri }: GenericPath,
-  subtree: FileNode[]
+  { path: root_path, document_top_tree_uri }: GenericPath
 ) {
-  let name = find_unused_name('Untitled', focused_path, root_path, tree, true);
+  let name = find_unused_name('Untitled', subtree, true);
   let new_file_path;
 
   if (current_platform == 'android') {

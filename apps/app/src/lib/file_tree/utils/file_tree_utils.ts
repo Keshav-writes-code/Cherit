@@ -1,38 +1,15 @@
 import { type FileNode } from '@/types';
 export function find_unused_name(
   base_name: string,
-  parent_path: string,
-  root_path: string,
-  tree: FileNode[],
+  subtree: FileNode[],
   is_directory: boolean
 ): string {
   let i = 0;
-  while (exists(parent_path, base_name, root_path, is_directory, tree))
+  while (
+    subtree.some((n) => n.name === base_name && n.is_directory === is_directory)
+  )
     base_name = `Untitled ${++i}`;
   return base_name;
-}
-export function exists(
-  focused_path: string,
-  node_name: string,
-  root_path: string,
-  is_directory: boolean,
-  tree: FileNode[]
-): boolean {
-  const stack: FileNode[] = [
-    { name: '', path: root_path, is_directory: true, children: tree },
-  ];
-  while (stack.length) {
-    const node = stack.pop()!;
-    if (node.path === focused_path)
-      return (
-        node.is_directory &&
-        node.children.some(
-          (c) => c.name === node_name && c.is_directory === is_directory
-        )
-      );
-    if (node.is_directory && node.children.length) stack.push(...node.children);
-  }
-  return false;
 }
 export function sort_file_tree(nodes: FileNode[]): FileNode[] {
   // Sort array in-place
