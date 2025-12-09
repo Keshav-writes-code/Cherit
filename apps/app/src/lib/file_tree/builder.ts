@@ -1,6 +1,6 @@
 import { readDir, type DirEntry } from '@tauri-apps/plugin-fs';
 import { type FileNode, type GenericPath } from '@/types';
-import { current_platform } from '@/misc_global_states.svelte';
+import { current_platform } from '@/lib/misc_global_states.svelte';
 import {
   AndroidFs,
   type AndroidEntryMetadataWithUri,

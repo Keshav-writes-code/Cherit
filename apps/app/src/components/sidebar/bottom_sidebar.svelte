@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { root_folder_picker_dialog_state } from '@/misc_global_states.svelte';
+  import { root_folder_picker_dialog_state } from '@/lib/misc_global_states.svelte';
   import type { GenericPath } from '@/types';
   let { root_path }: { root_path: GenericPath | undefined } = $props();
 </script>

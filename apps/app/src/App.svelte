@@ -6,7 +6,7 @@
   import GlobalContextMenu from '@/components/context_menu/index.svelte';
   import type { FileNode, GenericPath } from '@/types';
   import { Toaster } from 'svelte-sonner';
-  import { current_platform_type } from './misc_global_states.svelte';
+  import { current_platform_type } from '@/lib/misc_global_states.svelte';
 
   // NOTE: GLobal Variables
   let root_path: GenericPath | undefined = $state();

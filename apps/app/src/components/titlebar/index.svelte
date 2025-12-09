@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { current_platform_type } from '@/misc_global_states.svelte';
+  import { current_platform_type } from '@/lib/misc_global_states.svelte';
   import { getCurrentWindow } from '@tauri-apps/api/window';
   import Breadcrumb from '@/components/breadcrumb_path/index.svelte';
   import type { FileNode, GenericPath } from '@/types';

@@ -5,7 +5,7 @@
     current_platform,
     current_platform_type,
     root_folder_picker_dialog_state,
-  } from '@/misc_global_states.svelte';
+  } from '@/lib/misc_global_states.svelte';
   import type { GenericPath } from '@/types';
   import { open } from '@tauri-apps/plugin-dialog';
   import { LazyStore } from '@tauri-apps/plugin-store';

@@ -1,6 +1,6 @@
 import { create, mkdir, rename } from '@tauri-apps/plugin-fs';
 import { type FileNode, type GenericPath } from '@/types';
-import { current_platform } from '@/misc_global_states.svelte';
+import { current_platform } from '@/lib/misc_global_states.svelte';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
 import { exists, find_unused_name } from './utils';
 

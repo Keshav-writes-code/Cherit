@@ -1,4 +1,4 @@
-import { current_platform } from '@/misc_global_states.svelte';
+import { current_platform } from '@/lib/misc_global_states.svelte';
 import { type FileNode, type GenericPath } from '@/types';
 export const get_parent_path = (p: string) => {
   const s = p.startsWith('content://') ? '%2F' : '/';
