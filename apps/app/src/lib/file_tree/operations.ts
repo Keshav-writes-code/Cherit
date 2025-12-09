@@ -3,37 +3,6 @@ import { type FileNode, type GenericPath } from '@/types';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
 import { current_platform, find_unused_name, join_path, SEP } from './utils';
 
-export function insert_node_in_place(
-  roots: FileNode[],
-  new_node: FileNode,
-  offset: string = ''
-): FileNode {
-  const rel_path = new_node.path.startsWith(offset)
-    ? new_node.path.slice(offset.length)
-    : new_node.path;
-  const parts = rel_path.split(SEP).filter(Boolean).slice(0, -1);
-  let level = roots;
-  let current_path = offset;
-  for (const part of parts) {
-    current_path = join_path(current_path, part);
-    let node = level.find(
-      (n) => n.is_directory && n.name === decodeURIComponent(part)
-    );
-    if (!node)
-      level.push(
-        (node = {
-          name: part,
-          path: current_path,
-          is_directory: true,
-          children: [],
-        })
-      );
-    level = node.children;
-  }
-  level.push(new_node);
-  return new_node;
-}
-
 export async function move_node(
   node: FileNode,
   new_parent_path: string,
@@ -74,7 +43,8 @@ export async function move_node(
 export async function add_new_note(
   tree: FileNode[],
   focused_path: string,
-  { path: root_path, document_top_tree_uri }: GenericPath
+  { path: root_path, document_top_tree_uri }: GenericPath,
+  subtree: FileNode[]
 ) {
   let name = find_unused_name('Untitled', focused_path, root_path, tree, false);
   let new_file_path;
@@ -89,21 +59,18 @@ export async function add_new_note(
     new_file_path = join_path(focused_path, name + '.md');
     await create(new_file_path);
   }
-  insert_node_in_place(
-    tree,
-    {
-      name,
-      path: new_file_path,
-      is_directory: false,
-      children: [],
-    },
-    root_path
-  );
+  subtree.push({
+    name,
+    path: new_file_path,
+    is_directory: false,
+    children: [],
+  });
 }
 export async function add_new_folder(
   tree: FileNode[],
   focused_path: string,
-  { path: root_path, document_top_tree_uri }: GenericPath
+  { path: root_path, document_top_tree_uri }: GenericPath,
+  subtree: FileNode[]
 ) {
   let name = find_unused_name('Untitled', focused_path, root_path, tree, true);
   let new_file_path;
@@ -118,14 +85,10 @@ export async function add_new_folder(
     new_file_path = join_path(focused_path, name);
     await mkdir(new_file_path);
   }
-  insert_node_in_place(
-    tree,
-    {
-      name,
-      path: new_file_path,
-      is_directory: true,
-      children: [],
-    },
-    root_path
-  );
+  subtree.push({
+    name,
+    path: new_file_path,
+    is_directory: true,
+    children: [],
+  });
 }

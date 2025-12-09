@@ -9,6 +9,7 @@
   let {
     opened_filenode = $bindable(),
     focused_directory = $bindable(),
+    focused_subtree = $bindable(),
     file_tree,
     root_path,
     collapsed_state,
@@ -21,6 +22,7 @@
     collapsed_state: boolean;
     focused_directory: string | undefined;
     hover_newnode_button: boolean;
+    focused_subtree: FileNode[] | undefined;
     on_move: (node: FileNode, new_parent_path: string) => void;
   } = $props();
 
@@ -117,17 +119,20 @@
         {#if node.is_directory}
           {@render folder_item_expandable(node)}
         {:else}
-          {@render file_button(node)}
+          {@render file_button(node, file_tree)}
         {/if}
       </li>
     {/each}
 
-    {@render focus_directory_button(file_tree[0].path)}
 
+      {@render focus_directory_button(file_tree[0].path, file_tree)}
     <button
       aria-label="Set Focus to root"
       class="min-h-30% grow"
-      onclick={() => (focused_directory = root_path.path)}
+      onclick={() => {
+        focused_directory = root_path.path;
+        focused_subtree = file_tree;
+      }}
     >
     </button>
   </ul>
@@ -140,11 +145,14 @@
   </p>
 {/if}
 
-{#snippet focus_directory_button(path: string)}
+{#snippet focus_directory_button(path: string, subtree: FileNode[])}
   <button
     aria-label="Set focused directory"
     class=" w-2 flex hover:bg-accent absolute start--1.75 top-3 bottom-3 transition-all rounded-0.7"
-    onclick={() => (focused_directory = get_parent_path(path))}
+    onclick={() => {
+      focused_directory = get_parent_path(path);
+      focused_subtree = subtree;
+    }}
   >
     <span
       class="w-1px h-full m-auto transition-all
@@ -191,11 +199,11 @@
           {#if node.is_directory}
             {@render folder_item_expandable(node)}
           {:else}
-            {@render file_button(node)}
+            {@render file_button(node, nodes)}
           {/if}
         </li>
       {/each}
-      {@render focus_directory_button(nodes[0].path)}
+      {@render focus_directory_button(nodes[0].path, nodes)}
     </ul>
   {/if}
 {/snippet}
@@ -226,6 +234,7 @@
       expanded_state[node.path] = !expanded_state[node.path];
       if (e.target === e.currentTarget) {
         focused_directory = node.path;
+        focused_subtree = node.children;
       }
     }}
     onkeydown={(e: KeyboardEvent) => {
@@ -237,7 +246,7 @@
   </summary>
 {/snippet}
 
-{#snippet file_button(node: FileNode)}
+{#snippet file_button(node: FileNode, subtree: FileNode[])}
   <button
     draggable="true"
     ondragstart={(e) => handle_drag_start(e, node)}
@@ -250,6 +259,7 @@
       opened_filenode = node;
       if (e.target === e.currentTarget) {
         focused_directory = get_parent_path(node.path);
+        focused_subtree = subtree;
       }
     }}
   >

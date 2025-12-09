@@ -8,6 +8,7 @@
     hover_newnode_button = $bindable(),
     root_path,
     focused_directory,
+    focused_subtree,
   }: {
     collapsed_state: boolean;
     file_tree: FileNode[];
@@ -15,6 +16,7 @@
     focused_directory: string | undefined;
     opened_filenode: FileNode | undefined;
     hover_newnode_button: boolean;
+    focused_subtree: FileNode[] | undefined;
   } = $props();
   let is_processing = $state(false);
 </script>
@@ -31,7 +33,12 @@
     onclick={async () => {
       if (!focused_directory || !root_path || is_processing) return;
       is_processing = true;
-      await add_new_note(file_tree, focused_directory, root_path);
+      await add_new_note(
+        file_tree,
+        focused_directory,
+        root_path,
+        focused_subtree
+      );
       is_processing = false;
     }}
     ><div class="i-tabler:edit size-5"></div>
@@ -45,7 +52,12 @@
     onclick={async () => {
       if (!focused_directory || !root_path || is_processing) return;
       is_processing = true;
-      await add_new_folder(file_tree, focused_directory, root_path);
+      await add_new_folder(
+        file_tree,
+        focused_directory,
+        root_path,
+        focused_subtree
+      );
       is_processing = false;
     }}
     ><div class="i-tabler:folder-plus size-5"></div>

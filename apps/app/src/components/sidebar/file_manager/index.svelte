@@ -19,6 +19,8 @@
   let file_tree: FileNode[] = $state([]);
   let prev_root_folder: GenericPath | undefined = $state();
   let focused_directory: string | undefined = $derived(root_path?.path);
+  let focused_subtree: FileNode[] = $derived(file_tree);
+
   $effect(() => {
     sort_file_tree(file_tree);
   });
@@ -46,11 +48,13 @@
     bind:hover_newnode_button
     {focused_directory}
     {root_path}
+    {focused_subtree}
     bind:file_tree
   />
   <ItemsRender
     bind:opened_filenode
     bind:focused_directory
+    bind:focused_subtree
     {hover_newnode_button}
     {collapsed_state}
     {file_tree}
