@@ -1,7 +1,7 @@
 import { create, mkdir, rename } from '@tauri-apps/plugin-fs';
 import { type FileNode, type GenericPath } from '@/types';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
-import { current_platform, find_unused_name } from './utils';
+import { current_platform, find_unused_name, join_path, SEP } from './utils';
 
 export function insert_node_in_place(
   roots: FileNode[],
@@ -11,18 +11,11 @@ export function insert_node_in_place(
   const rel_path = new_node.path.startsWith(offset)
     ? new_node.path.slice(offset.length)
     : new_node.path;
-  const parts = rel_path
-    .split(/(?:%2F|[/\\])/)
-    .filter(Boolean)
-    .slice(0, -1);
+  const parts = rel_path.split(SEP).filter(Boolean).slice(0, -1);
   let level = roots;
   let current_path = offset.replace(/(?:%2F|[/\\])+$/, '');
   for (const part of parts) {
-    if (current_platform === 'android') {
-      current_path += '%2F' + encodeURIComponent(part);
-    } else {
-      current_path += '/' + part;
-    }
+    current_path = join_path(current_path, part);
     let node = level.find(
       (n) => n.is_directory && n.name === decodeURIComponent(part)
     );
@@ -47,7 +40,7 @@ export async function move_node(
   tree: FileNode[]
 ) {
   const new_path = new_parent_path
-    ? `${new_parent_path}/${node.name}`
+    ? join_path(new_parent_path, node.name)
     : node.name;
 
   await rename(node.path, new_path);
@@ -61,7 +54,7 @@ export async function move_node(
 
   const update = (n: FileNode, p: string) => {
     n.path = p;
-    n.children.forEach((c) => update(c, `${p}/${c.name}`));
+    n.children.forEach((c) => update(c, join_path(p, c.name)));
   };
   update(node, new_path);
 
@@ -93,8 +86,8 @@ export async function add_new_note(
     );
     new_file_path = focused_path + encodeURIComponent(`/${name}.md`);
   } else {
-    await create(`${focused_path}/${name}.md`);
-    new_file_path = `${focused_path}/${name}.md`;
+    new_file_path = join_path(focused_path, name + '.md');
+    await create(new_file_path);
   }
   insert_node_in_place(
     tree,
@@ -122,8 +115,8 @@ export async function add_new_folder(
     );
     new_file_path = focused_path + encodeURIComponent(`/${name}`);
   } else {
-    await mkdir(`${focused_path}/${name}`);
-    new_file_path = `${focused_path}/${name}`;
+    new_file_path = join_path(focused_path, name);
+    await mkdir(new_file_path);
   }
   insert_node_in_place(
     tree,

@@ -13,7 +13,7 @@ const PLATFORM_TYPE_MAP = {
   windows: 'desktop',
 } as const;
 
-export const PATH_SEPARATOR = {
+export const PATH_SEPARATOR_MAPPINGS = {
   linux: '/',
   macos: '/',
   ios: '/',
@@ -22,7 +22,7 @@ export const PATH_SEPARATOR = {
   netbsd: '/',
   openbsd: '/',
   solaris: '/',
-  android: '%2F', // URL-encoded slash
+  android: '%2F',
   windows: '\\',
 } as const satisfies Record<Platform, string>;
 
@@ -30,9 +30,18 @@ export const current_platform = platform();
 export const current_platform_type: 'desktop' | 'mobile' =
   PLATFORM_TYPE_MAP[current_platform as keyof typeof PLATFORM_TYPE_MAP];
 
+export const SEP = PATH_SEPARATOR_MAPPINGS[current_platform];
+
+/**
+ * Joins multiple path segments using the platform-specific separator.
+ * Just concatinates path you give it with Seperator, nothing else
+ */
+export function join_path(...parts: string[]) {
+  return parts.join(SEP);
+}
+
 export const get_parent_path = (p: string) => {
-  const s = current_platform == 'android' ? '%2F' : '/';
-  return p.slice(0, Math.max(0, p.lastIndexOf(s))) || (s === '/' ? '/' : p);
+  return p.slice(0, Math.max(0, p.lastIndexOf(SEP))) || (SEP === '/' ? '/' : p);
 };
 export function get_relative_path_parts(
   path: string,
