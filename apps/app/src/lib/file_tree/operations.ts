@@ -13,7 +13,7 @@ export function insert_node_in_place(
     : new_node.path;
   const parts = rel_path.split(SEP).filter(Boolean).slice(0, -1);
   let level = roots;
-  let current_path = offset.replace(/(?:%2F|[/\\])+$/, '');
+  let current_path = offset;
   for (const part of parts) {
     current_path = join_path(current_path, part);
     let node = level.find(
