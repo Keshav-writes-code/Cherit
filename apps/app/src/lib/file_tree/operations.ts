@@ -23,7 +23,7 @@ export function insert_node_in_place(
       level.push(
         (node = {
           name: part,
-          path: current_platform,
+          path: current_path,
           is_directory: true,
           children: [],
         })
