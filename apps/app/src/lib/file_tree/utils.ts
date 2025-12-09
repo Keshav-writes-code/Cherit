@@ -1,9 +1,18 @@
 import { current_platform } from '@/misc_global_states.svelte';
 import { type FileNode, type GenericPath } from '@/types';
 export const get_parent_path = (p: string) => {
-  const s = p.startsWith('content://') ? '%2F' : '/';
-  const c = p.endsWith(s) ? p.slice(0, -s.length) : p;
-  return c.slice(0, Math.max(0, c.lastIndexOf(s))) || (s === '/' ? '/' : p);
+  const s =
+    p.startsWith('content://') || current_platform !== 'windows' ? '/' : '\\';
+  const sep = p.startsWith('content://') ? '%2F' : s;
+  const c = p.endsWith(sep) ? p.slice(0, -sep.length) : p;
+  const idx = c.lastIndexOf(sep);
+  if (idx === -1) {
+    if (sep === '\\' && /^[a-zA-Z]:$/.test(c)) return c + '\\';
+    return sep === '/' ? '/' : p;
+  }
+  const parent = c.slice(0, idx);
+  if (sep === '\\' && /^[a-zA-Z]:$/.test(parent)) return parent + '\\';
+  return parent || (sep === '/' ? '/' : p);
 };
 
 export function find_unused_name(

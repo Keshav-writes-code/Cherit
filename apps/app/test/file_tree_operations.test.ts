@@ -88,5 +88,33 @@ describe('file_tree/operations', () => {
         expect(roots[0].children[0].name).toBe('b');
         expect(roots[0].children[0].children[0]).toBe(node);
     });
+
+    it('handles windows paths correctly', () => {
+        mocks.current_platform = 'windows';
+        const roots: FileNode[] = [];
+        const rootPath = 'C:\\';
+        const nodePath = 'C:\\a\\b\\file.txt';
+        const node: FileNode = { name: 'file.txt', path: nodePath, is_directory: false, children: [] };
+
+        insert_node_in_place(roots, node, rootPath);
+
+        expect(roots).toHaveLength(1);
+        expect(roots[0].name).toBe('a');
+        expect(roots[0].path).toBe('C:\\a');
+
+        expect(roots[0].children).toHaveLength(1);
+        expect(roots[0].children[0].name).toBe('b');
+        expect(roots[0].children[0].path).toBe('C:\\a\\b');
+    });
+
+    it('handles macos paths correctly', () => {
+        mocks.current_platform = 'macos';
+        const roots: FileNode[] = [];
+        const node: FileNode = { name: 'file', path: '/Users/me/file', is_directory: false, children: [] };
+        insert_node_in_place(roots, node, '/Users/me');
+
+        expect(roots).toHaveLength(1);
+        expect(roots[0]).toBe(node);
+    });
   });
 });

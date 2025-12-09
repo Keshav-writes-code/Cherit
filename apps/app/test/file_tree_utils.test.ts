@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   get_parent_path,
   sort_file_tree,
@@ -7,30 +7,53 @@ import {
   find_unused_name,
 } from '@/lib/file_tree/utils';
 import type { FileNode } from '@/types';
-import { vi } from 'vitest';
+
+// Dynamic mock for current_platform
+const mocks = vi.hoisted(() => {
+  return {
+    current_platform: 'linux',
+  };
+});
 
 vi.mock('@/misc_global_states.svelte', () => ({
-  current_platform: 'linux',
+  get current_platform() {
+    return mocks.current_platform;
+  }
 }));
 
 describe('file_tree/utils', () => {
+  beforeEach(() => {
+    mocks.current_platform = 'linux';
+  });
+
   describe('get_parent_path', () => {
     it('returns parent path for normal path', () => {
       expect(get_parent_path('/a/b/c')).toBe('/a/b');
       expect(get_parent_path('/a')).toBe('/');
     });
 
+    it('returns parent path for windows path', () => {
+      mocks.current_platform = 'windows';
+      expect(get_parent_path('C:\\a\\b\\c')).toBe('C:\\a\\b');
+      expect(get_parent_path('C:\\a')).toBe('C:\\');
+    });
+
     it('returns root for root path', () => {
       expect(get_parent_path('/')).toBe('/');
+
+      mocks.current_platform = 'windows';
+      expect(get_parent_path('C:\\')).toBe('C:\\');
     });
 
     it('handles android content paths', () => {
+      mocks.current_platform = 'android';
       const base = 'content://com.android.externalstorage.documents/tree/primary%3A/document/primary%3ADocuments';
       const child = `${base}%2Ftest`;
       expect(get_parent_path(child)).toBe(base);
     });
 
     it('handles root android path', () => {
+      mocks.current_platform = 'android';
       const base = 'content://com.android.externalstorage.documents/tree/primary%3A';
       expect(get_parent_path(base)).toBe(base);
     });

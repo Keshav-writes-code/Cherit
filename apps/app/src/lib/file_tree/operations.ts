@@ -21,6 +21,8 @@ export function insert_node_in_place(
   for (const part of parts) {
     if (current_platform === 'android') {
       current_path += '%2F' + encodeURIComponent(decodeURIComponent(part));
+    } else if (current_platform === 'windows') {
+      current_path += '\\' + part;
     } else {
       current_path += '/' + part;
     }
