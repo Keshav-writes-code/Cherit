@@ -7,7 +7,7 @@
     class: classes = 'text-xs',
   }: {
     filenode: FileNode | undefined;
-    root_path: GenericPath;
+    root_path: GenericPath | undefined;
     class?: string;
   } = $props();
 
