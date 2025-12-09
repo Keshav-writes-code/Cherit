@@ -16,6 +16,7 @@
     opened_filenode: FileNode | undefined;
     hover_newnode_button: boolean;
   } = $props();
+  let is_processing = $state(false);
 </script>
 
 <div
@@ -28,20 +29,24 @@
     onmouseenter={() => (hover_newnode_button = true)}
     onmouseleave={() => (hover_newnode_button = false)}
     onclick={async () => {
-      if (!focused_directory || !root_path) return;
+      if (!focused_directory || !root_path || is_processing) return;
+      is_processing = true;
       await add_new_note(file_tree, focused_directory, root_path);
+      is_processing = false;
     }}
     ><div class="i-tabler:edit size-5"></div>
   </button>
   <button
     aria-label="New Folder Button"
     class="btn btn-ghost hover:bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] btn-sm max-h-none p-1"
+    disabled={!focused_directory}
     onmouseenter={() => (hover_newnode_button = true)}
     onmouseleave={() => (hover_newnode_button = false)}
     onclick={async () => {
-      if (!focused_directory || !root_path) return;
-
+      if (!focused_directory || !root_path || is_processing) return;
+      is_processing = true;
       await add_new_folder(file_tree, focused_directory, root_path);
+      is_processing = false;
     }}
     ><div class="i-tabler:folder-plus size-5"></div>
   </button>
