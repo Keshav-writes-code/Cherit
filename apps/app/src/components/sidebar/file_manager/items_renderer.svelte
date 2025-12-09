@@ -117,7 +117,7 @@
     {#each file_tree as node (node.path)}
       <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
         {#if node.is_directory}
-          {@render folder_item_expandable(node)}
+          {@render folder_node(node)}
         {:else}
           {@render file_button(node, file_tree)}
         {/if}
@@ -172,7 +172,7 @@
   </button>
 {/snippet}
 
-{#snippet folder_item_expandable(node: FileNode)}
+{#snippet folder_node(node: FileNode)}
   {@const is_focused_and_collapsed_and_hover =
     expanded_state[node.path] === false &&
     node.path === focused_directory &&
@@ -186,12 +186,12 @@
   >
     {@render folder_button(node, is_focused_and_collapsed_and_hover)}
     {#if expanded_nodes_ever[node.path] || false || !collapsed_state}
-      {@render folder_node(node.children, node.path)}
+      {@render folder_content(node.children, node.path)}
     {/if}
   </details>
 {/snippet}
 
-{#snippet folder_node(nodes: FileNode[], parent_path: string)}
+{#snippet folder_content(nodes: FileNode[], parent_path: string)}
   {#if nodes.length}
     <ul
       ondragover={(e) => handle_drag_over(e, parent_path)}
@@ -205,7 +205,7 @@
       {#each nodes as node (node.path)}
         <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
           {#if node.is_directory}
-            {@render folder_item_expandable(node)}
+            {@render folder_node(node)}
           {:else}
             {@render file_button(node, nodes)}
           {/if}
