@@ -4,7 +4,7 @@
   import type { FileNode, GenericPath } from '@/types';
   import Prosemark from './prosemark.svelte';
   import { toast } from 'svelte-sonner';
-  import { current_platform_type } from '@/lib/misc_global_states.svelte';
+  import { current_platform_type } from '@/lib/file_tree';
   let {
     filenode = $bindable(),
     root_path,

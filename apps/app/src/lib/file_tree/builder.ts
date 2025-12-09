@@ -1,11 +1,11 @@
 import { readDir, type DirEntry } from '@tauri-apps/plugin-fs';
 import { type FileNode, type GenericPath } from '@/types';
-import { current_platform } from '@/lib/misc_global_states.svelte';
 import {
   AndroidFs,
   type AndroidEntryMetadataWithUri,
 } from 'tauri-plugin-android-fs-api';
 import { join } from '@tauri-apps/api/path';
+import { current_platform } from './utils';
 
 export async function build_file_tree_from_fs({
   path,

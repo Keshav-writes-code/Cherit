@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { get_relative_path_parts } from '@/lib/file_tree';
-  import { check_recent_path_schema } from '@/lib/user_activity';
   import {
     current_platform,
     current_platform_type,
-    root_folder_picker_dialog_state,
-  } from '@/lib/misc_global_states.svelte';
+    get_relative_path_parts,
+  } from '@/lib/file_tree';
+  import { check_recent_path_schema } from '@/lib/user_activity';
+  import { root_folder_picker_dialog_state } from '@/lib/misc_global_states.svelte';
   import type { GenericPath } from '@/types';
   import { open } from '@tauri-apps/plugin-dialog';
   import { LazyStore } from '@tauri-apps/plugin-store';

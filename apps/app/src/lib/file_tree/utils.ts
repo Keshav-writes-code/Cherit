@@ -1,10 +1,26 @@
-import { current_platform } from '@/lib/misc_global_states.svelte';
-import { type FileNode, type GenericPath } from '@/types';
+import { platform } from '@tauri-apps/plugin-os';
+import { type FileNode } from '@/types';
+const PLATFORM_TYPE_MAP = {
+  linux: 'desktop',
+  macos: 'desktop',
+  ios: 'mobile',
+  freebsd: 'desktop',
+  dragonfly: 'desktop',
+  netbsd: 'desktop',
+  openbsd: 'desktop',
+  solaris: 'desktop',
+  android: 'mobile',
+  windows: 'desktop',
+} as const;
+
+export const current_platform = platform();
+export const current_platform_type: 'desktop' | 'mobile' =
+  PLATFORM_TYPE_MAP[current_platform as keyof typeof PLATFORM_TYPE_MAP];
+
 export const get_parent_path = (p: string) => {
   const s = current_platform == 'android' ? '%2F' : '/';
   return p.slice(0, Math.max(0, p.lastIndexOf(s))) || (s === '/' ? '/' : p);
 };
-
 export function find_unused_name(
   base_name: string,
   parent_path: string,
