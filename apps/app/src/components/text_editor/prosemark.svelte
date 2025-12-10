@@ -17,12 +17,13 @@
   let {
     text_content,
     write_to_file,
+    editor_view = $bindable(),
   }: {
     text_content: string | undefined;
+    editor_view: EditorView | undefined;
     write_to_file: (markdown_content_state: string) => void;
   } = $props();
   let element: HTMLDivElement | undefined = $state();
-  let editor: EditorView | undefined = $state();
   let is_contents_changed = $state(false);
   $effect(() => {
     let newEditor: EditorView | undefined;
@@ -51,7 +52,7 @@
         ],
       });
     }
-    editor = newEditor;
+    editor_view = newEditor;
 
     return () => {
       newEditor?.destroy();
@@ -62,8 +63,8 @@
 <div
   bind:this={element}
   onfocusout={() => {
-    if (!editor || !is_contents_changed) return;
-    write_to_file(editor.state.doc.toString());
+    if (!editor_view || !is_contents_changed) return;
+    write_to_file(editor_view.state.doc.toString());
     is_contents_changed = false;
   }}
   class="pb-50vh"

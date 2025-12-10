@@ -5,6 +5,8 @@
   import Prosemark from './prosemark.svelte';
   import { toast } from 'svelte-sonner';
   import { current_platform_type } from '@/lib/file_tree';
+  import { type EditorView } from '@codemirror/view';
+
   let {
     filenode = $bindable(),
     root_path,
@@ -15,6 +17,7 @@
   let text_content: string | undefined = $state();
   let current_file_name: string | undefined = $state();
   let is_file_named_changed: boolean = $state(false);
+  let editor_view: EditorView | undefined = $state();
 
   $effect(() => {
     if (!filenode) return;
@@ -39,6 +42,7 @@
   <div class="max-w-170 w-full font-sans">
     <input
       type="text"
+      id="note_file_name_input"
       oninput={(e) => {
         current_file_name = current_file_name?.replace(
           /[^A-Za-z0-9 _.\-()]/g,
@@ -60,12 +64,19 @@
           if (e instanceof Error) toast.error(e.message);
         }
       }}
+      onkeydown={async (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (editor_view) editor_view.focus();
+        }
+      }}
       bind:value={current_file_name}
       class="w-full outline-none b-0 focus:ring-0 mb-16 mt-10 font-semibold text-5xl"
     />
 
     <Prosemark
       {text_content}
+      bind:editor_view
       write_to_file={(content) => {
         if (!filenode) return;
         writeTextFile(filenode?.path, content);

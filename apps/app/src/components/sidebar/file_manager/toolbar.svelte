@@ -40,8 +40,21 @@
       )
         return;
       is_processing = true;
-      await add_new_note(focused_subtree, focused_directory, root_path);
+      opened_filenode = await add_new_note(
+        focused_subtree,
+        focused_directory,
+        root_path
+      );
       is_processing = false;
+
+      const input: HTMLInputElement | null = document.getElementById(
+        'note_file_name_input'
+      ) as HTMLInputElement | null;
+      if (!input) return;
+      setTimeout(() => {
+        input.focus();
+        input.select();
+      }, 50);
     }}
     ><div class="i-tabler:edit size-5"></div>
   </button>

@@ -64,6 +64,9 @@ export async function add_new_note(
     is_directory: false,
     children: [],
   });
+  const node = subtree.find((n) => n.path === new_file_path);
+  if (!node) throw new Error('Failed to find the newly created note node.');
+  return node;
 }
 export async function add_new_folder(
   subtree: FileNode[],
