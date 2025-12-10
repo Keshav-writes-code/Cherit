@@ -150,15 +150,6 @@ async fn build_file_tree(
     Ok(nodes)
 }
 
-#[tauri::command]
-async fn sort_file_tree(nodes: Vec<FileNode>) -> Result<Vec<FileNode>, String> {
-    tauri::async_runtime::spawn_blocking(move || {
-        let mut n = nodes;
-        sort_nodes(&mut n);
-        Ok(n)
-    }).await.map_err(|e| e.to_string())?
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -167,7 +158,7 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_android_fs::init())
-        .invoke_handler(tauri::generate_handler![build_file_tree, sort_file_tree])
+        .invoke_handler(tauri::generate_handler![build_file_tree])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(

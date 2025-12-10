@@ -2,12 +2,13 @@
   import {
     build_file_tree_from_fs,
     move_node,
-    sort_file_tree,
+    sort_nodes,
   } from '@/lib/file_tree';
   import ItemsRender from './items_renderer.svelte';
   import { type FileNode, type GenericPath } from '@/types';
   import Toolbar from './toolbar.svelte';
   import { toast } from 'svelte-sonner';
+  import { untrack } from 'svelte';
   let {
     opened_filenode = $bindable(),
     root_path = $bindable(),
@@ -22,7 +23,8 @@
   let focused_subtree: FileNode[] | undefined = $derived(file_tree);
 
   $effect(() => {
-    if (file_tree) sort_file_tree(file_tree);
+    const subtree = untrack(() => focused_subtree);
+    if (file_tree && subtree) sort_nodes(subtree);
   });
 
   let collapsed_state: boolean = $state(true);
