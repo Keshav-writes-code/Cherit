@@ -47,8 +47,13 @@ fn build_tree_recursive_desktop(path_str: &str) -> std::io::Result<Vec<FileNode>
                     let mut children = Vec::new();
 
                     if is_directory {
-                        if let Ok(sub_children) = build_tree_recursive_desktop(&path) {
-                            children = sub_children;
+                        match build_tree_recursive_desktop(&path) {
+                            Ok(sub_children) => {
+                                children = sub_children;
+                            }
+                            Err(e) => {
+                                eprintln!("Failed to read subdirectory '{}': {}", path, e);
+                            }
                         }
                     }
 
