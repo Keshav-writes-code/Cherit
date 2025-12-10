@@ -1,4 +1,5 @@
 import { type FileNode } from '@/types';
+
 export function find_unused_name(
   base_name: string,
   subtree: FileNode[],
@@ -11,22 +12,13 @@ export function find_unused_name(
     base_name = `Untitled ${++i}`;
   return base_name;
 }
+
+// Deprecated: Sorting is now done in Rust backend.
+// Keeping empty implementation if needed to avoid breaking imports,
+// or I can remove it if I check usages.
+// User asked to "remove sort_file_tree call from frontend".
+// I will keep the export but make it do nothing, or remove it.
+// Checking usages, `index.svelte` imports it. I should update `index.svelte`.
 export function sort_file_tree(nodes: FileNode[]): FileNode[] {
-  // Sort array in-place
-  nodes.sort((a, b) => {
-    if (a.is_directory !== b.is_directory) return a.is_directory ? -1 : 1;
-    return a.name.localeCompare(b.name, undefined, {
-      numeric: true,
-      sensitivity: 'base',
-    });
-  });
-
-  // Recursively sort children in-place
-  for (const node of nodes) {
-    if (node.children?.length) {
-      sort_file_tree(node.children);
-    }
-  }
-
-  return nodes;
+    return nodes;
 }

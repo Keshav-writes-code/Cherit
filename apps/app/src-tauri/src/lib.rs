@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use tauri::Manager;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct FileNode {
@@ -9,16 +8,32 @@ pub struct FileNode {
     pub children: Vec<FileNode>,
 }
 
+fn sort_nodes(nodes: &mut Vec<FileNode>) {
+    nodes.sort_by(|a, b| {
+        if a.is_directory != b.is_directory {
+            return if a.is_directory {
+                std::cmp::Ordering::Less
+            } else {
+                std::cmp::Ordering::Greater
+            };
+        }
+        a.name.to_lowercase().cmp(&b.name.to_lowercase())
+    });
+
+    for node in nodes {
+        if !node.children.is_empty() {
+            sort_nodes(&mut node.children);
+        }
+    }
+}
+
 #[cfg(not(target_os = "android"))]
 fn build_tree_recursive_desktop(path_str: &str) -> std::io::Result<Vec<FileNode>> {
     use std::fs;
     let mut nodes = Vec::new();
-    // read_dir can fail if permission denied, just return empty? Or propagate error?
-    // Propagating is better.
     let entries = fs::read_dir(path_str)?;
 
     for entry in entries {
-        // Ignore errors for individual entries?
         if let Ok(entry) = entry {
             if let Ok(metadata) = entry.metadata() {
                 let file_name = entry.file_name().to_string_lossy().to_string();
@@ -32,7 +47,6 @@ fn build_tree_recursive_desktop(path_str: &str) -> std::io::Result<Vec<FileNode>
                     let mut children = Vec::new();
 
                     if is_directory {
-                        // Ignore permission errors in subdirectories by catching result
                         if let Ok(sub_children) = build_tree_recursive_desktop(&path) {
                             children = sub_children;
                         }
@@ -48,9 +62,6 @@ fn build_tree_recursive_desktop(path_str: &str) -> std::io::Result<Vec<FileNode>
             }
         }
     }
-    // Sort nodes?
-    // nodes.sort_by(|a, b| a.name.cmp(&b.name));
-    // Not explicitly requested, but good for UI.
     Ok(nodes)
 }
 
@@ -62,19 +73,24 @@ fn build_tree_recursive_android(
 ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Vec<FileNode>, String>> + Send>> {
     Box::pin(async move {
         use tauri_plugin_android_fs::AndroidFsExt;
+        use tauri_plugin_android_fs::FileUri;
+
         let api = app.android_fs();
-        let entries = api.read_dir(path.clone(), document_top_tree_uri.clone())
+
+        let json_obj = serde_json::json!({
+            "uri": path,
+            "documentTopTreeUri": document_top_tree_uri
+        });
+        let file_uri = FileUri::from_json_str(&json_obj.to_string())
+            .map_err(|e| format!("Failed to create FileUri: {}", e))?;
+
+        let entries = api.read_dir(&file_uri)
             .map_err(|e| e.to_string())?;
 
         let mut nodes = Vec::new();
         for entry in entries {
-            let name = entry.name.clone();
-            // Assuming entry has is_dir field or method.
-            // If it's `type` field like in JS, we need to check if it matches 'Dir'.
-            // Rust struct field likely `is_dir` (bool) or `kind` (enum).
-            // Trying `is_dir` as property. If it fails, maybe `is_dir()` method?
-            // Since we can't see the struct, we rely on standard Rust patterns.
-            let is_directory = entry.is_dir;
+            let name = entry.name().to_string();
+            let is_directory = entry.is_dir();
 
             let starts_with_dot = name.starts_with('.');
             let ends_with_md = name.ends_with(".md");
@@ -84,7 +100,11 @@ fn build_tree_recursive_android(
 
                 let mut children = Vec::new();
                 if is_directory {
-                     children = build_tree_recursive_android(app.clone(), path_uri.clone(), document_top_tree_uri.clone()).await?;
+                     children = build_tree_recursive_android(
+                        app.clone(),
+                        path_uri.clone(),
+                        document_top_tree_uri.clone()
+                    ).await?;
                 }
 
                 nodes.push(FileNode {
@@ -101,22 +121,33 @@ fn build_tree_recursive_android(
 
 #[tauri::command]
 async fn build_file_tree(
-    app: tauri::AppHandle,
+    _app: tauri::AppHandle,
     path: String,
-    document_top_tree_uri: Option<String>,
+    _document_top_tree_uri: Option<String>,
 ) -> Result<Vec<FileNode>, String> {
+    let nodes;
+
     #[cfg(target_os = "android")]
     {
-        build_tree_recursive_android(app, path, document_top_tree_uri).await
+        // On Android, we need the app handle and args.
+        // But we renamed arguments to start with _.
+        // We can use them directly.
+        let mut unsorted_nodes = build_tree_recursive_android(_app, path, _document_top_tree_uri).await?;
+        sort_nodes(&mut unsorted_nodes);
+        nodes = unsorted_nodes;
     }
 
     #[cfg(not(target_os = "android"))]
     {
-         tauri::async_runtime::spawn_blocking(move || {
-            build_tree_recursive_desktop(&path)
+        nodes = tauri::async_runtime::spawn_blocking(move || {
+            let mut n = build_tree_recursive_desktop(&path)?;
+            sort_nodes(&mut n);
+            Ok(n)
         }).await.map_err(|e| e.to_string())?
-          .map_err(|e| e.to_string())
+          .map_err(|e: std::io::Error| e.to_string())?;
     }
+
+    Ok(nodes)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
