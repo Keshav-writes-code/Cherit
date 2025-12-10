@@ -1,4 +1,6 @@
-import { type FileNode } from '@/types';
+import { invoke } from '@tauri-apps/api/core';
+import type { FileNode } from '@/types';
+import { toast } from 'svelte-sonner';
 
 export function find_unused_name(
   base_name: string,
@@ -13,12 +15,27 @@ export function find_unused_name(
   return base_name;
 }
 
-// Deprecated: Sorting is now done in Rust backend.
-// Keeping empty implementation if needed to avoid breaking imports,
-// or I can remove it if I check usages.
-// User asked to "remove sort_file_tree call from frontend".
-// I will keep the export but make it do nothing, or remove it.
-// Checking usages, `index.svelte` imports it. I should update `index.svelte`.
-export function sort_file_tree(nodes: FileNode[]): FileNode[] {
-    return nodes;
+let is_sorting = false;
+
+export async function sort_file_tree(nodes: FileNode[]) {
+    if (is_sorting) return;
+    is_sorting = true;
+    try {
+        const sorted = await invoke<FileNode[]>('sort_file_tree', { nodes });
+
+        // Only update if changes detected (simple JSON compare to avoid loops if strict equality not maintained)
+        // Optimization: checking only length and some properties might be faster but stringify is safest for now.
+        // Actually, if we just update, Svelte effect might run again.
+        // If sorting produces identical structure, stringify will match.
+
+        if (JSON.stringify(nodes) !== JSON.stringify(sorted)) {
+             nodes.length = 0;
+             nodes.push(...sorted);
+        }
+    } catch (e) {
+        toast.error('Failed to sort file tree: ' + e);
+        console.error(e);
+    } finally {
+        is_sorting = false;
+    }
 }
