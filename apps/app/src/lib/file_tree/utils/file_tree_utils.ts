@@ -1,4 +1,4 @@
-import type { FileNode } from '@/types';
+import { type FileNode } from '@/types';
 
 export function find_unused_name(
   base_name: string,
