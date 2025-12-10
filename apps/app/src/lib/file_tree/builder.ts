@@ -15,28 +15,3 @@ export async function build_file_tree_from_fs({
     throw error;
   }
 }
-
-// These functions are no longer needed but kept if needed for other parts of the app
-// or we can remove them if we are sure they are unused.
-// Based on the task, we are replacing the logic.
-// I'll comment them out or remove them if I'm sure.
-// The user said "replace it with the js build file tree function".
-// I'll keep the exports but empty or commented if I want to be safe, or just remove them.
-// "and replace it with the js build file tree function" -> Replace the implementation of `build_file_tree_from_fs`.
-// I'll remove the helper functions as they were only used by `build_file_tree_from_fs`.
-
-export async function transform_entries_to_filenode(
-  entries: any[],
-  base_dir_path: string
-): Promise<FileNode[]> {
-    // Deprecated: logic moved to Rust
-    return [];
-}
-
-export async function transform_android_entries_to_filenode(
-  entries: any[],
-  base_dir_path: string
-): Promise<FileNode[]> {
-    // Deprecated: logic moved to Rust
-    return [];
-}
