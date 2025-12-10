@@ -17,7 +17,9 @@ fn sort_nodes(nodes: &mut Vec<FileNode>) {
                 std::cmp::Ordering::Greater
             };
         }
-        a.name.to_lowercase().cmp(&b.name.to_lowercase())
+        // Use natural ordering with case-insensitive comparison
+        // to match TypeScript's localeCompare with numeric: true
+        natord::compare_ignore_case(&a.name, &b.name)
     });
 
     for node in nodes {
