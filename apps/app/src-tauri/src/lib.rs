@@ -121,18 +121,18 @@ fn build_tree_recursive_android(
 
 #[tauri::command]
 async fn build_file_tree(
-    _app: tauri::AppHandle,
+    app: tauri::AppHandle,
     path: String,
-    _document_top_tree_uri: Option<String>,
+    document_top_tree_uri: Option<String>,
 ) -> Result<Vec<FileNode>, String> {
     let nodes;
 
     #[cfg(target_os = "android")]
     {
         // On Android, we need the app handle and args.
-        // But we renamed arguments to start with _.
         // We can use them directly.
-        let mut unsorted_nodes = build_tree_recursive_android(_app, path, _document_top_tree_uri).await?;
+        // (Parameter names no longer start with _.)
+        let mut unsorted_nodes = build_tree_recursive_android(app, path, document_top_tree_uri).await?;
         sort_nodes(&mut unsorted_nodes);
         nodes = unsorted_nodes;
     }
