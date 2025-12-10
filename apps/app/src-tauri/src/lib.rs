@@ -100,7 +100,7 @@ fn build_tree_recursive_android(
 
                 let mut children = Vec::new();
                 if is_directory {
-                     children = build_tree_recursive_android(
+                    children = build_tree_recursive_android(
                         app.clone(),
                         path_uri.clone(),
                         document_top_tree_uri.clone()
