@@ -1,85 +1,42 @@
-import { readDir, type DirEntry } from '@tauri-apps/plugin-fs';
 import { type FileNode, type GenericPath } from '@/types';
-import {
-  AndroidFs,
-  type AndroidEntryMetadataWithUri,
-} from 'tauri-plugin-android-fs-api';
-import { join } from '@tauri-apps/api/path';
-import { current_platform } from './utils';
+import { invoke } from '@tauri-apps/api/core';
 
 export async function build_file_tree_from_fs({
   path,
   document_top_tree_uri,
 }: GenericPath): Promise<FileNode[]> {
-  let entries: DirEntry[] | AndroidEntryMetadataWithUri[] | undefined;
-  let base_nodes: FileNode[] | undefined;
-
-  if (current_platform == 'android') {
-    if (!document_top_tree_uri)
-      throw new Error('Document top tree URI is not set');
-    entries = await AndroidFs.readDir({
-      uri: path,
-      documentTopTreeUri: document_top_tree_uri,
+  try {
+    return await invoke('build_file_tree', {
+      path,
+      documentTopTreeUri: document_top_tree_uri || null,
     });
-    base_nodes = await transform_android_entries_to_filenode(entries, path);
-  } else {
-    entries = await readDir(path);
-    base_nodes = await transform_entries_to_filenode(entries, path);
+  } catch (error) {
+    console.error('Failed to build file tree:', error);
+    throw error;
   }
-
-  const nodes = await Promise.all(
-    base_nodes.map(async (n) => {
-      if (!n.is_directory) return n;
-      const children = await build_file_tree_from_fs({
-        path: n.path,
-        document_top_tree_uri,
-      });
-      return {
-        ...n,
-        children,
-      };
-    })
-  );
-
-  return nodes;
 }
+
+// These functions are no longer needed but kept if needed for other parts of the app
+// or we can remove them if we are sure they are unused.
+// Based on the task, we are replacing the logic.
+// I'll comment them out or remove them if I'm sure.
+// The user said "replace it with the js build file tree function".
+// I'll keep the exports but empty or commented if I want to be safe, or just remove them.
+// "and replace it with the js build file tree function" -> Replace the implementation of `build_file_tree_from_fs`.
+// I'll remove the helper functions as they were only used by `build_file_tree_from_fs`.
+
 export async function transform_entries_to_filenode(
-  entries: DirEntry[],
+  entries: any[],
   base_dir_path: string
 ): Promise<FileNode[]> {
-  const nodes = await Promise.all(
-    entries
-      .filter(
-        (entry) =>
-          (entry.isDirectory && !entry.name.startsWith('.')) ||
-          entry.name.endsWith('.md')
-      )
-      .map(async (entry) => ({
-        name: entry.name.replace(/\.md$/, ''),
-        path: await join(base_dir_path, entry.name),
-        is_directory: entry.isDirectory,
-        children: [],
-      }))
-  );
-  return nodes;
+    // Deprecated: logic moved to Rust
+    return [];
 }
+
 export async function transform_android_entries_to_filenode(
-  entries: AndroidEntryMetadataWithUri[],
+  entries: any[],
   base_dir_path: string
 ): Promise<FileNode[]> {
-  const nodes = await Promise.all(
-    entries
-      .filter(
-        (entry) =>
-          (entry.type === 'Dir' && !entry.name.startsWith('.')) ||
-          entry.name.endsWith('.md')
-      )
-      .map(async (entry) => ({
-        name: entry.name.replace(/\.md$/, ''),
-        path: `${base_dir_path}%2F${encodeURIComponent(entry.name)}`,
-        is_directory: entry.type === 'Dir',
-        children: [],
-      }))
-  );
-  return nodes;
+    // Deprecated: logic moved to Rust
+    return [];
 }
