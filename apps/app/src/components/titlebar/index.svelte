@@ -68,6 +68,7 @@
     <Breadcrumb class="h-min text-lg" {filenode} {root_path} />
     <div class="justify-self-end">
       <button
+        aria-label="menu button"
         class="  btn btn-ghost text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] min-h-none max-h-none h-full w-10 p-none"
       >
         <div
