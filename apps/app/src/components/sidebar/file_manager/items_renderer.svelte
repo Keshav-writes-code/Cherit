@@ -90,7 +90,6 @@
     dragged_node = null;
     drop_target = null;
   }
-  $inspect(file_tree.data);
 </script>
 
 {#if root_path.data && file_tree.data}
