@@ -1,19 +1,18 @@
 <script lang="ts">
   import { get_relative_path_parts } from '@/lib/file_tree';
-  import type { FileNode, GenericPath } from '@/types';
+  import { root_path } from '@/lib/states/ui_states.svelte';
+  import type { FileNode } from '@/types';
   let {
     filenode,
-    root_path,
     class: classes = 'text-xs',
   }: {
     filenode: FileNode | undefined;
-    root_path: GenericPath | undefined;
     class?: string;
   } = $props();
 
   let segments = $derived.by(() => {
-    if (!filenode || !root_path) return [];
-    const res = get_relative_path_parts(filenode.path, root_path.path);
+    if (!filenode || !root_path.data) return [];
+    const res = get_relative_path_parts(filenode.path, root_path.data.path);
     return res;
   });
 </script>

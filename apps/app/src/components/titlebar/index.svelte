@@ -1,14 +1,9 @@
 <script lang="ts">
   import { getCurrentWindow } from '@tauri-apps/api/window';
   import Breadcrumb from '@/components/breadcrumb_path/index.svelte';
-  import type { FileNode, GenericPath } from '@/types';
   import { current_platform_type } from '@/lib/file_tree';
+  import { opened_filenode } from '@/lib/states/ui_states.svelte';
 
-  const {
-    root_path,
-    filenode,
-  }: { root_path: GenericPath | undefined; filenode: FileNode | undefined } =
-    $props();
   const appWindow = getCurrentWindow();
 </script>
 
@@ -65,7 +60,7 @@
         class="i-tabler:layout-sidebar-filled color-[var(--color-primary)] size-7.5"
       ></div>
     </label>
-    <Breadcrumb class="h-min text-lg" {filenode} {root_path} />
+    <Breadcrumb class="h-min text-lg" filenode={opened_filenode.data} />
     <div class="justify-self-end">
       <button
         aria-label="menu button"

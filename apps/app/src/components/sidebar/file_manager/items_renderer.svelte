@@ -1,28 +1,26 @@
 <script lang="ts">
-  import type { FileNode, GenericPath } from '@/types';
+  import type { FileNode } from '@/types';
   import { blur, fly } from 'svelte/transition';
   import { backOut } from 'svelte/easing';
   import animatedDetails from 'svelte-animated-details';
   import { get_parent_path } from '@/lib/file_tree';
   import { context_menu } from '@/stores/context_menu.svelte';
+  import {
+    file_tree,
+    focused_subtree,
+    opened_filenode,
+    root_path,
+  } from '@/lib/states/ui_states.svelte';
 
   let {
-    opened_filenode = $bindable(),
     focused_directory = $bindable(),
-    focused_subtree = $bindable(),
-    file_tree,
-    root_path,
     collapsed_state,
     hover_newnode_button,
     on_move,
   }: {
-    opened_filenode: FileNode | undefined;
-    file_tree: FileNode[] | undefined;
-    root_path: GenericPath | undefined;
     collapsed_state: boolean;
     focused_directory: string | undefined;
     hover_newnode_button: boolean;
-    focused_subtree: FileNode[] | undefined;
     on_move: (node: FileNode, new_parent_path: string) => void;
   } = $props();
 
@@ -92,34 +90,35 @@
     dragged_node = null;
     drop_target = null;
   }
+  $inspect(file_tree.data);
 </script>
 
-{#if root_path && file_tree}
+{#if root_path.data && file_tree.data}
   <ul
     ondragover={(e) => {
-      if (typeof root_path === 'string' && e.currentTarget === e.target) {
-        handle_drag_over(e, root_path);
+      if (typeof root_path.data === 'string' && e.currentTarget === e.target) {
+        handle_drag_over(e, root_path.data);
       }
     }}
     ondrop={(e) => {
-      if (typeof root_path === 'string') handle_drop(e, root_path);
+      if (typeof root_path.data === 'string') handle_drop(e, root_path.data);
     }}
     onscroll={() => {
       context_menu.close();
     }}
     class="
-      {focused_directory == root_path.path &&
+      {focused_directory == root_path.data.path &&
       'shadow-[inset_0_0_0_1px_var(--color-accent)]'}
-      {drop_target === root_path.path &&
+      {drop_target === root_path.data?.path &&
       'bg-accent/10 outline-dashed outline-2 outline-accent'} 
       menu menu-sm h-full rounded-box relative w-full select-none overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide flex before:content-none flex-col gap-0.5 pt-0.5"
   >
-    {#each file_tree as node (node.path)}
+    {#each file_tree.data as node (node.path)}
       <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
         {#if node.is_directory}
           {@render folder_node(node)}
         {:else}
-          {@render file_button(node, file_tree)}
+          {@render file_button(node, file_tree.data)}
         {/if}
       </li>
     {:else}
@@ -135,13 +134,13 @@
       aria-label="Set Focus to root"
       class="min-h-30% grow"
       onclick={() => {
-        focused_directory = root_path.path;
-        focused_subtree = file_tree;
+        focused_directory = root_path.data?.path;
+        focused_subtree.set(file_tree.data);
       }}
     >
     </button>
   </ul>
-{:else if !file_tree}
+{:else if !file_tree.data}
   <div
     class="color-[color-mix(in_srgb,var(--color-secondary)_50%,black)] i-tabler:folder-question size-15 mx-auto mt-20"
   ></div>
@@ -156,7 +155,7 @@
     class=" w-2 flex hover:bg-accent absolute start--1.75 top-3 bottom-3 transition-all rounded-0.7"
     onclick={() => {
       focused_directory = get_parent_path(path);
-      focused_subtree = subtree;
+      focused_subtree.set(subtree);
     }}
   >
     <span
@@ -239,7 +238,7 @@
       expanded_state[node.path] = !expanded_state[node.path];
       if (e.target === e.currentTarget) {
         focused_directory = node.path;
-        focused_subtree = node.children;
+        focused_subtree.set(node.children);
       }
     }}
     onkeydown={(e: KeyboardEvent) => {
@@ -257,14 +256,16 @@
     ondragstart={(e) => handle_drag_start(e, node)}
     ondragend={reset_dnd}
     oncontextmenu={(e) => handle_node_right_click(e, node)}
-    class="{opened_filenode?.path === node.path ? 'bg-base-content/10' : ''} 
+    class="{opened_filenode.data?.path === node.path
+      ? 'bg-base-content/10'
+      : ''} 
       {dragged_node?.path === node.path ? 'opacity-50' : ''}
       py-0.75 w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
     onclick={(e) => {
-      opened_filenode = node;
+      opened_filenode.data = node;
       if (e.target === e.currentTarget) {
         focused_directory = get_parent_path(node.path);
-        focused_subtree = subtree;
+        focused_subtree.set(subtree);
       }
     }}
   >

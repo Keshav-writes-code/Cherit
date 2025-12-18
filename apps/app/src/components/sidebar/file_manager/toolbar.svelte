@@ -1,22 +1,19 @@
 <script lang="ts">
-  import { type FileNode, type GenericPath } from '@/types';
   import { add_new_folder, add_new_note } from '@/lib/file_tree';
+  import {
+    file_tree,
+    focused_subtree,
+    opened_filenode,
+    root_path,
+  } from '@/lib/states/ui_states.svelte';
   let {
     collapsed_state = $bindable(),
-    file_tree = $bindable(),
-    opened_filenode = $bindable(),
     hover_newnode_button = $bindable(),
-    root_path,
     focused_directory,
-    focused_subtree,
   }: {
     collapsed_state: boolean;
-    file_tree: FileNode[] | undefined;
-    root_path: GenericPath | undefined;
     focused_directory: string | undefined;
-    opened_filenode: FileNode | undefined;
     hover_newnode_button: boolean;
-    focused_subtree: FileNode[] | undefined;
   } = $props();
   let is_processing = $state(false);
 </script>
@@ -33,17 +30,17 @@
     onclick={async () => {
       if (
         !focused_directory ||
-        !file_tree ||
-        !focused_subtree ||
-        !root_path ||
+        !file_tree.data ||
+        !focused_subtree.data ||
+        !root_path.data ||
         is_processing
       )
         return;
       is_processing = true;
-      opened_filenode = await add_new_note(
-        focused_subtree,
+      opened_filenode.data = await add_new_note(
+        focused_subtree.data,
         focused_directory,
-        root_path
+        root_path.data
       );
       is_processing = false;
 
@@ -67,14 +64,14 @@
     onclick={async () => {
       if (
         !focused_directory ||
-        !file_tree ||
-        !focused_subtree ||
-        !root_path ||
+        !file_tree.data ||
+        !focused_subtree.data ||
+        !root_path.data ||
         is_processing
       )
         return;
       is_processing = true;
-      await add_new_folder(focused_subtree, focused_directory, root_path);
+      await add_new_folder(focused_subtree.data, focused_directory, root_path.data);
       is_processing = false;
     }}
     ><div class="i-tabler:folder-plus size-5"></div>
