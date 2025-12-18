@@ -94,7 +94,9 @@ fn build_tree_recursive_android(
         let entries = api.read_dir(&file_uri)
             .map_err(|e| e.to_string())?;
 
+        let mut futures: Vec<std::pin::Pin<Box<dyn std::future::Future<Output = Result<FileNode, String>> + Send>>> = Vec::new();
         let mut nodes = Vec::new();
+
         for entry in entries {
             let name = entry.name().to_string();
             let is_directory = entry.is_dir();
@@ -105,23 +107,43 @@ fn build_tree_recursive_android(
             if (is_directory && !starts_with_dot) || ends_with_md {
                 let path_uri = format!("{}%2F{}", path, urlencoding::encode(&name));
 
-                let mut children = Vec::new();
                 if is_directory {
-                    children = build_tree_recursive_android(
-                        app.clone(),
-                        path_uri.clone(),
-                        document_top_tree_uri.clone()
-                    ).await?;
-                }
+                    let app_clone = app.clone();
+                    let path_uri_clone = path_uri.clone();
+                    let document_top_tree_uri_clone = document_top_tree_uri.clone();
+                    let name_clone = name.clone();
 
-                nodes.push(FileNode {
-                    name: name.trim_end_matches(".md").to_string(),
-                    path: path_uri,
-                    is_directory,
-                    children,
-                });
+                    futures.push(Box::pin(async move {
+                        let children = build_tree_recursive_android(
+                            app_clone,
+                            path_uri_clone.clone(),
+                            document_top_tree_uri_clone
+                        ).await?;
+
+                        Ok(FileNode {
+                            name: name_clone.trim_end_matches(".md").to_string(),
+                            path: path_uri_clone,
+                            is_directory: true,
+                            children,
+                        })
+                    }));
+                } else {
+                    nodes.push(FileNode {
+                        name: name.trim_end_matches(".md").to_string(),
+                        path: path_uri,
+                        is_directory: false,
+                        children: Vec::new(),
+                    });
+                }
             }
         }
+
+        let dir_results = futures::future::join_all(futures).await;
+
+        for res in dir_results {
+            nodes.push(res?);
+        }
+
         Ok(nodes)
     })
 }
