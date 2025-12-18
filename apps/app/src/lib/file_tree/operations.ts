@@ -1,7 +1,13 @@
 import { create, mkdir, rename } from '@tauri-apps/plugin-fs';
 import { type FileNode, type GenericPath } from '@/types';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
-import { current_platform, find_unused_name, join_path, SEP } from './utils';
+import {
+  current_platform,
+  find_unused_name,
+  join_path,
+  SEP,
+  sort_nodes,
+} from './utils';
 
 export async function move_node(
   node: FileNode,
@@ -64,6 +70,7 @@ export async function add_new_note(
     is_directory: false,
     children: [],
   });
+  sort_nodes(subtree);
   const node = subtree.find((n) => n.path === new_file_path);
   if (!node) throw new Error('Failed to find the newly created note node.');
   return node;
@@ -92,4 +99,5 @@ export async function add_new_folder(
     is_directory: true,
     children: [],
   });
+  sort_nodes(subtree);
 }
