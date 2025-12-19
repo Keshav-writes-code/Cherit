@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Node } from '@/types';
   import animatedDetails from 'svelte-animated-details';
-  import { get_parent_path } from '@/lib/file_tree';
+  import { delete_node, get_parent_path } from '@/lib/file_tree';
   import { context_menu } from '@/stores/context_menu.svelte';
   import {
     file_tree,
@@ -32,7 +32,11 @@
     if (collapsed_state) return;
     expanded_nodes_ever = {};
   });
-  function handle_node_right_click(e: MouseEvent, node: Node) {
+  function handle_node_right_click(
+    e: MouseEvent,
+    node: Node,
+    parent_tree: Node[]
+  ) {
     context_menu.open(e, [
       {
         label: 'Rename',
@@ -43,7 +47,10 @@
         label: 'Delete',
         type: 'danger',
         icon_class: 'i-tabler:trash size-4',
-        action: () => console.log('Deleting', node.path),
+        action: () => {
+          if (!root_path.data) return;
+          delete_node(node, root_path.data, parent_tree);
+        },
       },
       { label: '', divider: true },
       {
@@ -113,7 +120,7 @@
     {#each file_tree.data as node}
       <li>
         {#if node.is_directory}
-          {@render folder_node(node)}
+          {@render folder_node(node, file_tree.data)}
         {:else}
           {@render file_button(node, file_tree.data)}
         {/if}
@@ -146,18 +153,19 @@
   </p>
 {/if}
 
-{#snippet focus_directory_button(path: string, subtree: Node[])}
+{#snippet focus_directory_button(subtree: Node[])}
+  {@const parent_path = get_parent_path(subtree[0].path)}
   <button
     aria-label="Set focused directory"
     class=" w-2 flex hover:bg-accent absolute start--1.75 top-3 bottom-3 transition-all rounded-0.7"
     onclick={() => {
-      focused_directory = get_parent_path(path);
+      focused_directory = parent_path;
       focused_subtree.set(subtree);
     }}
   >
     <span
       class="w-1px h-full m-auto transition-all
-        {get_parent_path(path) == focused_directory
+        {parent_path == focused_directory
         ? 'bg-[var(--color-accent)] '
         : 'bg-[rgb(from_var(--color-base-content)_r_g_b_/_0.1)]'}
         "
@@ -165,7 +173,7 @@
   </button>
 {/snippet}
 
-{#snippet folder_node(node: Node)}
+{#snippet folder_node(node: Node, parent_node: Node[])}
   {@const is_focused_and_collapsed_and_hover =
     expanded_state[node.path] === false &&
     node.path === focused_directory &&
@@ -177,7 +185,11 @@
       duration: 100 - 10 + 10 * node.children.length,
     }}
   >
-    {@render folder_button(node, is_focused_and_collapsed_and_hover)}
+    {@render folder_button(
+      node,
+      is_focused_and_collapsed_and_hover,
+      parent_node
+    )}
     {#if expanded_nodes_ever[node.path] || false || !collapsed_state}
       {@render folder_content(node.children, node.path)}
     {/if}
@@ -198,20 +210,21 @@
       {#each nodes as node}
         <li>
           {#if node.is_directory}
-            {@render folder_node(node)}
+            {@render folder_node(node, nodes)}
           {:else}
             {@render file_button(node, nodes)}
           {/if}
         </li>
       {/each}
-      {@render focus_directory_button(nodes[0].path, nodes)}
+      {@render focus_directory_button(nodes)}
     </ul>
   {/if}
 {/snippet}
 
 {#snippet folder_button(
   node: Node,
-  is_focused_and_collapsed_and_hover: boolean
+  is_focused_and_collapsed_and_hover: boolean,
+  parent_node: Node[]
 )}
   <summary
     draggable="true"
@@ -219,7 +232,7 @@
     ondragover={(e) => handle_drag_over(e, node.path)}
     ondrop={(e) => handle_drop(e, node.path)}
     ondragend={reset_dnd}
-    oncontextmenu={(e) => handle_node_right_click(e, node)}
+    oncontextmenu={(e) => handle_node_right_click(e, node, parent_node)}
     class="
       {is_focused_and_collapsed_and_hover &&
       'outline-solid outline-2 outline-accent'} 
@@ -252,7 +265,7 @@
     draggable="true"
     ondragstart={(e) => handle_drag_start(e, node)}
     ondragend={reset_dnd}
-    oncontextmenu={(e) => handle_node_right_click(e, node)}
+    oncontextmenu={(e) => handle_node_right_click(e, node, subtree)}
     class="{opened_filenode.data?.path === node.path
       ? 'bg-base-content/10'
       : ''} 

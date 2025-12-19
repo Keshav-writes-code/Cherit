@@ -1,4 +1,4 @@
-import { create, mkdir, rename } from '@tauri-apps/plugin-fs';
+import { create, mkdir, remove, rename } from '@tauri-apps/plugin-fs';
 import { type Node, type GenericPath } from '@/types';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
 import {
@@ -113,4 +113,28 @@ export async function rename_file(
   file_node.name = new_name;
   file_node.path = new_path;
   sort_nodes(parent_tree);
+}
+
+export async function delete_node(
+  node: Node,
+  { document_top_tree_uri }: GenericPath,
+  parent_tree: Node[]
+) {
+  if (current_platform === 'android') {
+    if (node.is_directory) {
+      await AndroidFs.removeDirAll({
+        uri: node.path,
+        documentTopTreeUri: document_top_tree_uri,
+      });
+    } else {
+      await AndroidFs.removeFile({
+        uri: node.path,
+        documentTopTreeUri: document_top_tree_uri,
+      });
+    }
+  } else {
+    await remove(node.path, { recursive: node.is_directory });
+  }
+  const index = parent_tree.findIndex((v) => v == node);
+  parent_tree.splice(index, 1);
 }
