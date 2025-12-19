@@ -463,6 +463,7 @@ name = "cherit"
 version = "0.0.1"
 dependencies = [
  "log",
+ "natord",
  "serde",
  "serde_json",
  "tauri",
@@ -473,6 +474,7 @@ dependencies = [
  "tauri-plugin-log",
  "tauri-plugin-os",
  "tauri-plugin-store",
+ "urlencoding",
 ]
 
 [[package]]
@@ -2062,6 +2064,12 @@ dependencies = [
  "thiserror 2.0.17",
  "windows-sys 0.60.2",
 ]
+
+[[package]]
+name = "natord"
+version = "1.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "308d96db8debc727c3fd9744aac51751243420e46edf401010908da7f8d5e57c"
 
 [[package]]
 name = "ndk"
@@ -4607,6 +4615,12 @@ dependencies = [
  "percent-encoding",
  "serde",
 ]
+
+[[package]]
+name = "urlencoding"
+version = "2.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "daf8dba3b7eb870caf1ddeed7bc9d2a049f3cfdfae7cb521b087cc33ae4c49da"
 
 [[package]]
 name = "urlpattern"

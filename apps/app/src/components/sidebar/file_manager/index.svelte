@@ -1,68 +1,41 @@
 <script lang="ts">
-  import {
-    build_file_tree_from_fs,
-    move_node,
-    sort_file_tree,
-  } from '@/lib/file_tree';
+  import { build_file_tree_from_fs, move_node } from '@/lib/file_tree';
   import ItemsRender from './items_renderer.svelte';
   import { type FileNode, type GenericPath } from '@/types';
   import Toolbar from './toolbar.svelte';
   import { toast } from 'svelte-sonner';
-  let {
-    opened_filenode = $bindable(),
-    root_path = $bindable(),
-  }: {
-    opened_filenode: FileNode | undefined;
-    root_path: GenericPath | undefined;
-  } = $props();
+  import { file_tree, root_path } from '@/lib/states/ui_states.svelte';
 
-  let file_tree: FileNode[] | undefined = $state();
   let prev_root_folder: GenericPath | undefined = $state();
-  let focused_directory: string | undefined = $derived(root_path?.path);
-  let focused_subtree: FileNode[] | undefined = $derived(file_tree);
+  let focused_directory: string | undefined = $derived(root_path.data?.path);
 
-  $effect(() => {
-    if (file_tree) sort_file_tree(file_tree);
-  });
   let collapsed_state: boolean = $state(true);
   $effect(() => {
-    if (!root_path) return;
-    build_file_tree_from_fs(root_path)
+    if (!root_path.data) return;
+    build_file_tree_from_fs(root_path.data)
       .then((v) => {
-        file_tree = v;
-        prev_root_folder = root_path;
+        file_tree.data = v;
+        prev_root_folder = root_path.data;
       })
       .catch((e) => {
         toast.error('Error loading file tree: \n' + e);
         console.error(e);
-        root_path = prev_root_folder;
+        root_path.data = prev_root_folder;
       });
   });
   let hover_newnode_button: boolean = $state(false);
 </script>
 
 <div class=" flex min-h-0 flex-1 flex-col w-full bg-base-200">
-  <Toolbar
-    bind:collapsed_state
-    bind:opened_filenode
-    bind:hover_newnode_button
-    {focused_directory}
-    {root_path}
-    {focused_subtree}
-    bind:file_tree
-  />
+  <Toolbar bind:collapsed_state bind:hover_newnode_button {focused_directory} />
   <ItemsRender
-    bind:opened_filenode
     bind:focused_directory
-    bind:focused_subtree
     {hover_newnode_button}
     {collapsed_state}
-    {file_tree}
-    {root_path}
     on_move={async (node, path) => {
-      if (file_tree === undefined) return;
+      if (file_tree.data === undefined) return;
       try {
-        await move_node(node, path, file_tree);
+        await move_node(node, path, file_tree.data);
       } catch (e) {
         toast.error('Error Moving File: \n' + e);
         console.error(e);

@@ -1,15 +1,7 @@
 <script lang="ts">
   import FileManager from '@/components/sidebar/file_manager/index.svelte';
   import BottomSidebar from '@/components/sidebar/bottom_sidebar.svelte';
-  import type { FileNode, GenericPath } from '@/types';
 
-  let {
-    root_path = $bindable(),
-    opened_filenode = $bindable(),
-  }: {
-    root_path: GenericPath | undefined;
-    opened_filenode: FileNode | undefined;
-  } = $props();
   let left_x: number | undefined = $state(undefined);
   let is_resizing = $state(false);
 </script>
@@ -32,8 +24,8 @@
     class="w-full h-10 min-h-10 bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)]"
     data-tauri-drag-region
   ></div>
-  <FileManager bind:opened_filenode bind:root_path />
-  <BottomSidebar {root_path} />
+  <FileManager />
+  <BottomSidebar />
   <div
     role="presentation"
     aria-hidden="true"
