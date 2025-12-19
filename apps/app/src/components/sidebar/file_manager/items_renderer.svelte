@@ -1,7 +1,5 @@
 <script lang="ts">
   import type { FileNode } from '@/types';
-  import { blur, fly } from 'svelte/transition';
-  import { backOut } from 'svelte/easing';
   import animatedDetails from 'svelte-animated-details';
   import { get_parent_path } from '@/lib/file_tree';
   import { context_menu } from '@/stores/context_menu.svelte';
@@ -112,8 +110,8 @@
       'bg-accent/10 outline-dashed outline-2 outline-accent'} 
       menu menu-sm h-full rounded-box relative w-full select-none overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide flex before:content-none flex-col gap-0.5 pt-0.5"
   >
-    {#each file_tree.data as node (node.path)}
-      <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
+    {#each file_tree.data as node}
+      <li>
         {#if node.is_directory}
           {@render folder_node(node)}
         {:else}
@@ -197,8 +195,8 @@
         'bg-accent/10 outline-dashed outline-2 outline-accent '}
       "
     >
-      {#each nodes as node (node.path)}
-        <li in:fly={{ y: -10, duration: 300, easing: backOut }} out:blur>
+      {#each nodes as node}
+        <li>
           {#if node.is_directory}
             {@render folder_node(node)}
           {:else}
