@@ -24,7 +24,6 @@
   $effect(() => {
     if (file_tree) sort_file_tree(file_tree);
   });
-
   let collapsed_state: boolean = $state(true);
   $effect(() => {
     if (!root_path) return;
