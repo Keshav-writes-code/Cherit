@@ -257,7 +257,7 @@
     ondragstart={(e) => handle_drag_start(e, node)}
     ondragend={reset_dnd}
     oncontextmenu={(e) => handle_node_right_click(e, node)}
-    class="{opened_filenode?.path === node.path ? 'bg-base-content/10' : ''} 
+    class="{opened_filenode?.path === node.path ? 'bg-base-content/10' : ''}
       {dragged_node?.path === node.path ? 'opacity-50' : ''}
       py-0.75 w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
     onclick={(e) => {

@@ -1,4 +1,5 @@
 import { type FileNode } from '@/types';
+
 export function find_unused_name(
   base_name: string,
   subtree: FileNode[],
@@ -11,6 +12,7 @@ export function find_unused_name(
     base_name = `Untitled ${++i}`;
   return base_name;
 }
+
 export function sort_file_tree(nodes: FileNode[]): FileNode[] {
   // Sort array in-place
   nodes.sort((a, b) => {
