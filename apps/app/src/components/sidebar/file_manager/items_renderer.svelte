@@ -24,6 +24,7 @@
 
   let expanded_nodes_ever: { [key: string]: boolean } = $state({});
   let expanded_state: { [key: string]: boolean } = $state({});
+  let focused_node: Node | undefined = $state();
 
   let dragged_node: Node | null = $state(null);
   let drop_target: string | null = $state(null);
@@ -37,6 +38,7 @@
     node: Node,
     parent_tree: Node[]
   ) {
+    focused_node = node;
     context_menu.open(e, [
       {
         label: 'Rename',
@@ -59,6 +61,9 @@
         action: () => navigator.clipboard.writeText(node.path),
       },
     ]);
+    context_menu.run_on_close(() => {
+      focused_node = undefined;
+    });
   }
   function handle_drag_start(e: DragEvent, node: Node) {
     dragged_node = node;
@@ -118,7 +123,10 @@
       menu menu-sm h-full rounded-box relative w-full select-none overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide flex before:content-none flex-col gap-0.5 pt-0.5"
   >
     {#each file_tree.data as node}
-      <li>
+      <li
+        class="{focused_node == node &&
+          'outline-[color-mix(in_srgb,var(--color-base-content)_30%,black)] outline-2 outline-solid '} rounded-box"
+      >
         {#if node.is_directory}
           {@render folder_node(node, file_tree.data)}
         {:else}
@@ -208,7 +216,10 @@
       "
     >
       {#each nodes as node}
-        <li>
+        <li
+          class="{focused_node == node &&
+            'outline-[color-mix(in_srgb,var(--color-base-content)_30%,black)] outline-2 outline-solid '} rounded-box"
+        >
           {#if node.is_directory}
             {@render folder_node(node, nodes)}
           {:else}
@@ -266,9 +277,8 @@
     ondragstart={(e) => handle_drag_start(e, node)}
     ondragend={reset_dnd}
     oncontextmenu={(e) => handle_node_right_click(e, node, subtree)}
-    class="{opened_filenode.data?.path === node.path
-      ? 'bg-base-content/10'
-      : ''} 
+    class="
+    {opened_filenode.data?.path === node.path && 'bg-base-content/10'} 
       {dragged_node?.path === node.path ? 'opacity-50' : ''}
       py-0.75 w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
     onclick={(e) => {

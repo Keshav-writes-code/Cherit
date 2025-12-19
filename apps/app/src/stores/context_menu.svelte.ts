@@ -11,6 +11,7 @@ class ContextMenuState {
   x = $state(0);
   y = $state(0);
   items = $state<ContextMenuItem[]>([]);
+  on_close: (() => void) | null = null;
 
   // Open the menu
   open(e: MouseEvent, items: ContextMenuItem[]) {
@@ -26,6 +27,10 @@ class ContextMenuState {
   // Close the menu
   close() {
     this.visible = false;
+    if (this.on_close) this.on_close();
+  }
+  run_on_close(callback: () => void) {
+    this.on_close = callback;
   }
 }
 
