@@ -23,9 +23,8 @@
     "svelte": "^5.45.8",
     "svelte-check": "^4.3.4",
     "typescript": "~5.9.3",
-    "vitest": "^4.0.14"
     "unocss": "^66.5.10",
-    "vite": "^7.2.7",
+    "vite": "^7.2.7"
   },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.5.0",
