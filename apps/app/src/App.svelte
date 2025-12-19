@@ -4,28 +4,32 @@
   import TitleBar from '@/components/titlebar/index.svelte';
   import Sidebar from '@/components/sidebar/index.svelte';
   import GlobalContextMenu from '@/components/context_menu/index.svelte';
+  import type { FileNode, GenericPath } from '@/types';
   import { Toaster } from 'svelte-sonner';
   import { current_platform_type } from '@/lib/file_tree';
-  import { opened_filenode } from './lib/states/ui_states.svelte';
+
+  // NOTE: GLobal Variables
+  let root_path: GenericPath | undefined = $state();
+  let opened_filenode: FileNode | undefined = $state();
 </script>
 
 <div
   class="drawer select-none h-full lg:drawer-open selection:bg-[rgb(from_var(--color-accent)_r_g_b_/_0.2)] isolate"
 >
-  <RootFolderSelector />
+  <RootFolderSelector bind:root_path />
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
   <div
     class="
     {current_platform_type == 'mobile' && 'pt-10'}
     drawer-content flex overflow-y-auto flex-col items-center h-full"
   >
-    <TitleBar />
-    <TextEditior bind:filenode={opened_filenode.data} />
+    <TitleBar {root_path} filenode={opened_filenode} />
+    <TextEditior bind:filenode={opened_filenode} {root_path} />
   </div>
   <div class="drawer-side is-drawer-close:overflow-visible">
     <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"
     ></label>
-    <Sidebar />
+    <Sidebar bind:opened_filenode bind:root_path />
   </div>
 </div>
 <GlobalContextMenu />

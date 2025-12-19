@@ -17,9 +17,7 @@ fn sort_nodes(nodes: &mut Vec<FileNode>) {
                 std::cmp::Ordering::Greater
             };
         }
-        // Use natural ordering with case-insensitive comparison
-        // to match TypeScript's localeCompare with numeric: true
-        natord::compare_ignore_case(&a.name, &b.name)
+        a.name.to_lowercase().cmp(&b.name.to_lowercase())
     });
 
     for node in nodes {
@@ -49,13 +47,8 @@ fn build_tree_recursive_desktop(path_str: &str) -> std::io::Result<Vec<FileNode>
                     let mut children = Vec::new();
 
                     if is_directory {
-                        match build_tree_recursive_desktop(&path) {
-                            Ok(sub_children) => {
-                                children = sub_children;
-                            }
-                            Err(e) => {
-                                eprintln!("Failed to read subdirectory '{}': {}", path, e);
-                            }
+                        if let Ok(sub_children) = build_tree_recursive_desktop(&path) {
+                            children = sub_children;
                         }
                     }
 
@@ -81,6 +74,8 @@ fn build_tree_recursive_android(
     Box::pin(async move {
         use tauri_plugin_android_fs::AndroidFsExt;
         use tauri_plugin_android_fs::FileUri;
+        use tauri_plugin_android_fs::EntryOptions;
+        use futures::future::join_all;
 
         let api = app.android_fs();
 
@@ -91,37 +86,74 @@ fn build_tree_recursive_android(
         let file_uri = FileUri::from_json_str(&json_obj.to_string())
             .map_err(|e| format!("Failed to create FileUri: {}", e))?;
 
-        let entries = api.read_dir(&file_uri)
+        let options = EntryOptions {
+            uri: false,
+            name: true,
+            last_modified: false,
+            len: false,
+            mime_type: false,
+        };
+
+        let entries = api.read_dir_with_options(&file_uri, options)
             .map_err(|e| e.to_string())?;
 
+        let mut futures = Vec::new();
         let mut nodes = Vec::new();
+
         for entry in entries {
-            let name = entry.name().to_string();
             let is_directory = entry.is_dir();
+            let name_opt = entry.name();
 
-            let starts_with_dot = name.starts_with('.');
-            let ends_with_md = name.ends_with(".md");
+            if let Some(name_str) = name_opt {
+                let name = name_str.to_string();
+                let starts_with_dot = name.starts_with('.');
+                let ends_with_md = name.ends_with(".md");
 
-            if (is_directory && !starts_with_dot) || ends_with_md {
-                let path_uri = format!("{}%2F{}", path, urlencoding::encode(&name));
+                if (is_directory && !starts_with_dot) || ends_with_md {
+                    let path_uri = format!("{}%2F{}", path, urlencoding::encode(&name));
 
-                let mut children = Vec::new();
-                if is_directory {
-                    children = build_tree_recursive_android(
-                        app.clone(),
-                        path_uri.clone(),
-                        document_top_tree_uri.clone()
-                    ).await?;
+                    if is_directory {
+                        let app_clone = app.clone();
+                        let path_clone = path_uri.clone();
+                        let doc_uri_clone = document_top_tree_uri.clone();
+                        let name_clone = name.clone();
+
+                        futures.push(async move {
+                             let children_res = build_tree_recursive_android(
+                                app_clone,
+                                path_clone.clone(),
+                                doc_uri_clone
+                            ).await;
+
+                            match children_res {
+                                Ok(children) => Some(FileNode {
+                                    name: name_clone.trim_end_matches(".md").to_string(),
+                                    path: path_clone,
+                                    is_directory: true,
+                                    children,
+                                }),
+                                Err(_) => None
+                            }
+                        });
+                    } else {
+                        nodes.push(FileNode {
+                            name: name.trim_end_matches(".md").to_string(),
+                            path: path_uri,
+                            is_directory: false,
+                            children: vec![],
+                        });
+                    }
                 }
-
-                nodes.push(FileNode {
-                    name: name.trim_end_matches(".md").to_string(),
-                    path: path_uri,
-                    is_directory,
-                    children,
-                });
             }
         }
+
+        let results = join_all(futures).await;
+        for res in results {
+            if let Some(node) = res {
+                nodes.push(node);
+            }
+        }
+
         Ok(nodes)
     })
 }
@@ -136,9 +168,6 @@ async fn build_file_tree(
 
     #[cfg(target_os = "android")]
     {
-        // On Android, we need the app handle and args.
-        // We can use them directly.
-        // (Parameter names no longer start with _.)
         let mut unsorted_nodes = build_tree_recursive_android(app, path, document_top_tree_uri).await?;
         sort_nodes(&mut unsorted_nodes);
         nodes = unsorted_nodes;
@@ -146,6 +175,9 @@ async fn build_file_tree(
 
     #[cfg(not(target_os = "android"))]
     {
+        // Suppress unused variable warnings on desktop
+        let _ = app;
+        let _ = document_top_tree_uri;
         nodes = tauri::async_runtime::spawn_blocking(move || {
             let mut n = build_tree_recursive_desktop(&path)?;
             sort_nodes(&mut n);

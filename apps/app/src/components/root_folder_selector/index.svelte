@@ -5,15 +5,16 @@
     get_relative_path_parts,
   } from '@/lib/file_tree';
   import { check_recent_path_schema } from '@/lib/user_activity';
-  import { root_folder_picker_dialog_state } from '@/lib/states/ui_states.svelte';
+  import { root_folder_picker_dialog_state } from '@/lib/misc_global_states.svelte';
   import type { GenericPath } from '@/types';
   import { open } from '@tauri-apps/plugin-dialog';
   import { LazyStore } from '@tauri-apps/plugin-store';
   import { onMount } from 'svelte';
   import { AndroidFs } from 'tauri-plugin-android-fs-api';
-  import { root_path } from '@/lib/states/ui_states.svelte';
+  let { root_path = $bindable() }: { root_path: GenericPath | undefined } =
+    $props();
   $effect(() => {
-    if (root_path.data) root_folder_picker_dialog_state.open = false;
+    if (root_path) root_folder_picker_dialog_state.open = false;
   });
 
   const user_activity = new LazyStore('user_activity.json');
@@ -28,7 +29,7 @@
         await user_activity.clear();
         return (root_folder_picker_dialog_state.open = true);
       }
-      root_path.data = {
+      root_path = {
         path: recent_paths[0].path,
         document_top_tree_uri: recent_paths[0].document_top_tree_uri,
       };
@@ -84,11 +85,11 @@
             <li class="w-full">
               <button
                 onclick={() => {
-                  root_path.data = { path, document_top_tree_uri };
+                  root_path = { path, document_top_tree_uri };
                   root_folder_picker_dialog_state.open = false;
                 }}
                 class="
-                {root_path.data?.path == path && 'bg-base-100'}
+                {root_path?.path == path && 'bg-base-100'}
                 flex w-full gap-0 flex-col items-baseline"
               >
                 <p class="text-sm text-base-content/80">
@@ -142,7 +143,7 @@
                 recursive: true,
               });
               if (!folder) return;
-              root_path.data = {
+              root_path = {
                 path: folder,
                 document_top_tree_uri: null,
               };
@@ -164,7 +165,7 @@
                 onclick={async () => {
                   const uri = await AndroidFs.showOpenDirPicker();
                   if (!uri) return;
-                  root_path.data = {
+                  root_path = {
                     path: uri.uri,
                     document_top_tree_uri: uri.documentTopTreeUri,
                   };

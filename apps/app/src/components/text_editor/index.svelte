@@ -1,17 +1,18 @@
 <script lang="ts">
   import BreadCrumb from '@/components/breadcrumb_path/index.svelte';
   import { readTextFile, rename, writeTextFile } from '@tauri-apps/plugin-fs';
-  import type { FileNode } from '@/types';
+  import type { FileNode, GenericPath } from '@/types';
   import Prosemark from './prosemark.svelte';
   import { toast } from 'svelte-sonner';
-  import { current_platform_type, sort_nodes } from '@/lib/file_tree';
+  import { current_platform_type } from '@/lib/file_tree';
   import { type EditorView } from '@codemirror/view';
-  import { focused_subtree } from '@/lib/states/ui_states.svelte';
 
   let {
     filenode = $bindable(),
+    root_path,
   }: {
     filenode: FileNode | undefined;
+    root_path: GenericPath | undefined;
   } = $props();
   let text_content: string | undefined = $state();
   let current_file_name: string | undefined = $state();
@@ -35,7 +36,7 @@
 </script>
 
 {#if current_platform_type == 'desktop'}
-  <BreadCrumb {filenode} />
+  <BreadCrumb {filenode} {root_path} />
 {/if}
 <div class="w-full px-8 flex justify-center flex-1 overflow-auto">
   <div class="max-w-170 w-full font-sans">
@@ -59,7 +60,6 @@
           filenode.path = new_file_path;
           filenode.name = current_file_name;
           is_file_named_changed = false;
-          if (focused_subtree.data) sort_nodes(focused_subtree.data);
         } catch (e) {
           if (e instanceof Error) toast.error(e.message);
         }
