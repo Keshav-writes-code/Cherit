@@ -4,7 +4,11 @@
   import type { Node } from '@/types';
   import Prosemark from './prosemark.svelte';
   import { toast } from 'svelte-sonner';
-  import { current_platform_type, sort_nodes } from '@/lib/file_tree';
+  import {
+    current_platform_type,
+    rename_file,
+    sort_nodes,
+  } from '@/lib/file_tree';
   import { type EditorView } from '@codemirror/view';
   import { focused_subtree } from '@/lib/states/ui_states.svelte';
 
@@ -51,15 +55,10 @@
       }}
       onfocusout={async () => {
         if (!is_file_named_changed) return;
-        if (!current_file_name || !filenode) return;
-        const new_file_path =
-          filenode.path.replace(/[^/\\]+$/, current_file_name) + '.md';
+        if (!current_file_name || !filenode || !focused_subtree.data) return;
         try {
-          await rename(filenode.path, new_file_path);
-          filenode.path = new_file_path;
-          filenode.name = current_file_name;
+          rename_file(filenode, current_file_name, focused_subtree.data);
           is_file_named_changed = false;
-          if (focused_subtree.data) sort_nodes(focused_subtree.data);
         } catch (e) {
           if (e instanceof Error) toast.error(e.message);
         }

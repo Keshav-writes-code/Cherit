@@ -4,6 +4,7 @@ import { AndroidFs } from 'tauri-plugin-android-fs-api';
 import {
   current_platform,
   find_unused_name,
+  get_parent_path,
   join_path,
   sort_nodes,
 } from './utils';
@@ -99,4 +100,17 @@ export async function add_new_folder(
     children: [],
   });
   sort_nodes(subtree);
+}
+
+export async function rename_file(
+  file_node: Node,
+  new_name: string,
+  parent_tree: Node[]
+) {
+  const parent = get_parent_path(file_node.path);
+  const new_path = join_path(parent, new_name + '.md');
+  rename(file_node.path, new_path);
+  file_node.name = new_name;
+  file_node.path = new_path;
+  sort_nodes(parent_tree);
 }
