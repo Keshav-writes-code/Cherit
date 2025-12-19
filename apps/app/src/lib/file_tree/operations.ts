@@ -1,5 +1,5 @@
 import { create, mkdir, rename } from '@tauri-apps/plugin-fs';
-import { type FileNode, type GenericPath } from '@/types';
+import { type Node, type GenericPath } from '@/types';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
 import {
   current_platform,
@@ -9,9 +9,9 @@ import {
 } from './utils';
 
 export async function move_node(
-  node: FileNode,
+  node: Node,
   new_parent_path: string,
-  tree: FileNode[]
+  tree: Node[]
 ) {
   const new_path = new_parent_path
     ? join_path(new_parent_path, node.name)
@@ -19,14 +19,14 @@ export async function move_node(
 
   await rename(node.path, new_path);
 
-  const remove = (list: FileNode[]) => {
+  const remove = (list: Node[]) => {
     const i = list.findIndex((n) => n === node);
     if (i > -1) list.splice(i, 1);
     else list.forEach((n) => remove(n.children));
   };
   remove(tree);
 
-  const update = (n: FileNode, p: string) => {
+  const update = (n: Node, p: string) => {
     n.path = p;
     n.children.forEach((c) => update(c, join_path(p, c.name)));
   };
@@ -34,7 +34,7 @@ export async function move_node(
 
   if (!new_parent_path) tree.push(node);
   else {
-    const find = (list: FileNode[]): FileNode | undefined => {
+    const find = (list: Node[]): Node | undefined => {
       for (const n of list) {
         if (n.path === new_parent_path) return n;
         const res = find(n.children);
@@ -46,7 +46,7 @@ export async function move_node(
 }
 
 export async function add_new_note(
-  subtree: FileNode[],
+  subtree: Node[],
   focused_path: string,
   { document_top_tree_uri }: GenericPath
 ) {
@@ -75,7 +75,7 @@ export async function add_new_note(
   return node;
 }
 export async function add_new_folder(
-  subtree: FileNode[],
+  subtree: Node[],
   focused_path: string,
   { document_top_tree_uri }: GenericPath
 ) {

@@ -1,8 +1,8 @@
-export interface FileNode {
+export interface Node {
   name: string;
   path: string;
   is_directory: boolean;
-  children: FileNode[];
+  children: Node[];
 }
 export type GenericPath = {
   path: string;

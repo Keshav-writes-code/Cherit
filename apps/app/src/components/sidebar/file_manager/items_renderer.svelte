@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { FileNode } from '@/types';
+  import type { Node } from '@/types';
   import animatedDetails from 'svelte-animated-details';
   import { get_parent_path } from '@/lib/file_tree';
   import { context_menu } from '@/stores/context_menu.svelte';
@@ -19,20 +19,20 @@
     collapsed_state: boolean;
     focused_directory: string | undefined;
     hover_newnode_button: boolean;
-    on_move: (node: FileNode, new_parent_path: string) => void;
+    on_move: (node: Node, new_parent_path: string) => void;
   } = $props();
 
   let expanded_nodes_ever: { [key: string]: boolean } = $state({});
   let expanded_state: { [key: string]: boolean } = $state({});
 
-  let dragged_node: FileNode | null = $state(null);
+  let dragged_node: Node | null = $state(null);
   let drop_target: string | null = $state(null);
 
   $effect(() => {
     if (collapsed_state) return;
     expanded_nodes_ever = {};
   });
-  function handle_node_right_click(e: MouseEvent, node: FileNode) {
+  function handle_node_right_click(e: MouseEvent, node: Node) {
     context_menu.open(e, [
       {
         label: 'Rename',
@@ -53,7 +53,7 @@
       },
     ]);
   }
-  function handle_drag_start(e: DragEvent, node: FileNode) {
+  function handle_drag_start(e: DragEvent, node: Node) {
     dragged_node = node;
     if (e.dataTransfer) {
       e.dataTransfer.effectAllowed = 'move';
@@ -146,7 +146,7 @@
   </p>
 {/if}
 
-{#snippet focus_directory_button(path: string, subtree: FileNode[])}
+{#snippet focus_directory_button(path: string, subtree: Node[])}
   <button
     aria-label="Set focused directory"
     class=" w-2 flex hover:bg-accent absolute start--1.75 top-3 bottom-3 transition-all rounded-0.7"
@@ -165,7 +165,7 @@
   </button>
 {/snippet}
 
-{#snippet folder_node(node: FileNode)}
+{#snippet folder_node(node: Node)}
   {@const is_focused_and_collapsed_and_hover =
     expanded_state[node.path] === false &&
     node.path === focused_directory &&
@@ -184,7 +184,7 @@
   </details>
 {/snippet}
 
-{#snippet folder_content(nodes: FileNode[], parent_path: string)}
+{#snippet folder_content(nodes: Node[], parent_path: string)}
   {#if nodes.length}
     <ul
       ondragover={(e) => handle_drag_over(e, parent_path)}
@@ -210,7 +210,7 @@
 {/snippet}
 
 {#snippet folder_button(
-  node: FileNode,
+  node: Node,
   is_focused_and_collapsed_and_hover: boolean
 )}
   <summary
@@ -247,7 +247,7 @@
   </summary>
 {/snippet}
 
-{#snippet file_button(node: FileNode, subtree: FileNode[])}
+{#snippet file_button(node: Node, subtree: Node[])}
   <button
     draggable="true"
     ondragstart={(e) => handle_drag_start(e, node)}

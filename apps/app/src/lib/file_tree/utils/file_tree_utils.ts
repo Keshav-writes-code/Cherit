@@ -1,8 +1,8 @@
-import { type FileNode } from '@/types';
+import { type Node } from '@/types';
 
 export function find_unused_name(
   base_name: string,
-  subtree: FileNode[],
+  subtree: Node[],
   is_directory: boolean
 ): string {
   let i = 0;
@@ -13,7 +13,7 @@ export function find_unused_name(
   return base_name;
 }
 
-export function sort_nodes(nodes: FileNode[]) {
+export function sort_nodes(nodes: Node[]) {
   // Sort array in-place
   nodes.sort((a, b) => {
     if (a.is_directory !== b.is_directory) return a.is_directory ? -1 : 1;

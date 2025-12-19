@@ -1,7 +1,7 @@
 <script lang="ts">
   import { build_file_tree_from_fs, move_node } from '@/lib/file_tree';
   import ItemsRender from './items_renderer.svelte';
-  import { type FileNode, type GenericPath } from '@/types';
+  import { type Node, type GenericPath } from '@/types';
   import Toolbar from './toolbar.svelte';
   import { toast } from 'svelte-sonner';
   import { file_tree, root_path } from '@/lib/states/ui_states.svelte';
