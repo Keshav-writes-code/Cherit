@@ -5,7 +5,10 @@
     get_relative_path_parts,
   } from '@/lib/file_tree';
   import { check_recent_path_schema } from '@/lib/user_activity';
-  import { root_folder_picker_dialog_state } from '@/lib/states/ui_states.svelte';
+  import {
+    file_tree,
+    root_folder_picker_dialog_state,
+  } from '@/lib/states/ui_states.svelte';
   import type { GenericPath } from '@/types';
   import { open } from '@tauri-apps/plugin-dialog';
   import { LazyStore } from '@tauri-apps/plugin-store';
@@ -84,6 +87,7 @@
             <li class="w-full">
               <button
                 onclick={() => {
+                  file_tree.data = undefined;
                   root_path.data = { path, document_top_tree_uri };
                   root_folder_picker_dialog_state.open = false;
                 }}
@@ -142,6 +146,7 @@
                 recursive: true,
               });
               if (!folder) return;
+              file_tree.data = undefined;
               root_path.data = {
                 path: folder,
                 document_top_tree_uri: null,
@@ -164,6 +169,7 @@
                 onclick={async () => {
                   const uri = await AndroidFs.showOpenDirPicker();
                   if (!uri) return;
+                  file_tree.data = undefined;
                   root_path.data = {
                     path: uri.uri,
                     document_top_tree_uri: uri.documentTopTreeUri,
