@@ -8,6 +8,7 @@ import {
   join_path,
   sort_nodes,
 } from './utils';
+import { toast } from 'svelte-sonner';
 
 export async function move_node(
   node: Node,
@@ -120,21 +121,25 @@ export async function delete_node(
   { document_top_tree_uri }: GenericPath,
   parent_tree: Node[]
 ) {
-  if (current_platform === 'android') {
-    if (node.is_directory) {
-      await AndroidFs.removeDirAll({
-        uri: node.path,
-        documentTopTreeUri: document_top_tree_uri,
-      });
+  try {
+    if (current_platform === 'android') {
+      if (node.is_directory) {
+        await AndroidFs.removeDirAll({
+          uri: node.path,
+          documentTopTreeUri: document_top_tree_uri,
+        });
+      } else {
+        await AndroidFs.removeFile({
+          uri: node.path,
+          documentTopTreeUri: document_top_tree_uri,
+        });
+      }
     } else {
-      await AndroidFs.removeFile({
-        uri: node.path,
-        documentTopTreeUri: document_top_tree_uri,
-      });
+      await remove(node.path, { recursive: node.is_directory });
     }
-  } else {
-    await remove(node.path, { recursive: node.is_directory });
+    const index = parent_tree.findIndex((v) => v == node);
+    parent_tree.splice(index, 1);
+  } catch (error) {
+    toast.error('Error Deleting File: \n' + error);
   }
-  const index = parent_tree.findIndex((v) => v == node);
-  parent_tree.splice(index, 1);
 }

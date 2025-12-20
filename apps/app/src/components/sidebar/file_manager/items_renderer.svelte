@@ -49,9 +49,9 @@
         label: 'Delete',
         type: 'danger',
         icon_class: 'i-tabler:trash size-4',
-        action: () => {
+        action: async () => {
           if (!root_path.data) return;
-          delete_node(node, root_path.data, parent_tree);
+          await delete_node(node, root_path.data, parent_tree);
         },
       },
       { label: '', divider: true },
