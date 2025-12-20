@@ -16,6 +16,6 @@
     "fs:allow-home-read-recursive",
     "fs:allow-home-write-recursive",
     "os:default",
-    "android-fs:all-without-delete"
+    "android-fs:all"
   ]
 }
