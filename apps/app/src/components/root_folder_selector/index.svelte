@@ -4,13 +4,13 @@
     current_platform_type,
     get_relative_path_parts,
   } from '@/lib/file_tree';
-  import { check_recent_path_schema } from '@/lib/user_activity';
+  import { get_latest_recent_path, RecentPaths } from '@/lib/user_activity';
   import {
     file_tree,
     opened_filenode,
     root_folder_picker_dialog_state,
   } from '@/lib/states/ui_states.svelte';
-  import type { GenericPath } from '@/types';
+  import type { GenericPath, RecentPath } from '@/types';
   import { open } from '@tauri-apps/plugin-dialog';
   import { LazyStore } from '@tauri-apps/plugin-store';
   import { onMount } from 'svelte';
@@ -21,23 +21,35 @@
   });
 
   const user_activity = new LazyStore('user_activity.json');
-  let recent_paths: GenericPath[] = $state([]);
+  let recent_paths: RecentPath[] = $state([]);
 
   onMount(async () => {
-    recent_paths =
-      (await user_activity.get<GenericPath[]>('recent_paths')) ?? [];
-    if (recent_paths.length) {
-      // Check for Older Data Schema
-      if (!check_recent_path_schema(recent_paths)) {
-        await user_activity.clear();
-        return (root_folder_picker_dialog_state.open = true);
-      }
-      root_path.data = {
-        path: recent_paths[0].path,
-        document_top_tree_uri: recent_paths[0].document_top_tree_uri,
-      };
-    } else root_folder_picker_dialog_state.open = true;
+    const raw = (await user_activity.get<RecentPath[]>('recent_paths')) ?? [];
+    if (!raw.length) return (root_folder_picker_dialog_state.open = true);
+
+    const { data, success } = RecentPaths.safeParse(raw);
+    if (!success) {
+      await user_activity.clear();
+      root_folder_picker_dialog_state.open = true;
+      return;
+    }
+    root_path.data = get_latest_recent_path(data);
+    recent_paths = data;
   });
+
+  async function touch_recent_paths({
+    path,
+    document_top_tree_uri,
+  }: GenericPath) {
+    let processed = recent_paths.filter((v) => v.path !== path);
+    processed = [
+      { path, document_top_tree_uri, last_accessed: new Date() },
+      ...processed,
+    ].slice(0, 10);
+    await user_activity.set('recent_paths', processed);
+    recent_paths = processed;
+    await user_activity.save();
+  }
 
   function reset_workspace_state() {
     file_tree.data = undefined;
@@ -94,6 +106,7 @@
               <button
                 onclick={() => {
                   reset_workspace_state();
+                  touch_recent_paths({ path, document_top_tree_uri });
                   root_path.data = { path, document_top_tree_uri };
                   root_folder_picker_dialog_state.open = false;
                 }}
@@ -153,18 +166,12 @@
               });
               if (!folder) return;
               reset_workspace_state();
-              root_path.data = {
+              const generic_path: GenericPath = {
                 path: folder,
                 document_top_tree_uri: null,
               };
-              if (!recent_paths.find((p) => p.path === folder)) {
-                recent_paths = [
-                  { path: folder, document_top_tree_uri: null },
-                  ...recent_paths,
-                ].slice(0, 10);
-                await user_activity.set('recent_paths', recent_paths);
-                await user_activity.save();
-              }
+              root_path.data = generic_path;
+              await touch_recent_paths(generic_path);
             }}>Open</button
           >
         {:else if current_platform_type == 'mobile'}
@@ -176,22 +183,13 @@
                   const uri = await AndroidFs.showOpenDirPicker();
                   if (!uri) return;
                   reset_workspace_state();
-                  root_path.data = {
+                  const generic_path: GenericPath = {
                     path: uri.uri,
                     document_top_tree_uri: uri.documentTopTreeUri,
                   };
+                  root_path.data = generic_path;
+                  await touch_recent_paths(generic_path);
                   await AndroidFs.persistUriPermission(uri);
-                  if (!recent_paths.find((p) => p.path === uri.uri)) {
-                    recent_paths = [
-                      {
-                        path: uri.uri,
-                        document_top_tree_uri: uri.documentTopTreeUri,
-                      },
-                      ...recent_paths,
-                    ].slice(0, 10);
-                    await user_activity.set('recent_paths', recent_paths);
-                    await user_activity.save();
-                  }
                 }}
               >
                 <div class="size-6 i-tabler:folder-open"></div>

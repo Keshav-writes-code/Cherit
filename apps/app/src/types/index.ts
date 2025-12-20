@@ -8,3 +8,4 @@ export type GenericPath = {
   path: string;
   document_top_tree_uri: string | null;
 };
+export type RecentPath = GenericPath & { last_accessed: Date };
