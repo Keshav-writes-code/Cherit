@@ -7,6 +7,7 @@
   import { check_recent_path_schema } from '@/lib/user_activity';
   import {
     file_tree,
+    opened_filenode,
     root_folder_picker_dialog_state,
   } from '@/lib/states/ui_states.svelte';
   import type { GenericPath } from '@/types';
@@ -37,6 +38,11 @@
       };
     } else root_folder_picker_dialog_state.open = true;
   });
+
+  function reset_workspace_state() {
+    file_tree.data = undefined;
+    opened_filenode.data = undefined;
+  }
 </script>
 
 <dialog
@@ -87,7 +93,7 @@
             <li class="w-full">
               <button
                 onclick={() => {
-                  file_tree.data = undefined;
+                  reset_workspace_state();
                   root_path.data = { path, document_top_tree_uri };
                   root_folder_picker_dialog_state.open = false;
                 }}
@@ -146,7 +152,7 @@
                 recursive: true,
               });
               if (!folder) return;
-              file_tree.data = undefined;
+              reset_workspace_state();
               root_path.data = {
                 path: folder,
                 document_top_tree_uri: null,
@@ -169,7 +175,7 @@
                 onclick={async () => {
                   const uri = await AndroidFs.showOpenDirPicker();
                   if (!uri) return;
-                  file_tree.data = undefined;
+                  reset_workspace_state();
                   root_path.data = {
                     path: uri.uri,
                     document_top_tree_uri: uri.documentTopTreeUri,
