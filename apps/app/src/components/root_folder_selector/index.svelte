@@ -168,6 +168,7 @@
                     path: uri.uri,
                     document_top_tree_uri: uri.documentTopTreeUri,
                   };
+                  await AndroidFs.persistUriPermission(uri);
                   if (!recent_paths.find((p) => p.path === uri.uri)) {
                     recent_paths = [
                       {
