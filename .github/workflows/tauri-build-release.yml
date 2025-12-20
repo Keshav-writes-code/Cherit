@@ -60,7 +60,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           cache-on-failure: true
-          workspaces: ./src-tauri -> target
+          workspaces: ./apps/app/src-tauri/ -> target
 
       # ------------- Android -------------
       - name: Set up JDK
