@@ -105,6 +105,6 @@ jobs:
         with:
           projectPath: 'apps/app'
           uploadWorkflowArtifacts: true
-          workflowArtifactNamePattern: '[name]-v[version]-[platform]-[arch]-[mode][ext]'
+          workflowArtifactNamePattern: '[name]-v[version]-[platform]-[arch]-[mode]-[bundle]'
           args: ${{ matrix.args }}
           mobile: ${{ matrix.mobile }}
