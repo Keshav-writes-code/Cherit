@@ -2,7 +2,7 @@
   import { getCurrentWindow } from '@tauri-apps/api/window';
   import Breadcrumb from '@/components/breadcrumb_path/index.svelte';
   import { current_platform_type } from '@/lib/file_tree';
-  import { opened_filenode } from '@/lib/states/ui_states.svelte';
+  import { opened_filenode } from '@/lib/states';
 
   const appWindow = getCurrentWindow();
 </script>

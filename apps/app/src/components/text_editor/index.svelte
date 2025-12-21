@@ -10,7 +10,7 @@
     sort_nodes,
   } from '@/lib/file_tree';
   import { type EditorView } from '@codemirror/view';
-  import { focused_subtree } from '@/lib/states/ui_states.svelte';
+  import { focused_subtree } from '@/lib/states';
 
   let {
     filenode = $bindable(),

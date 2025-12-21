@@ -1,6 +1,6 @@
 // @unocss-include
 import { delete_node } from '@/lib/file_tree';
-import type { ContextMenuItem } from '@/stores/context_menu.svelte';
+import type { ContextMenuItem } from '@/lib/states';
 import type { GenericPath, Node } from '@/types';
 import { revealItemInDir } from '@tauri-apps/plugin-opener';
 export function get_desktop_context_menu(

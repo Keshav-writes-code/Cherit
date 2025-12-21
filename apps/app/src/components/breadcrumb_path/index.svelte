@@ -1,6 +1,6 @@
 <script lang="ts">
   import { get_relative_path_parts } from '@/lib/file_tree';
-  import { root_path } from '@/lib/states/ui_states.svelte';
+  import { root_path } from '@/lib/states';
   import type { Node } from '@/types';
   let {
     filenode,

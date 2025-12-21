@@ -9,13 +9,13 @@
     file_tree,
     opened_filenode,
     root_folder_picker_dialog_state,
-  } from '@/lib/states/ui_states.svelte';
+    root_path,
+  } from '@/lib/states';
   import type { GenericPath, RecentPath } from '@/types';
   import { open } from '@tauri-apps/plugin-dialog';
   import { LazyStore } from '@tauri-apps/plugin-store';
   import { onMount } from 'svelte';
   import { AndroidFs } from 'tauri-plugin-android-fs-api';
-  import { root_path } from '@/lib/states/ui_states.svelte';
   $effect(() => {
     if (root_path.data) root_folder_picker_dialog_state.open = false;
   });

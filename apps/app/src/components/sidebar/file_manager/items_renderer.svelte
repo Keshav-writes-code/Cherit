@@ -3,15 +3,13 @@
   import animatedDetails from 'svelte-animated-details';
   import { current_platform_type, get_parent_path } from '@/lib/file_tree';
   import {
-    context_menu,
-    type ContextMenuItem,
-  } from '@/stores/context_menu.svelte';
-  import {
     file_tree,
     focused_subtree,
     opened_filenode,
     root_path,
-  } from '@/lib/states/ui_states.svelte';
+    context_menu,
+    type ContextMenuItem,
+  } from '@/lib/states';
   import {
     get_desktop_context_menu,
     get_mobile_context_menu,

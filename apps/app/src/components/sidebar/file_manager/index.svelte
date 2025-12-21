@@ -4,7 +4,7 @@
   import { type GenericPath } from '@/types';
   import Toolbar from './toolbar.svelte';
   import { toast } from 'svelte-sonner';
-  import { file_tree, root_path } from '@/lib/states/ui_states.svelte';
+  import { file_tree, root_path } from '@/lib/states';
 
   let prev_root_folder: GenericPath | undefined = $state();
   let focused_directory: string | undefined = $derived(root_path.data?.path);

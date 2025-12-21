@@ -5,7 +5,7 @@
     focused_subtree,
     opened_filenode,
     root_path,
-  } from '@/lib/states/ui_states.svelte';
+  } from '@/lib/states';
   let {
     collapsed_state = $bindable(),
     hover_newnode_button = $bindable(),
@@ -71,7 +71,11 @@
       )
         return;
       is_processing = true;
-      await add_new_folder(focused_subtree.data, focused_directory, root_path.data);
+      await add_new_folder(
+        focused_subtree.data,
+        focused_directory,
+        root_path.data
+      );
       is_processing = false;
     }}
     ><div class="i-tabler:folder-plus size-5"></div>

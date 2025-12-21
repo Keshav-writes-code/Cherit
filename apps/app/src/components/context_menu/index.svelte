@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { context_menu } from '@/stores/context_menu.svelte';
+  import { context_menu } from '@/lib/states';
   import { current_platform_type } from '@/lib/file_tree';
   import { fly } from 'svelte/transition';
 

@@ -1,8 +1,5 @@
 <script lang="ts">
-  import {
-    root_folder_picker_dialog_state,
-    root_path,
-  } from '@/lib/states/ui_states.svelte';
+  import { root_folder_picker_dialog_state, root_path } from '@/lib/states';
 </script>
 
 <div
