@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Node } from '@/types';
   import animatedDetails from 'svelte-animated-details';
-  import { delete_node, get_parent_path } from '@/lib/file_tree';
+  import { current_platform_type, get_parent_path } from '@/lib/file_tree';
   import { context_menu } from '@/stores/context_menu.svelte';
   import {
     file_tree,
@@ -9,6 +9,10 @@
     opened_filenode,
     root_path,
   } from '@/lib/states/ui_states.svelte';
+  import {
+    get_desktop_context_menu,
+    get_mobile_context_menu,
+  } from './file_manager_context_menu';
 
   let {
     focused_directory = $bindable(),
@@ -41,28 +45,17 @@
     parent_tree: Node[]
   ) {
     focused_node = node;
-    context_menu.open(e, [
-      {
-        label: 'Rename',
-        icon_class: 'i-tabler:pencil size-4',
-        action: () => navigator.clipboard.writeText(node.path),
-      },
-      {
-        label: 'Delete',
-        type: 'danger',
-        icon_class: 'i-tabler:trash size-4',
-        action: async () => {
-          if (!root_path.data) return;
-          await delete_node(node, root_path.data, parent_tree);
-        },
-      },
-      { label: '', divider: true },
-      {
-        label: 'Open in system explorer',
-        icon_class: 'i-tabler:arrow-up-right size-4',
-        action: () => navigator.clipboard.writeText(node.path),
-      },
-    ]);
+    if (current_platform_type == 'desktop') {
+      context_menu.open(
+        e,
+        get_desktop_context_menu(node, parent_tree, root_path)
+      );
+    } else {
+      context_menu.open(
+        e,
+        get_mobile_context_menu(node, parent_tree, root_path)
+      );
+    }
     context_menu.run_on_close(() => {
       focused_node = undefined;
     });

@@ -91,8 +91,7 @@ fn build_tree_recursive_android(
         let file_uri = FileUri::from_json_str(&json_obj.to_string())
             .map_err(|e| format!("Failed to create FileUri: {}", e))?;
 
-        let entries = api.read_dir(&file_uri)
-            .map_err(|e| e.to_string())?;
+        let entries = api.read_dir(&file_uri).map_err(|e| e.to_string())?;
 
         let mut nodes = Vec::new();
         for entry in entries {
@@ -110,8 +109,9 @@ fn build_tree_recursive_android(
                     children = build_tree_recursive_android(
                         app.clone(),
                         path_uri.clone(),
-                        document_top_tree_uri.clone()
-                    ).await?;
+                        document_top_tree_uri.clone(),
+                    )
+                    .await?;
                 }
 
                 nodes.push(FileNode {
@@ -139,7 +139,8 @@ async fn build_file_tree(
         // On Android, we need the app handle and args.
         // We can use them directly.
         // (Parameter names no longer start with _.)
-        let mut unsorted_nodes = build_tree_recursive_android(app, path, document_top_tree_uri).await?;
+        let mut unsorted_nodes =
+            build_tree_recursive_android(app, path, document_top_tree_uri).await?;
         sort_nodes(&mut unsorted_nodes);
         nodes = unsorted_nodes;
     }
@@ -150,8 +151,10 @@ async fn build_file_tree(
             let mut n = build_tree_recursive_desktop(&path)?;
             sort_nodes(&mut n);
             Ok(n)
-        }).await.map_err(|e| e.to_string())?
-          .map_err(|e: std::io::Error| e.to_string())?;
+        })
+        .await
+        .map_err(|e| e.to_string())?
+        .map_err(|e: std::io::Error| e.to_string())?;
     }
 
     Ok(nodes)
@@ -160,6 +163,7 @@ async fn build_file_tree(
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::new().build())
