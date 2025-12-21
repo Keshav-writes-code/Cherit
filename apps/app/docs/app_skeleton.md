@@ -47,7 +47,6 @@
 │   └──  user_activity # module serve the user activity saving logic
 │       └──  index.ts
 ├──  main.ts # main loader for the svelte app and other css modules
-├──  stores
 ├──  types
 │   └──  index.ts
 └──  vite-env.d.ts
