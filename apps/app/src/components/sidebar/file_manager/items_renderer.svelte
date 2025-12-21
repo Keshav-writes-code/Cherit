@@ -2,7 +2,10 @@
   import type { Node } from '@/types';
   import animatedDetails from 'svelte-animated-details';
   import { current_platform_type, get_parent_path } from '@/lib/file_tree';
-  import { context_menu } from '@/stores/context_menu.svelte';
+  import {
+    context_menu,
+    type ContextMenuItem,
+  } from '@/stores/context_menu.svelte';
   import {
     file_tree,
     focused_subtree,
@@ -45,17 +48,21 @@
     parent_tree: Node[]
   ) {
     focused_node = node;
-    if (current_platform_type == 'desktop') {
-      context_menu.open(
-        e,
-        get_desktop_context_menu(node, parent_tree, root_path)
+    let context_menu_items: ContextMenuItem[];
+    if (current_platform_type == 'desktop')
+      context_menu_items = get_desktop_context_menu(
+        node,
+        parent_tree,
+        root_path
       );
-    } else {
-      context_menu.open(
-        e,
-        get_mobile_context_menu(node, parent_tree, root_path)
+    else
+      context_menu_items = get_mobile_context_menu(
+        node,
+        parent_tree,
+        root_path
       );
-    }
+
+    context_menu.open(e, context_menu_items);
     context_menu.run_on_close(() => {
       focused_node = undefined;
     });
