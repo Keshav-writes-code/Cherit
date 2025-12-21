@@ -48,6 +48,13 @@
     onclose={() => context_menu.close()}
   >
     <div class="modal-box p-0 bg-base-200">
+      <!-- Visual Handle -->
+      <div class="flex group w-full justify-center pt-4 pb-2">
+        <div
+          class="h-1.5 w-12 rounded-full bg-base-content/20 group-hover:(w-10 bg-gray) transition-all duration-200"
+        ></div>
+      </div>
+
       <!-- Menu Content -->
       <ul class="menu menu-lg px-4 gap-0.5 join join-vertical w-full">
         {#each context_menu.items as item}
