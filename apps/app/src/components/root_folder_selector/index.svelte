@@ -19,6 +19,7 @@
   import { onMount } from 'svelte';
   import { AndroidFs } from 'tauri-plugin-android-fs-api';
   import { toast } from 'svelte-sonner';
+  import { show_folder_picker } from '@/lib/system_dialogs';
 
   const user_activity = new LazyStore('user_activity.json');
   let recent_paths: RecentPath[] = $state([]);
@@ -186,16 +187,8 @@
           <button
             class="btn btn-primary w-30"
             onclick={async () => {
-              const folder = await open({
-                multiple: false,
-                directory: true,
-                recursive: true,
-              });
-              if (!folder) return;
-              await update_workspace(root_path.data?.path, {
-                path: folder,
-                document_top_tree_uri: null,
-              });
+              const generic_path = await show_folder_picker();
+              await update_workspace(root_path.data?.path, generic_path);
             }}>Open</button
           >
         {:else if current_platform_type == 'mobile'}
@@ -204,12 +197,8 @@
               <button
                 class="grid grid-cols-[auto_auto_1fr]"
                 onclick={async () => {
-                  const uri = await AndroidFs.showOpenDirPicker();
-                  if (!uri) return;
-                  await update_workspace(root_path.data?.path, {
-                    path: uri.uri,
-                    document_top_tree_uri: uri.documentTopTreeUri,
-                  });
+                  const generic_path = await show_folder_picker();
+                  await update_workspace(root_path.data?.path, generic_path);
                 }}
               >
                 <div class="size-6 i-tabler:folder-open"></div>
