@@ -5,7 +5,26 @@
 
   let dialog = $state<HTMLDialogElement>();
 
-  // Synchronize the native dialog state with the store visibility
+  // 1. New State for measuring dimensions
+  let menu_w = $state(0);
+  let menu_h = $state(0);
+  let win_w = $state(0);
+  let win_h = $state(0);
+
+  let pos_x = $derived.by(() => {
+    if (context_menu.x + menu_w > win_w) {
+      return context_menu.x - menu_w;
+    }
+    return context_menu.x;
+  });
+
+  let pos_y = $derived.by(() => {
+    if (context_menu.y + menu_h > win_h) {
+      return context_menu.y - menu_h;
+    }
+    return context_menu.y;
+  });
+
   $effect(() => {
     if (current_platform_type === 'mobile' && dialog) {
       if (context_menu.visible) {
@@ -21,11 +40,9 @@
     context_menu.close();
   }
 
-  // Handle outside clicks for desktop without putting click listeners on non-interactive elements
   function handle_window_click(e: MouseEvent) {
     if (current_platform_type === 'desktop' && context_menu.visible) {
       const target = e.target as HTMLElement;
-      // Close only if the click is NOT inside the desktop menu
       if (!target.closest('.desktop-context-menu')) {
         context_menu.close();
       }
@@ -34,6 +51,8 @@
 </script>
 
 <svelte:window
+  bind:innerWidth={win_w}
+  bind:innerHeight={win_h}
   onclick={handle_window_click}
   onscroll={() => context_menu.close()}
   onblur={() => context_menu.close()}
@@ -41,21 +60,17 @@
 />
 
 {#if current_platform_type === 'mobile'}
-  <!-- Native Dialog for Mobile (DaisyUI Modal) -->
   <dialog
     bind:this={dialog}
     class="modal modal-bottom"
     onclose={() => context_menu.close()}
   >
     <div class="modal-box p-0 bg-base-200">
-      <!-- Visual Handle -->
       <div class="flex group w-full justify-center pt-4 pb-2">
         <div
           class="h-1.5 w-12 rounded-full bg-base-content/20 group-active:(w-10 bg-gray) transition-all duration-200"
         ></div>
       </div>
-
-      <!-- Menu Content -->
       <ul class="menu menu-lg px-4 gap-0.5 join join-vertical w-full">
         {#each context_menu.items as item}
           {#if item.divider}
@@ -75,20 +90,18 @@
         {/each}
       </ul>
     </div>
-
-    <!-- Native Backdrop: Clicking this closes the dialog automatically -->
     <form method="dialog" class="modal-backdrop">
       <button>close</button>
     </form>
   </dialog>
 {:else if context_menu.visible}
-  <!-- Desktop Floating Menu -->
-  <!-- We use a class for the window click handler to identify this container -->
   <div
     class="desktop-context-menu fixed z-[9999]"
-    style="top: {context_menu.y}px; left: {context_menu.x}px;"
+    style="top: {pos_y}px; left: {pos_x}px;"
   >
     <ul
+      bind:clientWidth={menu_w}
+      bind:clientHeight={menu_h}
       transition:fly={{ duration: 100, y: -5 }}
       class="menu menu-sm w-56 rounded-box shadow-xl border border-base-300 bg-base-200"
       oncontextmenu={(e) => e.preventDefault()}
