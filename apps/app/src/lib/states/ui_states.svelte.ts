@@ -22,3 +22,5 @@ export const focused_subtree = new FocusedSubtree();
 export let root_folder_picker_dialog_state: { open: boolean } = $state({
   open: false,
 });
+
+export const pdf_export_status: { data: boolean } = $state({ data: false });

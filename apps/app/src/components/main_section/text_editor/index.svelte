@@ -1,16 +1,11 @@
 <script lang="ts">
-  import BreadCrumb from '@/components/breadcrumb_path/index.svelte';
-  import { readTextFile, rename, writeTextFile } from '@tauri-apps/plugin-fs';
-  import type { Node } from '@/types';
-  import Prosemark from './prosemark.svelte';
-  import { toast } from 'svelte-sonner';
-  import {
-    current_platform_type,
-    rename_file,
-    sort_nodes,
-  } from '@/lib/file_tree';
-  import { type EditorView } from '@codemirror/view';
+  import { rename_file } from '@/lib/file_tree';
   import { focused_subtree } from '@/lib/states';
+  import type { Node } from '@/types';
+  import { type EditorView } from '@codemirror/view';
+  import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
+  import { toast } from 'svelte-sonner';
+  import Prosemark from './prosemark.svelte';
 
   let {
     filenode = $bindable(),
@@ -38,11 +33,8 @@
   });
 </script>
 
-{#if current_platform_type == 'desktop'}
-  <BreadCrumb {filenode} />
-{/if}
 <div class="w-full px-8 flex justify-center flex-1 overflow-auto">
-  <div class="max-w-170 w-full font-sans">
+  <div class="max-w-170 w-full font-sans" id="text_editor">
     <input
       type="text"
       id="note_file_name_input"

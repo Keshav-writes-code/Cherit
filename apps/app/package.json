@@ -13,6 +13,7 @@
   "devDependencies": {
     "@0x-jerry/unocss-preset-daisyui": "0.2.3",
     "@iconify-json/famicons": "^1.2.2",
+    "@iconify-json/line-md": "^1.2.11",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "@tauri-apps/cli": "^2.9.6",
     "@tsconfig/svelte": "^5.0.6",
@@ -48,6 +49,8 @@
     "@unocss/reset": "^66.5.10",
     "@unocss/transformer-variant-group": "^66.5.10",
     "daisyui": "5.4.7",
+    "html2canvas-pro": "^1.6.2",
+    "jspdf": "^3.0.4",
     "svelte-animated-details": "^1.0.2",
     "svelte-sonner": "^1.0.7",
     "tauri-plugin-android-fs-api": "^23.0.1",

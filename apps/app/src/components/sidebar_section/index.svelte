@@ -1,6 +1,6 @@
 <script lang="ts">
-  import FileManager from '@/components/sidebar/file_manager/index.svelte';
-  import BottomSidebar from '@/components/sidebar/bottom_sidebar.svelte';
+  import FileManager from '@/components/sidebar_section/file_manager/index.svelte';
+  import BottomSidebar from '@/components/sidebar_section/bottom_sidebar.svelte';
 
   let left_x: number | undefined = $state(undefined);
   let is_resizing = $state(false);

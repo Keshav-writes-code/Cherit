@@ -15,5 +15,11 @@ export type MenuItem = {
   icon_class?: string;
   divider?: boolean; // To render a <hr>
 };
+export type SubmitStates =
+  | 'idle'
+  | 'disabled'
+  | 'waiting'
+  | 'success'
+  | 'error';
 
 export type RecentPath = GenericPath & { last_accessed: Date };
