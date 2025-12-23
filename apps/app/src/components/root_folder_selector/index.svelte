@@ -18,6 +18,7 @@
   import { LazyStore } from '@tauri-apps/plugin-store';
   import { onMount } from 'svelte';
   import { AndroidFs } from 'tauri-plugin-android-fs-api';
+  import { toast } from 'svelte-sonner';
 
   const user_activity = new LazyStore('user_activity.json');
   let recent_paths: RecentPath[] = $state([]);
@@ -53,30 +54,33 @@
     recent_paths = processed;
     await user_activity.save();
   }
-
+  function reset_ui_states() {
+    file_tree.data = undefined;
+    opened_filenode.data = undefined;
+    root_path.data = undefined;
+  }
   async function update_workspace(
     old_path: string | undefined,
     new_path: GenericPath
   ) {
-    // Prerequisites
-    // CLose the Dialog Box
-    root_folder_picker_dialog_state.open = false;
-    // Do nothing if user clicks on already selected path
-    if (old_path === new_path.path) return;
-    // Reset file_tree and opened node
-    file_tree.data = undefined;
-    opened_filenode.data = undefined;
+    try {
+      // Prerequisites
+      root_folder_picker_dialog_state.open = false;
+      if (old_path === new_path.path) return;
+      reset_ui_states();
 
-    // Actual Workspace Updation
-    // Update Root Path
-    root_path.data = new_path;
-    //Update File Tree
-    is_filetree_loading.data = true;
-    file_tree.data = await build_file_tree_from_fs(new_path);
-    is_filetree_loading.data = false;
+      // Actual Workspace Updation
+      root_path.data = new_path;
+      is_filetree_loading.data = true;
+      file_tree.data = await build_file_tree_from_fs(new_path);
+      is_filetree_loading.data = false;
 
-    // Update Recent Paths
-    await touch_recent_paths(new_path);
+      await touch_recent_paths(new_path);
+    } catch (e) {
+      reset_ui_states();
+      toast.error('Error Opening Folder: \n' + e);
+      root_folder_picker_dialog_state.open = true;
+    }
   }
 </script>
 
