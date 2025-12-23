@@ -1,20 +1,14 @@
-export type ContextMenuItem = {
-  label: string;
-  action?: () => void;
-  type?: 'default' | 'danger' | 'warning';
-  icon_class?: string;
-  divider?: boolean; // To render a <hr>
-};
+import { type MenuItem } from '@/types';
 
-class ContextMenuState {
+class MenuState {
   visible = $state(false);
   x = $state(0);
   y = $state(0);
-  items = $state<ContextMenuItem[]>([]);
+  items = $state<MenuItem[]>([]);
   on_close: (() => void) | null = null;
 
   // Open the menu
-  open(e: MouseEvent, items: ContextMenuItem[]) {
+  open(e: MouseEvent, items: MenuItem[]) {
     e.preventDefault(); // Stop browser context menu
     e.stopPropagation(); // Stop bubbling
 
@@ -34,4 +28,4 @@ class ContextMenuState {
   }
 }
 
-export const context_menu = new ContextMenuState();
+export const context_menu = new MenuState();

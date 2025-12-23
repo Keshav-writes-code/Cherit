@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Node } from '@/types';
+  import type { Node, MenuItem } from '@/types';
   import animatedDetails from 'svelte-animated-details';
   import { current_platform_type, get_parent_path } from '@/lib/file_tree';
   import {
@@ -8,7 +8,6 @@
     opened_filenode,
     root_path,
     context_menu,
-    type ContextMenuItem,
     is_filetree_loading,
   } from '@/lib/states';
   import {
@@ -45,7 +44,7 @@
     parent_tree: Node[]
   ) {
     focused_node = node;
-    let context_menu_items: ContextMenuItem[];
+    let context_menu_items: MenuItem[];
     if (current_platform_type == 'desktop')
       context_menu_items = get_desktop_context_menu(
         node,

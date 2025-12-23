@@ -1,13 +1,13 @@
 // @unocss-include
 import { delete_node } from '@/lib/file_tree';
-import type { ContextMenuItem } from '@/lib/states';
+import type { MenuItem } from '@/types';
 import type { GenericPath, Node } from '@/types';
 import { revealItemInDir } from '@tauri-apps/plugin-opener';
 export function get_desktop_context_menu(
   node: Node,
   parent_tree: Node[],
   root_path: { data: GenericPath | undefined }
-): ContextMenuItem[] {
+): MenuItem[] {
   return [
     {
       label: 'Rename',
@@ -37,7 +37,7 @@ export function get_mobile_context_menu(
   node: Node,
   parent_tree: Node[],
   root_path: { data: GenericPath | undefined }
-): ContextMenuItem[] {
+): MenuItem[] {
   return [
     {
       label: 'Delete',
