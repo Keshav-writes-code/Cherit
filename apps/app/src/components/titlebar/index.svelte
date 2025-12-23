@@ -7,7 +7,7 @@
   const appWindow = getCurrentWindow();
 </script>
 
-{#if current_platform_type !== 'mobile'}
+{#if current_platform_type == 'desktop'}
   <div
     class="  w-full h-10 z-12 flex justify-between bg-[color-mix(in_srgb,var(--color-base-content)_22%,black)] relative"
     data-tauri-drag-region
