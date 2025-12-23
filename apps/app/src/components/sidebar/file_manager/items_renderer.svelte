@@ -9,6 +9,7 @@
     root_path,
     context_menu,
     type ContextMenuItem,
+    is_filetree_loading,
   } from '@/lib/states';
   import {
     get_desktop_context_menu,
@@ -20,13 +21,11 @@
     collapsed_state,
     hover_newnode_button,
     on_move,
-    is_filetree_loading,
   }: {
     collapsed_state: boolean;
     focused_directory: string | undefined;
     hover_newnode_button: boolean;
     on_move: (node: Node, new_parent_path: string) => void;
-    is_filetree_loading: boolean;
   } = $props();
 
   let expanded_nodes_ever: { [key: string]: boolean } = $state({});
@@ -152,7 +151,7 @@
     >
     </button>
   </ul>
-{:else if is_filetree_loading}
+{:else if is_filetree_loading.data}
   <div class=" skeleton h-full rounded-box w-full"></div>
 {:else if !file_tree.data}
   <div

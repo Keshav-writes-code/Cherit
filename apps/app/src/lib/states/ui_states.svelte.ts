@@ -9,6 +9,7 @@ export const opened_filenode: { data: Node | undefined } = $state({
 export const file_tree: { data: Node[] | undefined } = $state({
   data: undefined,
 });
+export const is_filetree_loading: { data: boolean } = $state({ data: false });
 
 class FocusedSubtree {
   data = $derived(file_tree.data);

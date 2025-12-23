@@ -3,10 +3,12 @@
     current_platform,
     current_platform_type,
     get_relative_path_parts,
+    build_file_tree_from_fs,
   } from '@/lib/file_tree';
   import { get_latest_recent_path, RecentPaths } from '@/lib/user_activity';
   import {
     file_tree,
+    is_filetree_loading,
     opened_filenode,
     root_folder_picker_dialog_state,
     root_path,
@@ -16,9 +18,6 @@
   import { LazyStore } from '@tauri-apps/plugin-store';
   import { onMount } from 'svelte';
   import { AndroidFs } from 'tauri-plugin-android-fs-api';
-  $effect(() => {
-    if (root_path.data) root_folder_picker_dialog_state.open = false;
-  });
 
   const user_activity = new LazyStore('user_activity.json');
   let recent_paths: RecentPath[] = $state([]);
@@ -33,8 +32,12 @@
       root_folder_picker_dialog_state.open = true;
       return;
     }
-    root_path.data = get_latest_recent_path(data);
+    const recent_path = get_latest_recent_path(data);
+    if (!recent_path) return (root_folder_picker_dialog_state.open = true);
+
+    root_path.data = recent_path;
     recent_paths = data;
+    update_workspace(undefined, { ...recent_path });
   });
 
   async function touch_recent_paths({
@@ -51,9 +54,29 @@
     await user_activity.save();
   }
 
-  function reset_workspace_state() {
+  async function update_workspace(
+    old_path: string | undefined,
+    new_path: GenericPath
+  ) {
+    // Prerequisites
+    // CLose the Dialog Box
+    root_folder_picker_dialog_state.open = false;
+    // Do nothing if user clicks on already selected path
+    if (old_path === new_path.path) return;
+    // Reset file_tree and opened node
     file_tree.data = undefined;
     opened_filenode.data = undefined;
+
+    // Actual Workspace Updation
+    // Update Root Path
+    root_path.data = new_path;
+    //Update File Tree
+    is_filetree_loading.data = true;
+    file_tree.data = await build_file_tree_from_fs(new_path);
+    is_filetree_loading.data = false;
+
+    // Update Recent Paths
+    await touch_recent_paths(new_path);
   }
 </script>
 
@@ -104,11 +127,11 @@
             )}
             <li class="w-full">
               <button
-                onclick={() => {
-                  reset_workspace_state();
-                  touch_recent_paths({ path, document_top_tree_uri });
-                  root_path.data = { path, document_top_tree_uri };
-                  root_folder_picker_dialog_state.open = false;
+                onclick={async () => {
+                  await update_workspace(root_path.data?.path, {
+                    path,
+                    document_top_tree_uri,
+                  });
                 }}
                 class="
                 {root_path.data?.path == path && 'bg-base-100'}
@@ -165,13 +188,10 @@
                 recursive: true,
               });
               if (!folder) return;
-              reset_workspace_state();
-              const generic_path: GenericPath = {
+              await update_workspace(root_path.data?.path, {
                 path: folder,
                 document_top_tree_uri: null,
-              };
-              root_path.data = generic_path;
-              await touch_recent_paths(generic_path);
+              });
             }}>Open</button
           >
         {:else if current_platform_type == 'mobile'}
@@ -182,14 +202,10 @@
                 onclick={async () => {
                   const uri = await AndroidFs.showOpenDirPicker();
                   if (!uri) return;
-                  reset_workspace_state();
-                  const generic_path: GenericPath = {
+                  await update_workspace(root_path.data?.path, {
                     path: uri.uri,
                     document_top_tree_uri: uri.documentTopTreeUri,
-                  };
-                  root_path.data = generic_path;
-                  await touch_recent_paths(generic_path);
-                  await AndroidFs.persistUriPermission(uri);
+                  });
                 }}
               >
                 <div class="size-6 i-tabler:folder-open"></div>
