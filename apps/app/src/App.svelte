@@ -6,7 +6,7 @@
   import GlobalContextMenu from '@/components/context_menu/index.svelte';
   import { Toaster } from 'svelte-sonner';
   import { current_platform_type } from '@/lib/file_tree';
-  import { opened_filenode } from './lib/states/ui_states.svelte';
+  import { opened_filenode } from '@/lib/states';
 </script>
 
 <div
