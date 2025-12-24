@@ -38,17 +38,16 @@ jobs:
       - uses: actions/checkout@v6
 
       # ------------ Desktop OS ----------------
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@v1.3.1
+      - name: Free up disk space on Linux runners
+        uses: mathio/gha-cleanup@v1
         if: startsWith(matrix.platform, 'ubuntu')
         with:
-          tool-cache: false
-          android: ${{ matrix.mobile != 'android' }}
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
+          remove-browsers: true
+          verbose: true
+      - name: Fix Android Directory Permissions
+        run: |
+          sudo mkdir -p /usr/local/lib/android
+          sudo chown -R $USER:$USER /usr/local/lib/android
       - name: install dependencies (ubuntu only)
         if: startsWith(matrix.platform, 'ubuntu')
         run: |
