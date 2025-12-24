@@ -34,8 +34,12 @@ jobs:
             mobile: 'android'
     runs-on: ${{ matrix.platform }}
     steps:
+      #  ------------ Git Clone ----------------
+      - uses: actions/checkout@v6
+
       # ------------ Desktop OS ----------------
-      - uses: mathio/gha-cleanup@v1
+      - name: Free up disk space on Linux runners
+        uses: mathio/gha-cleanup@v1
         if: matrix.platform == 'ubuntu-22.04' || matrix.platform == 'ubuntu-24.04-arm'
         with:
           remove-browsers: true
@@ -45,9 +49,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev
-
-      #  ------------ Git Clone ----------------
-      - uses: actions/checkout@v6
 
       # ------------- Node -------------
       - name: setup node
