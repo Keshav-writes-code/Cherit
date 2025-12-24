@@ -45,6 +45,7 @@ jobs:
           remove-browsers: true
           verbose: true
       - name: Fix Android Directory Permissions
+        if: startsWith(matrix.platform, 'ubuntu')
         run: |
           sudo mkdir -p /usr/local/lib/android
           sudo chown -R $USER:$USER /usr/local/lib/android
