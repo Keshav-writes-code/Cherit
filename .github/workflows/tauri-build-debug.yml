@@ -40,6 +40,7 @@ jobs:
       # ------------ Desktop OS ----------------
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
+        if: startsWith(matrix.platform, 'ubuntu')
         with:
           tool-cache: false
           android: ${{ matrix.mobile != 'android' }}
