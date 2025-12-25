@@ -4,6 +4,9 @@
   "workspaces": {
     "": {
       "name": "cherit",
+      "dependencies": {
+        "@saurl/tauri-plugin-safe-area-insets-css-api": "^0.1.0",
+      },
       "devDependencies": {
         "prettier": "^3.6.2",
         "prettier-plugin-astro": "^0.14.1",
@@ -315,6 +318,8 @@
     "@rollup/rollup-win32-x64-gnu": ["@rollup/rollup-win32-x64-gnu@4.53.3", "", { "os": "win32", "cpu": "x64" }, "sha512-J9QDiOIZlZLdcot5NXEepDkstocktoVjkaKUtqzgzpt2yWjGlbYiKyp05rWwk4nypbYUNoFAztEgixoLaSETkg=="],
 
     "@rollup/rollup-win32-x64-msvc": ["@rollup/rollup-win32-x64-msvc@4.53.3", "", { "os": "win32", "cpu": "x64" }, "sha512-UhTd8u31dXadv0MopwGgNOBpUVROFKWVQgAg5N1ESyCz8AuBcMqm4AuTjrwgQKGDfoFuz02EuMRHQIw/frmYKQ=="],
+
+    "@saurl/tauri-plugin-safe-area-insets-css-api": ["@saurl/tauri-plugin-safe-area-insets-css-api@0.1.0", "", { "dependencies": { "@tauri-apps/api": "^2.5.0" } }, "sha512-cZbOexV7OSBvgGECrqInA7daoCRLG5wGcUy/zrRIDaqXVKP6THdLWwsC5Ho6UD0lsxr8O4+zd1PPFJwrlHxTYg=="],
 
     "@sindresorhus/is": ["@sindresorhus/is@4.6.0", "", {}, "sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw=="],
 

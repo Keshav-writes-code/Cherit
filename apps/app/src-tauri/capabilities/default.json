@@ -17,7 +17,7 @@
     "fs:allow-home-write-recursive",
     "os:default",
     "android-fs:all",
-    "opener:default"
+    "opener:default",
+    "safe-area-insets-css:default"
   ]
 }
-

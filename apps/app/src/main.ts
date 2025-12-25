@@ -5,6 +5,8 @@ import 'uno.css';
 import 'daisyui/theme/dark.css';
 import '@/fonts.css';
 
+import '@saurl/tauri-plugin-safe-area-insets-css-api';
+
 const app = mount(App, {
   target: document.body,
 });
