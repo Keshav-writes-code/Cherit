@@ -26,5 +26,7 @@
     context_menu.open(e, menu_items, { x, y });
   }}
 >
-  <div class="i-tabler:dots-vertical color-[var(--color-primary)] size-5"></div>
+  <div
+    class="i-tabler:dots-vertical color-[var(--color-primary)] sm:size-5 size-7.5"
+  ></div>
 </button>
