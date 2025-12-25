@@ -5,10 +5,37 @@ import {
   current_platform,
   find_unused_name,
   get_parent_path,
+  get_relative_path_parts,
   join_path,
   sort_nodes,
 } from './utils';
 import { toast } from 'svelte-sonner';
+
+export function find_filenode_by_path(
+  tree: Node[],
+  path: string,
+  root_path: string
+): Node | undefined {
+  const parts = get_relative_path_parts(path, root_path);
+  let current_level = tree;
+  let found_node: Node | undefined;
+
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    const is_last = i === parts.length - 1;
+    const part_name = part.endsWith('.md') ? part.slice(0, -3) : part;
+
+    found_node = current_level.find((n) => {
+      if (n.name !== part_name) return false;
+      return is_last ? !n.is_directory : n.is_directory;
+    });
+
+    if (!found_node) return undefined;
+    current_level = found_node.children;
+  }
+
+  return found_node;
+}
 
 export async function move_node(
   node: Node,

@@ -3,86 +3,41 @@
     current_platform,
     current_platform_type,
     get_relative_path_parts,
-    build_file_tree_from_fs,
   } from '@/lib/file_tree';
-  import { get_latest_recent_path, RecentPaths } from '@/lib/user_activity';
   import {
-    file_tree,
-    is_filetree_loading,
+    get_most_recent_workspace,
+    RecentWorkspaces,
+  } from '@/lib/user_activity';
+  import {
     opened_filenode,
     root_folder_picker_dialog_state,
     root_path,
   } from '@/lib/states';
-  import type { GenericPath, RecentPath } from '@/types';
-  import { open } from '@tauri-apps/plugin-dialog';
-  import { LazyStore } from '@tauri-apps/plugin-store';
+  import type { Workspace } from '@/types';
   import { onMount } from 'svelte';
-  import { AndroidFs } from 'tauri-plugin-android-fs-api';
-  import { toast } from 'svelte-sonner';
   import { show_folder_picker } from '@/lib/system_dialogs';
-
-  const user_activity = new LazyStore('user_activity.json');
-  let recent_paths: RecentPath[] = $state([]);
+  import {
+    recent_workspaces,
+    user_activity,
+    update_workspace,
+  } from './operations.svelte';
 
   onMount(async () => {
-    const raw = (await user_activity.get<RecentPath[]>('recent_paths')) ?? [];
+    const raw = (await user_activity.get<Workspace[]>('recent_paths')) ?? [];
     if (!raw.length) return (root_folder_picker_dialog_state.open = true);
 
-    const { data, success } = RecentPaths.safeParse(raw);
+    const { data, success } = RecentWorkspaces.safeParse(raw);
     if (!success) {
       await user_activity.clear();
       root_folder_picker_dialog_state.open = true;
       return;
     }
-    const recent_path = get_latest_recent_path(data);
-    if (!recent_path) return (root_folder_picker_dialog_state.open = true);
+    const recent_workspace = get_most_recent_workspace(data);
+    if (!recent_workspace) return (root_folder_picker_dialog_state.open = true);
 
-    root_path.data = recent_path;
-    recent_paths = data;
-    update_workspace(undefined, { ...recent_path });
+    recent_workspaces.data = data;
+    update_workspace(undefined, { ...recent_workspace });
   });
-
-  async function touch_recent_paths({
-    path,
-    document_top_tree_uri,
-  }: GenericPath) {
-    let processed = recent_paths.filter((v) => v.path !== path);
-    processed = [
-      { path, document_top_tree_uri, last_accessed: new Date() },
-      ...processed,
-    ].slice(0, 10);
-    await user_activity.set('recent_paths', processed);
-    recent_paths = processed;
-    await user_activity.save();
-  }
-  function reset_ui_states() {
-    file_tree.data = undefined;
-    opened_filenode.data = undefined;
-    root_path.data = undefined;
-  }
-  async function update_workspace(
-    old_path: string | undefined,
-    new_path: GenericPath
-  ) {
-    try {
-      // Prerequisites
-      root_folder_picker_dialog_state.open = false;
-      if (old_path === new_path.path) return;
-      reset_ui_states();
-
-      // Actual Workspace Updation
-      root_path.data = new_path;
-      is_filetree_loading.data = true;
-      file_tree.data = await build_file_tree_from_fs(new_path);
-      is_filetree_loading.data = false;
-
-      await touch_recent_paths(new_path);
-    } catch (e) {
-      reset_ui_states();
-      toast.error('Error Opening Folder: \n' + e);
-      root_folder_picker_dialog_state.open = true;
-    }
-  }
 </script>
 
 <dialog
@@ -109,21 +64,21 @@
     </form>
 
     <div class="min-w-70 bg-base-content/10">
-      {#if recent_paths.length}
+      {#if recent_workspaces.data.length}
         <ul
           class="w-full bg-transparent gap-2 menu bg-base-200 rounded-box w-56"
         >
           <button
             onclick={async () => {
               await user_activity.clear();
-              recent_paths = [];
+              recent_workspaces.data = [];
             }}
             class="btn btn-square btn-ghost color-gray"
             aria-label="Delete All Recent folders"
           >
             <div class=" i-tabler:trash-filled size-4"></div>
           </button>
-          {#each recent_paths as { path, document_top_tree_uri }}
+          {#each recent_workspaces.data as { path, document_top_tree_uri }}
             {@const path_parts = get_relative_path_parts(
               path,
               current_platform == 'android'
@@ -136,6 +91,7 @@
                   await update_workspace(root_path.data?.path, {
                     path,
                     document_top_tree_uri,
+                    last_filenode_path: opened_filenode.data?.path,
                   });
                 }}
                 class="
@@ -187,8 +143,13 @@
           <button
             class="btn btn-primary w-30"
             onclick={async () => {
-              const generic_path = await show_folder_picker();
-              await update_workspace(root_path.data?.path, generic_path);
+              const { path, document_top_tree_uri } =
+                await show_folder_picker();
+              await update_workspace(root_path.data?.path, {
+                path,
+                document_top_tree_uri,
+                last_filenode_path: opened_filenode.data?.path,
+              });
             }}>Open</button
           >
         {:else if current_platform_type == 'mobile'}
@@ -197,8 +158,13 @@
               <button
                 class="grid grid-cols-[auto_auto_1fr]"
                 onclick={async () => {
-                  const generic_path = await show_folder_picker();
-                  await update_workspace(root_path.data?.path, generic_path);
+                  const { path, document_top_tree_uri } =
+                    await show_folder_picker();
+                  await update_workspace(root_path.data?.path, {
+                    path,
+                    document_top_tree_uri,
+                    last_filenode_path: opened_filenode.data?.path,
+                  });
                 }}
               >
                 <div class="size-6 i-tabler:folder-open"></div>

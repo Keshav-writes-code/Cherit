@@ -4,10 +4,7 @@ export interface Node {
   is_directory: boolean;
   children: Node[];
 }
-export type GenericPath = {
-  path: string;
-  document_top_tree_uri: string | null;
-};
+
 export type MenuItem = {
   label: string;
   action?: () => void;
@@ -22,4 +19,5 @@ export type SubmitStates =
   | 'success'
   | 'error';
 
-export type RecentPath = GenericPath & { last_accessed: Date };
+export { type Workspace } from '@/lib/user_activity';
+export * from './schema';
