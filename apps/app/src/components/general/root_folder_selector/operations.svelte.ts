@@ -1,6 +1,5 @@
 import {
   build_file_tree_from_fs,
-  current_platform,
   find_filenode_by_path,
 } from '@/lib/file_tree';
 import {
@@ -11,7 +10,6 @@ import {
   is_filetree_loading,
 } from '@/lib/states';
 import { type Workspace, type GenericPath } from '@/types';
-import { exists } from '@tauri-apps/plugin-fs';
 import { LazyStore } from '@tauri-apps/plugin-store';
 import { toast } from 'svelte-sonner';
 
@@ -51,15 +49,11 @@ async function update_opened_filenode(
   root_path: string
 ) {
   if (!last_filenode_path || !file_tree.data) return;
-  if (current_platform === 'android') {
-  } else {
-    if (!(await exists(last_filenode_path))) return;
-    opened_filenode.data = find_filenode_by_path(
-      file_tree.data,
-      last_filenode_path,
-      root_path
-    );
-  }
+  opened_filenode.data = find_filenode_by_path(
+    file_tree.data,
+    last_filenode_path,
+    root_path
+  );
 }
 // NOTE: Just update the last accessed time and nothing else
 export async function touch_recent_workspaces(
