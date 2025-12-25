@@ -22,8 +22,8 @@
     {#each segments as seg, i}
       <li
         class={i < segments.length - 1
-          ? 'text-[color-mix(in_srgb,var(--color-base-content)_80%,black)]'
-          : ''}
+          ? 'text-[oklch(from_var(--color-base-content)_calc(l*0.6)_c_h)]'
+          : 'text-[oklch(from_var(--color-base-content)_calc(l*0.9)_c_h)]'}
       >
         {seg.replace(/\.md$/, '')}
       </li>
