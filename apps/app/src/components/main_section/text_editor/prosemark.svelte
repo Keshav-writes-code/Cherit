@@ -128,6 +128,8 @@
     --pm-cursor-color: white;
   }
   #codemirror-container {
-    --font: Inter;
+    --font:
+      system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+      'Noto Sans', 'Liberation Sans', Arial, sans-serif;
   }
 </style>
