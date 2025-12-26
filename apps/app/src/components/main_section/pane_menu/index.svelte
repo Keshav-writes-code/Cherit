@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { current_platform_type } from '@/lib/file_tree';
   import { context_menu, pdf_export_status } from '@/lib/states';
   import type { Node } from '@/types';
   import { type MenuItem } from '@/types';
@@ -27,6 +28,8 @@
   }}
 >
   <div
-    class="i-tabler:dots-vertical lt-sm:color-[var(--color-primary)] sm:size-5 size-7.5"
+    class="i-tabler:dots-vertical size-5
+    {current_platform_type == 'mobile' &&
+      'color-[var(--color-primary)] size-7.5'}"
   ></div>
 </button>
