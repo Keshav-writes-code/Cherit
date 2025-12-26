@@ -27,6 +27,6 @@
   }}
 >
   <div
-    class="i-tabler:dots-vertical color-[var(--color-primary)] sm:size-5 size-7.5"
+    class="i-tabler:dots-vertical lt-sm:color-[var(--color-primary)] sm:size-5 size-7.5"
   ></div>
 </button>
