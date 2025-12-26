@@ -68,6 +68,7 @@
     is_contents_changed = false;
   }}
   class="pb-50vh"
+  id="codemirror-container"
 ></div>
 
 <style>
@@ -125,5 +126,8 @@
     --pm-syntax-comment: oklch(74.9% 0.02 252.89);
     --pm-syntax-invalid: oklch(75.93% 0.182 28.91);
     --pm-cursor-color: white;
+  }
+  #codemirror-container {
+    --font: Inter;
   }
 </style>

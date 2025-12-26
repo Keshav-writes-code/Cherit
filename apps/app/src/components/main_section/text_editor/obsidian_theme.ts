@@ -1,6 +1,10 @@
 import { EditorView } from '@codemirror/view';
 
 export const obsidian_theme = EditorView.theme({
+  '.cm-content': {
+    fontSize: '1.7rem',
+    lineHeight: '1.7'
+  },
   '.cm-gutters': {
     opacity: '0',
     transition: 'opacity 0.2s ease',
@@ -17,23 +21,16 @@ export const obsidian_theme = EditorView.theme({
     fontSize: '1.4rem',
     lineHeight: '3rem',
   },
-  '.cm-line': {
-    fontSize: '1.8rem',
-    lineHeight: '3rem',
-    fontFamily:
-      "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
-  },
   '.cm-checkbox': {
     appearance: 'none',
-    width: '1.8rem',
-    height: '1.8rem',
+    width: '1em',
+    height: '1em',
     border: '2px solid #555',
-    borderRadius: '0.3rem',
+    borderRadius: '0.3em',
     backgroundColor: '#111',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     position: 'relative',
-    verticalAlign: 'text-top',
   },
   '.cm-checkbox:hover': {
     borderColor: 'var(--color-accent)',
