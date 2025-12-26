@@ -2,6 +2,7 @@ import {
   build_file_tree_from_fs,
   find_filenode_by_path,
 } from '@/lib/file_tree';
+import { current_platform } from '@/lib/file_tree/utils/platform_utils';
 import {
   opened_filenode,
   file_tree,
@@ -12,6 +13,7 @@ import {
 import { type Workspace, type GenericPath } from '@/types';
 import { LazyStore } from '@tauri-apps/plugin-store';
 import { toast } from 'svelte-sonner';
+import { AndroidFs } from 'tauri-plugin-android-fs-api';
 
 export const user_activity = new LazyStore('user_activity.json');
 export let recent_workspaces: { data: Workspace[] } = $state({ data: [] });
@@ -35,6 +37,9 @@ export async function update_workspace(
     file_tree.data = await build_file_tree_from_fs(generic_path);
     is_filetree_loading.data = false;
     update_opened_filenode(last_filenode_path, generic_path.path);
+    if (current_platform == 'android') {
+      await AndroidFs.persistUriPermission({ uri: path, documentTopTreeUri: document_top_tree_uri })
+    }
 
     await touch_recent_workspaces(new_workspace);
   } catch (e) {
