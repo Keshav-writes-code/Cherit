@@ -36,6 +36,7 @@
     aria-hidden="true"
     onmousedown={() => (is_resizing = true)}
     ondblclick={() => (left_x = undefined)}
-    class={`absolute h-full w-0.8 hover:bg-primary ${is_resizing && 'bg-primary'} transition-all duration-300 cursor-row-resize right-0 z-1`}
+    class="absolute h-full w-0.8 hover:bg-primary transition-all duration-300 cursor-row-resize right-0 z-1 top-0
+    {is_resizing && 'bg-primary'} "
   ></div>
 </div>
