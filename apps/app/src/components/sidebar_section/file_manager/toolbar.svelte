@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { add_new_folder, add_new_note } from '@/lib/file_tree';
+  import {
+    add_new_folder,
+    add_new_note,
+    current_platform_type,
+  } from '@/lib/file_tree';
   import {
     file_tree,
     focused_subtree,
@@ -16,10 +20,15 @@
     hover_newnode_button: boolean;
   } = $props();
   let is_processing = $state(false);
+  let icon_size = current_platform_type == 'desktop' ? 'size-5' : 'size-7';
 </script>
 
 <div
-  class="text-[color-mix(in_srgb,var(--color-base-content)_65%,black)] pt-1.5 flex justify-center *:h-full mb-2"
+  class="text-[color-mix(in_srgb,var(--color-base-content)_65%,black)] pt-1.5 flex *:h-full mb-2
+  {current_platform_type == 'desktop'
+    ? 'justify-center'
+    : 'justify-around b-b-1 b-b-[color-mix(in_srgb,var(--color-base-content)_20%,black)] py-2 *:color-[var(--color-primary)]  '}
+  "
 >
   <button
     aria-label="New File Button"
@@ -53,7 +62,7 @@
         input.select();
       }, 50);
     }}
-    ><div class="i-tabler:edit size-5"></div>
+    ><div class="i-tabler:edit {icon_size}"></div>
   </button>
   <button
     aria-label="New Folder Button"
@@ -78,7 +87,7 @@
       );
       is_processing = false;
     }}
-    ><div class="i-tabler:folder-plus size-5"></div>
+    ><div class="i-tabler:folder-plus {icon_size}"></div>
   </button>
   <!-- <button -->
   <!--   aria-label="Sort Button" -->
@@ -94,7 +103,7 @@
     ><div
       class=" {collapsed_state
         ? 'i-famicons:chevron-expand'
-        : 'i-famicons:chevron-collapse'} size-5"
+        : 'i-famicons:chevron-collapse'} {icon_size}"
     ></div>
   </button>
 </div>
