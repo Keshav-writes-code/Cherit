@@ -22,7 +22,7 @@
     {#each segments as seg, i}
       <li
         class={i < segments.length - 1
-          ? 'text-[oklch(from_var(--color-base-content)_calc(l*0.6)_c_h)]'
+          ? 'text-[oklch(from_var(--color-base-content)_calc(l*0.7)_c_h)]'
           : 'text-[oklch(from_var(--color-base-content)_calc(l*0.9)_c_h)]'}
       >
         {seg.replace(/\.md$/, '')}
