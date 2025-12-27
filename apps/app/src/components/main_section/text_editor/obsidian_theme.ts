@@ -59,7 +59,7 @@ export const obsidian_theme = EditorView.theme({
     margin: '0',
   },
   '.ͼ12': {
-    marginLeft: '0.5px',
+    marginLeft: '0.05em',
   },
   '.ͼ14': {
     fontSize: '1.6rem',
