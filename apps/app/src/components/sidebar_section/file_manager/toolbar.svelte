@@ -24,7 +24,7 @@
 </script>
 
 <div
-  class="text-[color-mix(in_srgb,var(--color-base-content)_65%,black)] pt-1.5 flex *:h-full mb-2
+  class="text-[color-mix(in_srgb,var(--color-base-content)_65%,black)] pt-1.5 flex *:h-full pb-2
   {current_platform_type == 'desktop'
     ? 'justify-center'
     : 'justify-around b-b-1 b-b-[color-mix(in_srgb,var(--color-base-content)_20%,black)] py-2 *:color-[var(--color-primary)]  '}
