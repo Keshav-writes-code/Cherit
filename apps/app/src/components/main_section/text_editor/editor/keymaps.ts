@@ -1,11 +1,28 @@
-import { wrap_selection } from '@/lib/text_editor';
+import { trigger_redo, trigger_undo, wrap_selection } from '@/lib/text_editor';
 import { keymap } from '@codemirror/view';
-import { undo, redo } from '@codemirror/commands';
 
 export const custom_keymaps = keymap.of([
-  { key: 'Mod-z', run: undo },
-  { key: 'Mod-y', run: redo },
-  { key: 'Mod-Shift-z', run: redo },
+  {
+    key: 'Mod-z',
+    run: (view) => {
+      trigger_undo(view);
+      return true;
+    },
+  },
+  {
+    key: 'Mod-y',
+    run: (view) => {
+      trigger_redo(view);
+      return true;
+    },
+  },
+  {
+    key: 'Mod-Shift-z',
+    run: (view) => {
+      trigger_redo(view);
+      return true;
+    },
+  },
   {
     key: 'Mod-b',
     run: (view) => {

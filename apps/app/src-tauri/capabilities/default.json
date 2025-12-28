@@ -18,6 +18,10 @@
     "os:default",
     "android-fs:all",
     "opener:default",
-    "safe-area-insets-css:default"
+    "safe-area-insets-css:default",
+    "clipboard-manager:default",
+    "clipboard-manager:allow-read-text",
+    "clipboard-manager:allow-write-text"
   ]
 }
+

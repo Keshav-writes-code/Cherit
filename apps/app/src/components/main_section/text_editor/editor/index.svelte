@@ -17,6 +17,10 @@
   import { editor_view } from '../editor_state.svelte';
   import { custom_keymaps } from './keymaps';
   import { defaultKeymap } from '@codemirror/commands';
+  import type { MenuItem } from '@/types';
+  import { current_platform_type } from '@/lib/file_tree';
+  import { get_desktop_context_menu } from './context_menu';
+  import { context_menu } from '@/lib/states';
   let {
     text_content,
     write_to_file,
@@ -65,9 +69,19 @@
       newEditor?.destroy();
     };
   });
+  function handle_node_right_click(e: MouseEvent) {
+    let context_menu_items: MenuItem[] | undefined;
+    if (!editor_view.data) return;
+    if (current_platform_type == 'desktop')
+      context_menu_items = get_desktop_context_menu(editor_view.data);
+
+    if (!context_menu_items) return;
+    context_menu.open(e, context_menu_items);
+  }
 </script>
 
 <div
+  role="application"
   bind:this={element}
   onfocusout={() => {
     if (on_focus_out) on_focus_out();
@@ -75,6 +89,7 @@
     write_to_file(editor_view.data.state.doc.toString());
     is_contents_changed = false;
   }}
+  oncontextmenu={(e) => handle_node_right_click(e)}
   class="pb-50vh"
   id="codemirror-container"
   onfocusin={on_focus_in}
