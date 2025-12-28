@@ -79,29 +79,38 @@ export async function add_new_note(
   focused_path: string,
   { document_top_tree_uri }: GenericPath
 ) {
-  let name = find_unused_name('Untitled', subtree, false);
-  let new_file_path;
-  if (current_platform == 'android') {
-    await AndroidFs.createNewFile(
-      { uri: focused_path, documentTopTreeUri: document_top_tree_uri },
-      `${name}.md`,
-      'plain/text'
-    );
-    new_file_path = focused_path + encodeURIComponent(`/${name}.md`);
-  } else {
-    new_file_path = join_path(focused_path, name + '.md');
-    await create(new_file_path);
+  try {
+    let name = find_unused_name('Untitled', subtree, false);
+    let new_file_path;
+    if (current_platform == 'android') {
+      await AndroidFs.createNewFile(
+        { uri: focused_path, documentTopTreeUri: document_top_tree_uri },
+        `${name}.md`,
+        'plain/text'
+      );
+      new_file_path = focused_path + encodeURIComponent(`/${name}.md`);
+    } else {
+      new_file_path = join_path(focused_path, name + '.md');
+      await create(new_file_path);
+    }
+    subtree.push({
+      name,
+      path: new_file_path,
+      is_directory: false,
+      children: [],
+    });
+    sort_nodes(subtree);
+    const node = subtree.find((n) => n.path === new_file_path);
+    if (!node) throw new Error('Failed to find the newly created note node.');
+    return node;
+  } catch (e) {
+    console.error(e);
+    if (e instanceof Error)
+      toast.error('Error Creating Note', { description: e.message });
+    else if (typeof e == 'string') {
+      toast.error('Error Creating Note', { description: e });
+    }
   }
-  subtree.push({
-    name,
-    path: new_file_path,
-    is_directory: false,
-    children: [],
-  });
-  sort_nodes(subtree);
-  const node = subtree.find((n) => n.path === new_file_path);
-  if (!node) throw new Error('Failed to find the newly created note node.');
-  return node;
 }
 export async function add_new_folder(
   subtree: Node[],
