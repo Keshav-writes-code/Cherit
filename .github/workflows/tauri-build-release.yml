@@ -35,40 +35,70 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      # ------------- Node -------------
+      # ------------- Node & Frontend Cache -------------
       - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
+
       - name: setup bun
         uses: oven-sh/setup-bun@v2
-      - name: install frontend dependencies
-        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: bun i # change this to npm or pnpm depending on which one you use.
 
-      # ------------- Rust -------------
+      # NEW: Cache Bun dependencies
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: install frontend dependencies
+        run: bun i
+
+      # ------------- Rust & Cargo Cache -------------
       - name: install Rust stable (desktop)
         if: matrix.mobile == ''
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-apple-darwin,x86_64-apple-darwin
+
       - name: install Rust stable (android)
         if: matrix.mobile == 'android'
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+      # MODIFIED: Fixed workspaces syntax and ensured shared key matches matrix
       - uses: Swatinem/rust-cache@v2
         with:
           cache-on-failure: true
-          workspaces: apps/app/src-tauri/ -> target
+          # Point this to the folder containing Cargo.toml.
+          # The action automatically handles the 'target' directory.
+          workspaces: apps/app/src-tauri
+          # Adding a key based on the job matrix helps prevent cache conflicts between platforms
+          key: ${{ matrix.platform }}-${{ matrix.args }}
 
       # ------------- Android -------------
       - name: Set up JDK
         if: matrix.mobile == 'android'
         uses: actions/setup-java@v5
         with:
-          java-version: '17' # Maybe 17
+          java-version: '17'
           distribution: 'temurin'
+
+      # NEW: Cache Gradle for Android
+      - name: Cache Gradle
+        if: matrix.mobile == 'android'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Setup Android SDK
         if: matrix.mobile == 'android'
         uses: android-actions/setup-android@v3
