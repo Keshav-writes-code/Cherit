@@ -3,7 +3,6 @@
   import Sidebar from '@/components/sidebar_section/index.svelte';
   import GlobalContextMenu from '@/components/general/context_menu/index.svelte';
   import { Toaster } from 'svelte-sonner';
-  import { current_platform_type } from '@/lib/file_tree';
   import Main from '@/components/main_section/index.svelte';
   import { attach_window_listeners } from '@/lib/window_listeners';
   $effect(() => {
