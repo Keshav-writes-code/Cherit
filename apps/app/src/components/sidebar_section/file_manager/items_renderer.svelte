@@ -13,7 +13,7 @@
   import {
     get_desktop_context_menu,
     get_mobile_context_menu,
-  } from './file_manager_context_menu';
+  } from './context_menu';
 
   let {
     focused_directory = $bindable(),
