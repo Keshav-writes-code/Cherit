@@ -2,11 +2,11 @@
   import { current_platform_type, rename_file } from '@/lib/file_tree';
   import { focused_subtree } from '@/lib/states';
   import type { Node } from '@/types';
-  import { type EditorView } from '@codemirror/view';
   import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
   import { toast } from 'svelte-sonner';
-  import Prosemark from './prosemark.svelte';
+  import Editor from './editor/index.svelte';
   import MobileToolbar from './editor_toolbar_mobile/index.svelte';
+  import { editor_view } from './editor_state.svelte';
 
   let {
     filenode = $bindable(),
@@ -16,7 +16,6 @@
   let text_content: string | undefined = $state();
   let current_file_name: string | undefined = $state();
   let is_file_named_changed: boolean = $state(false);
-  let editor_view: EditorView | undefined = $state();
   let mobile_toolbar_visible: boolean = $state(false);
 
   $effect(() => {
@@ -60,16 +59,15 @@
       onkeydown={async (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          if (editor_view) editor_view.focus();
+          if (editor_view.data) editor_view.data.focus();
         }
       }}
       bind:value={current_file_name}
       class="w-full outline-none b-0 focus:ring-0 mb-16 mt-10 font-semibold text-5xl"
     />
 
-    <Prosemark
+    <Editor
       {text_content}
-      bind:editor_view
       write_to_file={(content) => {
         if (!filenode) return;
         writeTextFile(filenode?.path, content);

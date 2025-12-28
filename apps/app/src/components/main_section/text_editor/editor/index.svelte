@@ -13,18 +13,17 @@
   import { htmlBlockExtension } from '@prosemark/render-html';
   import { languages } from '@codemirror/language-data';
   import { indentUnit } from '@codemirror/language';
-  import { obsidian_theme } from './obsidian_theme';
+  import { obsidian_theme } from './editor_theme';
+  import { editor_view } from '../editor_state.svelte';
   let {
     text_content,
     write_to_file,
     on_focus_in,
     on_focus_out,
-    editor_view = $bindable(),
   }: {
     text_content: string | undefined;
     on_focus_in?: () => void;
     on_focus_out?: () => void;
-    editor_view: EditorView | undefined;
     write_to_file: (markdown_content_state: string) => void;
   } = $props();
   let element: HTMLDivElement | undefined = $state();
@@ -56,7 +55,7 @@
         ],
       });
     }
-    editor_view = newEditor;
+    editor_view.data = newEditor;
 
     return () => {
       newEditor?.destroy();
@@ -68,8 +67,8 @@
   bind:this={element}
   onfocusout={() => {
     if (on_focus_out) on_focus_out();
-    if (!editor_view || !is_contents_changed) return;
-    write_to_file(editor_view.state.doc.toString());
+    if (!editor_view.data || !is_contents_changed) return;
+    write_to_file(editor_view.data.state.doc.toString());
     is_contents_changed = false;
   }}
   class="pb-50vh"

@@ -29,6 +29,7 @@
     "vitest": "^4.0.16"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.10.1",
     "@codemirror/lang-markdown": "^6.5.0",
     "@codemirror/language": "^6.12.1",
     "@codemirror/language-data": "^6.5.2",
@@ -39,6 +40,7 @@
     "@lezer/markdown": "^1.6.2",
     "@prosemark/core": "^0.0.4",
     "@prosemark/render-html": "^0.0.5",
+    "@saurl/tauri-plugin-safe-area-insets-css-api": "^0.1.0",
     "@tauri-apps/api": "^2.9.1",
     "@tauri-apps/plugin-dialog": "~2.4.2",
     "@tauri-apps/plugin-fs": "~2.4.4",
@@ -55,7 +57,6 @@
     "svelte-animated-details": "^1.0.2",
     "svelte-sonner": "^1.0.7",
     "tauri-plugin-android-fs-api": "^24.0.0",
-    "zod": "^4.2.1",
-    "@saurl/tauri-plugin-safe-area-insets-css-api": "^0.1.0"
+    "zod": "^4.2.1"
   }
 }
