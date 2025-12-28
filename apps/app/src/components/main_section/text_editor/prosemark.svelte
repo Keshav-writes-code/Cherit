@@ -17,9 +17,13 @@
   let {
     text_content,
     write_to_file,
+    on_focus_in,
+    on_focus_out,
     editor_view = $bindable(),
   }: {
     text_content: string | undefined;
+    on_focus_in?: () => void;
+    on_focus_out?: () => void;
     editor_view: EditorView | undefined;
     write_to_file: (markdown_content_state: string) => void;
   } = $props();
@@ -63,12 +67,14 @@
 <div
   bind:this={element}
   onfocusout={() => {
+    if (on_focus_out) on_focus_out();
     if (!editor_view || !is_contents_changed) return;
     write_to_file(editor_view.state.doc.toString());
     is_contents_changed = false;
   }}
   class="pb-50vh"
   id="codemirror-container"
+  onfocusin={on_focus_in}
 ></div>
 
 <style>

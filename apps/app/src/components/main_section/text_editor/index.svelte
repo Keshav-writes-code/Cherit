@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { rename_file } from '@/lib/file_tree';
+  import { current_platform_type, rename_file } from '@/lib/file_tree';
   import { focused_subtree } from '@/lib/states';
   import type { Node } from '@/types';
   import { type EditorView } from '@codemirror/view';
   import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
   import { toast } from 'svelte-sonner';
   import Prosemark from './prosemark.svelte';
+  import MobileToolbar from './editor_toolbar_mobile/index.svelte';
 
   let {
     filenode = $bindable(),
@@ -16,6 +17,7 @@
   let current_file_name: string | undefined = $state();
   let is_file_named_changed: boolean = $state(false);
   let editor_view: EditorView | undefined = $state();
+  let mobile_toolbar_visible: boolean = $state(false);
 
   $effect(() => {
     if (!filenode) return;
@@ -72,6 +74,16 @@
         if (!filenode) return;
         writeTextFile(filenode?.path, content);
       }}
+      on_focus_in={() => {
+        mobile_toolbar_visible = true;
+      }}
+      on_focus_out={() => {
+        mobile_toolbar_visible = false;
+      }}
     />
   </div>
 </div>
+
+{#if current_platform_type == 'mobile' && mobile_toolbar_visible}
+  <MobileToolbar />
+{/if}
