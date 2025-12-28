@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { EditorView } from '@codemirror/view';
+  import { EditorView, keymap } from '@codemirror/view';
   import { EditorState } from '@codemirror/state';
   import { markdown } from '@codemirror/lang-markdown';
   import { GFM } from '@lezer/markdown';
@@ -15,6 +15,8 @@
   import { indentUnit } from '@codemirror/language';
   import { obsidian_theme } from './editor_theme';
   import { editor_view } from '../editor_state.svelte';
+  import { custom_keymaps } from './keymaps';
+  import { defaultKeymap } from '@codemirror/commands';
   let {
     text_content,
     write_to_file,
@@ -35,6 +37,8 @@
         doc: text_content,
         parent: element,
         extensions: [
+          custom_keymaps,
+          keymap.of(defaultKeymap),
           EditorView.lineWrapping,
           EditorState.tabSize.of(8),
           indentUnit.of('\t'),
