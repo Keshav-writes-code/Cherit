@@ -7,15 +7,24 @@ export const wrap_selection = (
   wrap_str: string
 ) => {
   if (!view) return;
+
   view.dispatch(
-    view.state.changeByRange((range) => ({
-      changes: {
-        from: range.from,
-        to: range.to,
-        insert: `${wrap_str}${view.state.sliceDoc(range.from, range.to)}${wrap_str}`,
-      },
-      range: range,
-    }))
+    view.state.changeByRange((range) => {
+      const content = view.state.sliceDoc(range.from, range.to);
+      const newContent = `${wrap_str}${content}${wrap_str}`;
+
+      return {
+        changes: {
+          from: range.from,
+          to: range.to,
+          insert: newContent,
+        },
+        range: EditorSelection.range(
+          range.from,
+          range.from + newContent.length
+        ),
+      };
+    })
   );
   return true;
 };
