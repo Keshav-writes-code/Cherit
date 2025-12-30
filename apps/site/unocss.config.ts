@@ -38,11 +38,11 @@ export default defineConfig({
     presetDaisyui(),
     presetTypography(),
     presetWebFonts({
-      provider: "bunny",
+      provider: "fontshare",
       fonts: {
-        sans: "Atkinson Hyperlegible",
-        sans2: "Alata",
-        mono: "Fira Code",
+        sans: "Satoshi",
+        recoleta: "Recoleta-Regular",
+        nightingale: "DTNightingale",
       },
       processors: createLocalFontProcessor({
         cacheDir: "node_modules/.cache/unocss/fonts",
