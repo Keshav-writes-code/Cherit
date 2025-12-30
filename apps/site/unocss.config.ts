@@ -1,5 +1,3 @@
-// uno.config.ts
-
 import { presetDaisyui } from "@0x-jerry/unocss-preset-daisyui";
 import { createLocalFontProcessor } from "@unocss/preset-web-fonts/local";
 import {
@@ -8,7 +6,7 @@ import {
   presetWebFonts,
   transformerVariantGroup,
   presetTypography,
-  presetWind4,
+  presetMini,
 } from "unocss";
 
 export default defineConfig({
@@ -29,11 +27,7 @@ export default defineConfig({
     ["isolate", { isolation: "isolate" }],
   ],
   presets: [
-    presetWind4({
-      preflights: {
-        reset: false,
-      },
-    }),
+    presetMini(),
     presetIcons(),
     presetDaisyui(),
     presetTypography(),
