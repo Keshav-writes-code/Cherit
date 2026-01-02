@@ -1,3 +1,4 @@
+
 ---
 import { Image } from "astro:assets";
 import logo from "@/assets/logo_500.png";
@@ -6,11 +7,13 @@ const links = {
   download: "/download",
 };
 const git_start_count =   (await (await fetch('https://api.github.com/repos/Keshav-writes-code/Cherit')).json()).stargazers_count;
+
 ---
 
+
 <header
-  class="h-18 p-4 rounded-box mt-3 flex  b-1 b-[color-mix(in_srgb,var(--color-base-content)_20%,black)] w-full liquid-glass"
-    id="my-glass-panel"
+  class="h-18 p-4 rounded-box mt-3 flex  b-1 b-[color-mix(in_srgb,var(--color-base-content)_20%,black)]  mx-auto transition-width duration-300  w-full "
+  id="navbar"
 >
   <a
     class="font-nightingale font-recoleta gap-2 h-fullw w-52 items-center flex text-2xl"
@@ -28,8 +31,23 @@ const git_start_count =   (await (await fetch('https://api.github.com/repos/Kesh
     <a href="https://github.com/Keshav-writes-code/Cherit" class="btn btn-ghost flex  items-center " target="_blank" >
       <div class="i-mdi:github size-5.5 " >  </div>
       {git_start_count}
-
     </a>
   </div>
+  
 </header>
-
+<script>
+function add_width_animation(){
+  const nav = document.getElementById('navbar')
+  if(!nav)return
+  window.addEventListener('scroll',()=>{
+    if(window.scrollY <= 0){
+      nav.classList.remove('w-70%')
+      nav.classList.add('w-full')
+    }else{
+      nav.classList.remove('w-full')
+      nav.classList.add('w-70%')
+    }
+  })
+}
+add_width_animation()
+</script>
