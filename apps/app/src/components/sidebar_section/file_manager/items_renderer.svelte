@@ -14,6 +14,7 @@
     get_desktop_context_menu,
     get_mobile_context_menu,
   } from './context_menu';
+  import { flip } from 'svelte/animate';
 
   let {
     focused_directory = $bindable(),
@@ -121,8 +122,9 @@
       {current_platform_type == 'mobile' ? ' menu-lg' : 'menu-sm'}
       menu h-full rounded-box relative w-full select-none overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide flex before:content-none flex-col gap-0.5 pt-0.5"
   >
-    {#each file_tree.data as node}
+    {#each file_tree.data as node (node.path)}
       <li
+        animate:flip={{ duration: 300 }}
         class="{focused_node == node &&
           'outline-[color-mix(in_srgb,var(--color-base-content)_30%,black)] outline-2 outline-solid '} rounded-box"
       >
@@ -216,8 +218,9 @@
         'bg-accent/10 outline-dashed outline-2 outline-accent '}
       "
     >
-      {#each nodes as node}
+      {#each nodes as node (node.path)}
         <li
+          animate:flip={{ duration: 300 }}
           class="{focused_node == node &&
             'outline-[color-mix(in_srgb,var(--color-base-content)_30%,black)] outline-2 outline-solid '} rounded-box"
         >
