@@ -133,8 +133,8 @@ jobs:
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         with:
           projectPath: 'apps/app'
-          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: 'App v__VERSION__'
+          tagName: cherit-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'Cherit v__VERSION__'
           releaseAssetNamePattern: '[name]-v[version]-[platform]-[arch][ext]'
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
