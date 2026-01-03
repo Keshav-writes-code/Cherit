@@ -6,7 +6,7 @@ import {
   presetWebFonts,
   transformerVariantGroup,
   presetTypography,
-  presetMini,
+  presetWind4,
 } from "unocss";
 
 export default defineConfig({
@@ -27,7 +27,11 @@ export default defineConfig({
     ["isolate", { isolation: "isolate" }],
   ],
   presets: [
-    presetMini(),
+    presetWind4({
+      preflights: {
+        reset: false,
+      },
+    }),
     presetIcons(),
     presetDaisyui(),
     presetTypography(),

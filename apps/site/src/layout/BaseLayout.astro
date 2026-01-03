@@ -4,6 +4,7 @@ import "daisyui/theme/dim.css";
 import "daisyui/theme/dark.css";
 import "daisyui/theme/black.css";
 import "../styles/fonts.css";
+import { ClientRouter } from "astro:transitions";
 type Props = {
   class?: string;
   theme?: string;
@@ -17,6 +18,7 @@ const { class: classes, theme = "dark" }: Props = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title></title>
+    <ClientRouter />
   </head>
   <body class={`${classes}`}>
     <slot />

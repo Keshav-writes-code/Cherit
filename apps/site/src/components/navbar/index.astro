@@ -1,0 +1,24 @@
+---
+import { Image } from "astro:assets";
+import logo from "@/assets/logo_500.png";
+import InteractiveNav from "./interactive.svelte";
+const links = {
+  download: "/download",
+};
+const git_star_count = (
+  await (
+    await fetch("https://api.github.com/repos/Keshav-writes-code/Cherit")
+  ).json()
+).stargazers_count;
+---
+
+<InteractiveNav nav_links={links} git_star_count={git_star_count} client:load>
+  <Image
+    width={34}
+    height={34}
+    src={logo}
+    class="h-34px w-auto"
+    alt="Logo"
+    slot="logo"
+  />
+</InteractiveNav>
