@@ -23,10 +23,12 @@ import Navbar from "@/components/navbar/index.astro";
       </div>
     </div>
   </div>
-  <div class="w-full grid place-items-center fixed px-5 max-w-screen-xl">
+  <div
+    class="w-full grid place-items-center fixed px-5 max-w-screen-xl isolate z-1"
+  >
     <Navbar />
   </div>
-  <main class="w-full grid place-items-center px-5 max-w-screen-xl">
+  <main class="isolate w-full grid place-items-center px-5 max-w-screen-xl">
     <section class="mt-40">
       <h1
         class="text-center bg-linear-to-br bg-clip-text p-2 text-4xl font-semibold text-transparent sm:text-6xl from-zinc-50 to-zinc-400 tracking-tight leading-[1.1]"
