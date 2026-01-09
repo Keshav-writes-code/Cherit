@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layout/BaseLayout.astro";
 import Navbar from "@/components/navbar/index.astro";
+import DownloadBtnHeadless from "@/components/common/download_button_headless.svelte";
 ---
 
 <BaseLayout
@@ -48,6 +49,18 @@ import Navbar from "@/components/navbar/index.astro";
         A lightning-fast, open-source knowledge base built with Tauri. <br />
         Experience the power of Markdown in a 3MB featherweight package
       </p>
+      <DownloadBtnHeadless
+        class="group flex justify-center w-60 hover:scale-103 transition-property-transform duration-500 mx-auto mt-12"
+      >
+        <p>Download</p>
+
+        <span class="w-5">
+          <div
+            class="absolute group-hover:transform-translate-x-1.5 i-tabler:chevron-right size-6 transition-transform translate-y--50%"
+          >
+          </div>
+        </span>
+      </DownloadBtnHeadless>
     </section>
   </main>
 </BaseLayout>
