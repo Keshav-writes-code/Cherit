@@ -5,8 +5,6 @@
     $props();
 </script>
 
-<button
-  class="{classes} btn btn-primary btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl"
->
+<button class="{classes} ">
   {@render children()}
 </button>
