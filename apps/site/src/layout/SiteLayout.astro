@@ -1,0 +1,25 @@
+---
+import BaseLayout from "@/layout/BaseLayout.astro";
+import Navbar from "@/components/navbar/index.astro";
+type Props = {
+  class?: string;
+};
+let { class: classes }: Props = Astro.props;
+---
+
+<BaseLayout
+  theme="dark"
+  class="font-sans isolate bg-black min-h-screen h-full min-h-screen flex flex-col items-center"
+>
+  <div
+    class="w-full grid place-items-center fixed px-5 max-w-screen-xl isolate z-1"
+    transition:persist
+  >
+    <Navbar />
+  </div>
+  <main
+    class=`isolate w-full grid place-items-center px-5 max-w-screen-xl ${classes} `
+  >
+    <slot />
+  </main>
+</BaseLayout>
