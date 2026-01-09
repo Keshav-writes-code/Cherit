@@ -1,4 +1,5 @@
 ---
+import { base } from "astro:config/client";
 import SiteLayout from "@/layout/SiteLayout.astro";
 import DownloadBtnHeadless from "@/components/common/download_button_headless.svelte";
 ---
@@ -43,15 +44,21 @@ import DownloadBtnHeadless from "@/components/common/download_button_headless.sv
       <DownloadBtnHeadless
         class="btn btn-primary btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 [transition-property:_scale,_background] duration-300 mx-auto mt-12 grow"
       >
-        <p>Download</p>
+        Download
+      </DownloadBtnHeadless>
+      <a
+        class="btn btn-primary hover:bg-base-100 btn-soft btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 transition-property-transform [transition-property:_scale,_background] duration-300 mx-auto mt-12 grow"
+        href=`${base}/demo`
+      >
+        <p>Demo</p>
 
-        <span class="w-5">
+        <span class="w-5 relative">
           <div
-            class="absolute translate-y--50% w-0 group-hover:w-4 transition-width h-0.5 bg-white"
+            class="absolute translate-y--50% w-0 left-1 group-hover:w-3 transition-width duration-300 h-0.5 bg-current"
           >
           </div>
           <div
-            class="absolute group-hover:transform-translate-x-1 i-tabler:chevron-right size-6 transition-transform translate-y--50%"
+            class="absolute group-hover:transform-translate-x-1 i-tabler:chevron-right size-6 transition-transform duration-300 translate-y--50%"
           >
           </div>
         </span>

@@ -1,0 +1,10 @@
+---
+import Editor from "@/components/editor/index.svelte";
+import SiteLayout from "@/layout/SiteLayout.astro";
+---
+
+<SiteLayout class="flex">
+  <div class="mt-30 flex min-h-0 grow w-full overflow-y-auto">
+    <Editor client:load />
+  </div>
+</SiteLayout>
