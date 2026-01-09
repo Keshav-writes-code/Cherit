@@ -1,4 +1,8 @@
-import { trigger_redo, trigger_undo, wrap_selection } from '@/lib/text_editor';
+import {
+  trigger_redo,
+  trigger_undo,
+  wrap_selection,
+} from '../../../../lib/text_editor';
 import { keymap } from '@codemirror/view';
 
 export const custom_keymaps = keymap.of([
