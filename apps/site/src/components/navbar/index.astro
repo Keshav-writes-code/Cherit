@@ -2,8 +2,9 @@
 import { Image } from "astro:assets";
 import logo from "@/assets/logo_500.png";
 import InteractiveNav from "./interactive.svelte";
+import { base } from "astro:config/client";
 const links = {
-  download: "/download",
+  download: `${base}/download`,
 };
 const git_star_count = (
   await (
