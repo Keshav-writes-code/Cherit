@@ -19,6 +19,7 @@ let { class: classes }: Props = Astro.props;
   </div>
   <main
     class=`isolate w-full grid place-items-center px-5 max-w-screen-xl ${classes} `
+    transition:animate="slide"
   >
     <slot />
   </main>
