@@ -1,10 +1,14 @@
 ---
+interface Props {
+  class?: string;
+}
+let { class: classes } = Astro.props;
 import { base } from "astro:config/client";
 import DownloadBtnHeadless from "@/components/common/download_button_headless.svelte";
 import Screenshots from "./screenshots.astro";
 ---
 
-<section class="mt-40 w-full">
+<section class=`${classes}  w-full`>
   <div
     class="flex justify-center mb-8 animate-in slide-in-b-2 fade-in-0 animate-duration-500 animate-delay-400 animate-fill-both"
   >
