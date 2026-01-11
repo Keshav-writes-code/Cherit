@@ -8,10 +8,18 @@ interface Props {
 let { class: classes } = Astro.props;
 ---
 
-<div class=` ${classes} `>
-  <footer class="mx-auto max-w-screen-2xl px-4 md:px-8">
+<div class=` ${classes} w-full b-t-1 b-t-[var(--color-base-100)] `>
+  <footer class="mx-auto max-w-screen-2xl px-4 md:px-8 max-w-screen-xl">
     <div
-      class="mb-16 grid grid-cols-2 gap-12 pt-10 md:grid-cols-4 lg:grid-cols-5 lg:gap-8 lg:pt-12"
+      class="mb-16
+    grid
+    grid-cols-2
+    gap-12
+    pt-10
+    md:grid-cols-4
+    lg:grid-cols-5
+    lg:gap-8
+    lg:pt-12"
     >
       <div class="col-span-full lg:col-span-2">
         <!-- logo - start -->
@@ -117,11 +125,31 @@ let { class: classes } = Astro.props;
       </div>
       <!-- nav - end -->
     </div>
-
     <div
-      class="border-t border-gray-800 py-8 text-center text-sm text-gray-400"
+      class="flex flex-col items-center justify-between gap-4 md:flex-row b-t-1 py-8 b-t-[var(--color-base-100)] font-bold"
     >
-      © 2021 - Present Flowrift. All rights reserved.
+      <div class="text-center md:text-left">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          © 2022 - {new Date().getFullYear()}
+          <a
+            href="https://github.com/Keshav-writes-code"
+            target="_blank"
+            class="link link-primary"
+          >
+            keshav-writes-code
+          </a>
+        </p>
+        <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+          Licensed under the
+          <a
+            href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
+            target="_blank"
+            class="link hover:link-primary"
+          >
+            GPLv2
+          </a>
+        </p>
+      </div>
     </div>
   </footer>
 </div>
