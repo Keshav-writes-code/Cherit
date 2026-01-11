@@ -6,7 +6,10 @@ let { class: classes } = Astro.props;
 ---
 
 <!-- Screen 2: The Weight Problem (Comparison) -->
-<section id="speed" class=` ${classes} section-container isolate z-0 pb-40`>
+<section
+  class=`${classes} section-container isolate z-0 pb-40`
+  transition:persist
+>
   <div class="container mx-auto">
     <div class="text-center mb-16 animate-on-scroll">
       <h2 class="text-4xl md:text-5xl font-bold mb-4">Size Matters</h2>
