@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layout/BaseLayout.astro";
 import Navbar from "@/components/navbar/index.astro";
+import Footer from "@/components/common/footer.astro";
 interface Props {
   class?: string;
 }
@@ -23,4 +24,5 @@ let { class: classes }: Props = Astro.props;
   >
     <slot />
   </main>
+  <Footer class="max-w-screen-xl" />
 </BaseLayout>
