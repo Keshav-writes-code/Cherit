@@ -1,0 +1,90 @@
+---
+import { Image } from "astro:assets";
+
+// 1. Get images
+const bgs = Object.values(
+  import.meta.glob("@/assets/images/backgrounds/*", { eager: true }),
+).map((f: any) => f.default);
+const desktop_screens = Object.values(
+  import.meta.glob("@/assets/images/screenshots/desktop/*", { eager: true }),
+).map((f: any) => f.default);
+const mobile_screens = Object.values(
+  import.meta.glob("@/assets/images/screenshots/mobile/*", { eager: true }),
+).map((f: any) => f.default);
+
+// 2. Sync Lists: Cut the longer list so both match perfectly
+const count = Math.min(
+  bgs.length,
+  desktop_screens.length,
+  mobile_screens.length,
+);
+const bgList = bgs.slice(0, count);
+const desktop_screen_list = desktop_screens.slice(0, count);
+const mobile_screen_list = mobile_screens.slice(0, count);
+
+// 3. Animation Logic
+const speed = 3; // seconds
+const total = count * speed;
+const step = 100 / count;
+const css = `@keyframes fade { 0% {opacity:0} ${step * 0.2}% {opacity:1} ${step * 0.8}% {opacity:1} ${step}% {opacity:0} }`;
+---
+
+<div
+  class="relative w-full max-w-250 aspect-video mx-auto rounded-2xl border border-gray-200 dark:border-gray-800 p-2"
+>
+  <div
+    class="grid h-full w-full place-items-center bg-base-100 border rounded-1 overflow-hidden dark:border-gray-800 dark:bg-gray-900/50"
+  >
+    {
+      bgList.map((img, i) => (
+        <Image
+          src={img}
+          alt=""
+          class="col-start-1 row-start-1 h-full w-full object-cover opacity-0"
+          style={{ animation: `fade ${total}s linear infinite ${i * speed}s` }}
+        />
+      ))
+    }
+  </div>
+
+  <div
+    class="mockup-window absolute left-1/2 top-1/2 h-4/5 w-4/5 -translate-x-1/2 -translate-y-1/2 border border-base-300 bg-base-100 pt-0 before:hidden"
+  >
+    <div class="grid h-full w-full place-items-center overflow-hidden">
+      {
+        desktop_screen_list.map((img, i) => (
+          <Image
+            src={img}
+            alt=""
+            class="col-start-1 row-start-1 h-full w-full object-fill opacity-0"
+            style={{
+              animation: `fade ${total}s linear infinite ${i * speed}s`,
+            }}
+          />
+        ))
+      }
+    </div>
+  </div>
+  <div
+    class="mockup-phone rotate--6 hover:(rotate-0 scale-105%) origin-br transition-transform shadow-xl b-[var(--color-base-200)] outline-1 outline-gray-800 absolute w-60 p-0 rounded-8 right--10 bottom--10"
+  >
+    <div class="mockup-phone-display rounded-none text-white bg-neutral-900">
+      <div class="grid h-full w-full place-items-center overflow-hidden">
+        {
+          mobile_screen_list.map((img, i) => (
+            <Image
+              src={img}
+              alt=""
+              class="col-start-1 row-start-1 h-full w-full object-fill opacity-0"
+              style={{
+                animation: `fade ${total}s linear infinite ${i * speed}s`,
+              }}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<style set:html={css}></style>

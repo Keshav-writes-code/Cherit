@@ -1,4 +1,5 @@
 import { presetDaisyui } from "@0x-jerry/unocss-preset-daisyui";
+import { presetAnimations } from "unocss-preset-animations";
 import { createLocalFontProcessor } from "@unocss/preset-web-fonts/local";
 import {
   defineConfig,
@@ -31,7 +32,9 @@ export default defineConfig({
       preflights: {
         reset: false,
       },
+      dark: "media",
     }),
+    presetAnimations(),
     presetIcons(),
     presetDaisyui(),
     presetTypography(),

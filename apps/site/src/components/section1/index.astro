@@ -1,0 +1,90 @@
+---
+import { base } from "astro:config/client";
+import DownloadBtnHeadless from "@/components/common/download_button_headless.svelte";
+import Screenshots from "./screenshots.astro";
+---
+
+<section class="mt-40 w-full">
+  <div
+    class="flex justify-center mb-8 animate-in slide-in-b-2 fade-in-0 animate-duration-500 animate-delay-400 animate-fill-both"
+  >
+    <a
+      href="/download"
+      class="group inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/50 px-4 py-1.5 text-sm font-medium text-gray-600 backdrop-blur-sm transition-colors hover:bg-white hover:text-gray-900 dark:border-gray-800 dark:bg-gray-950/50 dark:text-gray-400 dark:hover:bg-gray-950 dark:hover:text-white shadow-sm hover:shadow-md"
+    >
+      <span class="relative flex h-2 w-2">
+        <span
+          class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"
+        ></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 bg-teal-500"
+        ></span>
+      </span>
+      <span>All major platforms supported!</span>
+      <span class="w-1 relative">
+        <div
+          class="absolute translate-y--50% w-0 left-1 group-hover:w-2 transition-width duration-300 h-0.5 bg-current"
+        >
+        </div>
+        <div
+          class="absolute group-hover:transform-translate-x-1 i-tabler:chevron-right size-4 transition-transform duration-300 translate-y--50%"
+        >
+        </div>
+      </span>
+
+      <span
+        class="iconify i-material-symbols:arrow-forward text-gray-400 transition-transform group-hover:translate-x-0.5"
+        aria-hidden="true"
+        style=""
+      >
+      </span>
+    </a>
+  </div>
+  <h1
+    class="text-center bg-linear-to-br bg-clip-text p-2 text-4xl font-semibold text-transparent sm:text-6xl from-zinc-50 to-zinc-400 tracking-tight leading-[1.1] animate-in slide-in-b-2 fade-in-0 animate-duration-500 animate-delay-100 animate-fill-both"
+  >
+    <span> Your second brain </span>
+    <br />
+    <span
+      class="font-bold text-violet-400 isolate
+  text-shadow-[0_0_5px_#6633EE40,_0_0_20px_#6633EE40,_0_0_40px_#6633EE40,_0_0_80px_#6633EE40,_0_0_120px_#6633EE40]"
+    >
+      just lost the weight
+    </span>
+  </h1>
+  <p
+    class="mt-8 mx-auto text-center text-pretty text-lg md:text-xl lg:text-xl text-zinc-300 font-normal leading-relaxed max-w-3xl animate-in slide-in-b-4 fade-in-0 animate-duration-500 animate-delay-200 animate-fill-both"
+  >
+    A lightning-fast, open-source knowledge base built with Tauri. <br />
+    Experience the power of Markdown in a 3MB featherweight package
+  </p>
+  <div
+    class="flex justify-center gap-6 items-start mt-12 *:w-min animate-in slide-in-b-4 fade-in-0 animate-duration-500 animate-fill-both animate-delay-300"
+  >
+    <DownloadBtnHeadless
+      class="btn btn-primary btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 [transition-property:_scale,_background] duration-300"
+    >
+      <div class="i-tabler:download size-6"></div>
+      Download
+    </DownloadBtnHeadless>
+    <a
+      class="btn btn-primary hover:bg-base-100 btn-soft btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 transition-property-transform [transition-property:_scale,_background] duration-300"
+      href=`${base}/demo`
+    >
+      <p>Demo</p>
+
+      <span class="w-5 relative">
+        <div
+          class="absolute translate-y--50% w-0 left-1 group-hover:w-3 transition-width duration-300 h-0.5 bg-current"
+        >
+        </div>
+        <div
+          class="absolute group-hover:transform-translate-x-1 i-tabler:chevron-right size-6 transition-transform duration-300 translate-y--50%"
+        >
+        </div>
+      </span>
+    </a>
+  </div>
+  <div class="mt-20">
+    <Screenshots />
+  </div>
+</section>

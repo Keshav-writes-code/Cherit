@@ -1,7 +1,6 @@
 ---
-import { base } from "astro:config/client";
 import SiteLayout from "@/layout/SiteLayout.astro";
-import DownloadBtnHeadless from "@/components/common/download_button_headless.svelte";
+import Section1 from "@/components/section1/index.astro";
 ---
 
 <SiteLayout>
@@ -21,48 +20,5 @@ import DownloadBtnHeadless from "@/components/common/download_button_headless.sv
       </div>
     </div>
   </div>
-  <section class="mt-40">
-    <h1
-      class="text-center bg-linear-to-br bg-clip-text p-2 text-4xl font-semibold text-transparent sm:text-6xl from-zinc-50 to-zinc-400 tracking-tight leading-[1.1]"
-    >
-      <span> Your second brain </span>
-      <br />
-      <span
-        class="font-bold text-violet-400 isolate
-  text-shadow-[0_0_5px_#6633EE40,_0_0_20px_#6633EE40,_0_0_40px_#6633EE40,_0_0_80px_#6633EE40,_0_0_120px_#6633EE40]"
-      >
-        just lost the weight
-      </span>
-    </h1>
-    <p
-      class="mt-8 text-center text-pretty text-lg md:text-xl lg:text-xl text-zinc-300 font-normal leading-relaxed max-w-3xl"
-    >
-      A lightning-fast, open-source knowledge base built with Tauri. <br />
-      Experience the power of Markdown in a 3MB featherweight package
-    </p>
-    <div class="flex gap-8">
-      <DownloadBtnHeadless
-        class="btn btn-primary btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 [transition-property:_scale,_background] duration-300 mx-auto mt-12 grow"
-      >
-        Download
-      </DownloadBtnHeadless>
-      <a
-        class="btn btn-primary hover:bg-base-100 btn-soft btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 transition-property-transform [transition-property:_scale,_background] duration-300 mx-auto mt-12 grow"
-        href=`${base}/demo`
-      >
-        <p>Demo</p>
-
-        <span class="w-5 relative">
-          <div
-            class="absolute translate-y--50% w-0 left-1 group-hover:w-3 transition-width duration-300 h-0.5 bg-current"
-          >
-          </div>
-          <div
-            class="absolute group-hover:transform-translate-x-1 i-tabler:chevron-right size-6 transition-transform duration-300 translate-y--50%"
-          >
-          </div>
-        </span>
-      </a>
-    </div>
-  </section>
+  <Section1 />
 </SiteLayout>
