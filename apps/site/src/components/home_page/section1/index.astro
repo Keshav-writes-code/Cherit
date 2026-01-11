@@ -65,11 +65,9 @@ import Screenshots from "./screenshots.astro";
     class="flex justify-center gap-6 items-start mt-12 *:w-min animate-in slide-in-b-4 fade-in-0 animate-duration-500 animate-fill-both animate-delay-300"
   >
     <DownloadBtnHeadless
+      client:load
       class="btn btn-primary btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 [transition-property:_scale,_background] duration-300"
-    >
-      <div class="i-tabler:download size-6"></div>
-      Download
-    </DownloadBtnHeadless>
+    />
     <a
       class="btn btn-primary hover:bg-base-100 btn-soft btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 transition-property-transform [transition-property:_scale,_background] duration-300"
       href=`${base}/demo`
