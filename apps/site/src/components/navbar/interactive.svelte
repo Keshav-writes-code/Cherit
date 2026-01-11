@@ -33,7 +33,7 @@
     <p>Cherit</p>
   </a>
   <nav
-    class="flex flex-row gap-6 items-center font-semibold justify-self-center"
+    class="flex flex-row gap-1 items-center font-semibold justify-self-center"
   >
     {#each Object.entries(nav_links) as [key, value]}
       <a class="capitalize btn btn-ghost" href={value}>{key}</a>
