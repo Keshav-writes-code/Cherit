@@ -1,9 +1,9 @@
 ---
 import BaseLayout from "@/layout/BaseLayout.astro";
 import Navbar from "@/components/navbar/index.astro";
-type Props = {
+interface Props {
   class?: string;
-};
+}
 let { class: classes }: Props = Astro.props;
 ---
 

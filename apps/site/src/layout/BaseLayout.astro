@@ -7,10 +7,10 @@ import "../styles/fonts.css";
 import "../styles/global.css";
 
 import { ClientRouter } from "astro:transitions";
-type Props = {
+interface Props {
   class?: string;
   theme?: string;
-};
+}
 const { class: classes, theme = "dark" }: Props = Astro.props;
 ---
 
