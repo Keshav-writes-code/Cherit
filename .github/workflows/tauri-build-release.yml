@@ -135,7 +135,7 @@ jobs:
           projectPath: 'apps/app'
           tagName: cherit-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'Cherit v__VERSION__'
-          releaseAssetNamePattern: '[name]-v[version]-[platform]-[arch][ext]'
+          releaseAssetNamePattern: '[name]-[platform]-[arch][ext]'
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
