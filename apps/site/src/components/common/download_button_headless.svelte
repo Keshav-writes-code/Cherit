@@ -3,100 +3,103 @@
   import type { Snippet } from "svelte";
 
   interface Props {
+    owner: string;
+    repo: string;
     class?: string;
     children?: Snippet;
   }
-  let { class: classes, children }: Props = $props();
 
-  let owner = "keshav-writes-code";
-  let repo = "cherit";
+  let { class: classes = "", children }: Props = $props();
+  const owner = "keshav-writes-code";
+  const repo = "cherit";
 
-  // Default to the generic releases page
-  let downloadUrl = $state(
-    `https://github.com/${owner}/${repo}/releases/latest`,
-  );
-  let label = $state("Download");
+  let ua = $state("");
+  let baseUrl = `https://github.com/${owner}/${repo}/releases/latest/download`;
 
-  onMount(async () => {
-    // 1. Detect OS immediately (no API needed) to set the Label and Fallback URL
-    const ua = navigator.userAgent.toLowerCase();
-    let filenamePart = ""; // Used to guess the 'latest' filename
+  onMount(() => {
+    ua = navigator.userAgent.toLowerCase();
+  });
+
+  const config = $derived.by(() => {
+    const file = (suffix: string) => `${baseUrl}/${repo}-${suffix}`;
 
     if (ua.includes("android")) {
-      label = "Download for Android";
-      filenamePart = "android-universal.apk";
-    } else if (ua.includes("win")) {
-      label = "Download for Windows";
-      filenamePart = "windows-x64.exe";
-    } else if (ua.includes("mac")) {
-      label = "Download for macOS";
-      filenamePart = "darwin-x64.dmg"; // Assuming intel/universal fallback
-    } else if (ua.includes("linux")) {
-      label = "Download for Linux";
-      // Specific distro checks
-      if (
-        ua.includes("debian") ||
-        ua.includes("ubuntu") ||
-        ua.includes("mint")
-      ) {
-        filenamePart = "linux-amd64.deb";
-      } else if (ua.includes("fedora") || ua.includes("red hat")) {
-        filenamePart = "linux-x86_64.rpm";
-      } else {
-        filenamePart = "linux-amd64.AppImage";
-      }
-    } else {
-      label = "Download"; // Unknown OS
+      return {
+        main: { label: "Android (apk)", url: file("android-universal.apk") },
+        others: [
+          { label: "Android Arm64 (apk)", url: file("android-arm64.apk") },
+        ],
+      };
+    }
+    if (ua.includes("win")) {
+      return {
+        main: { label: "Windows (exe)", url: file("windows-x64.exe") },
+        others: [{ label: "Windows (msi)", url: file("windows-x64.msi") }],
+      };
+    }
+    if (ua.includes("mac")) {
+      return {
+        main: { label: "macOS (dmg)", url: file("darwin-x64.dmg") },
+        others: [
+          {
+            label: "macOS Apple Silicon (dmg)",
+            url: file("darwin-aarch64.dmg"),
+          },
+          { label: "macOS (tar.gz)", url: file("darwin-x64.app.tar.gz") },
+        ],
+      };
+    }
+    if (ua.includes("linux")) {
+      const isDeb =
+        ua.includes("debian") || ua.includes("ubuntu") || ua.includes("mint");
+      const isRpm =
+        ua.includes("fedora") || ua.includes("red hat") || ua.includes("suse");
+
+      const deb = { label: "Linux (deb)", url: file("linux-amd64.deb") };
+      const rpm = { label: "Linux (rpm)", url: file("linux-x86_64.rpm") };
+      const app = {
+        label: "Linux (AppImage)",
+        url: file("linux-amd64.AppImage"),
+      };
+
+      if (isDeb) return { main: deb, others: [rpm, app] };
+      if (isRpm) return { main: rpm, others: [deb, app] };
+      return { main: app, others: [deb, rpm] };
     }
 
-    // 2. Try to verify the exact asset URL via API
-    // (This ensures the asset actually exists on the latest release)
-    try {
-      const resp = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/releases/latest`,
-      );
-
-      if (resp.ok) {
-        const { assets } = await resp.json();
-
-        // Try to find the exact detected file in the asset list
-        // We search for the specific part determined above (e.g. ".deb" or "universal.apk")
-        if (filenamePart) {
-          // We use the specific `filenamePart` logic to filter your known naming convention
-          // This handles your request for "cherit-latest-linux.deb" vs versioned ones
-          // depending on what actually exists in the release.
-          const match = assets.find(
-            (a: any) =>
-              a.name.toLowerCase().endsWith(filenamePart.toLowerCase()) || // Exact match suffix
-              a.name.toLowerCase().includes(filenamePart.toLowerCase()), // Partial match
-          );
-
-          if (match) {
-            downloadUrl = match.browser_download_url;
-          } else {
-            // If we couldn't find the exact file in the API list,
-            // but we know your build process uploads "cherit-latest-...",
-            // we can try to construct the URL manually using the tag from the JSON
-            // or just fall back to the generic latest download link structure:
-            // https://github.com/user/repo/releases/latest/download/filename
-            downloadUrl = `https://github.com/${owner}/${repo}/releases/latest/download/cherit-latest-${filenamePart.replace("cherit-latest-", "")}`;
-            // Note: The logic above is a safety net.
-            // Ideally, the API `match` works best.
-          }
-        }
-      }
-      // If API fails (403/Rate Limit), we leave downloadUrl as the main releases page
-      // but the Label is already set correctly ("Download for Windows")!
-    } catch (e) {
-      console.error("Auto-download check failed", e);
-    }
+    return {
+      main: {
+        label: "",
+        url: `https://github.com/${owner}/${repo}/releases/latest`,
+      },
+      others: [],
+    };
   });
 </script>
 
-<a href={downloadUrl} class={classes} target="_blank" rel="noopener noreferrer">
-  <div class="i-tabler:download size-6"></div>
-  {label}
-  {#if children}
-    {@render children()}
+<div class="join">
+  <a href={config.main.url} class="{classes} join-item" target="_blank">
+    {#if children}{@render children()}{/if}
+    <span class="ml-2"
+      >{config.main.label
+        ? `Download for ${config.main.label}`
+        : "Download"}</span
+    >
+  </a>
+
+  {#if config.others.length > 0}
+    <div class="dropdown dropdown-end join-item">
+      <div tabindex="0" role="button" class="{classes} join-item px-3">
+        <div class="i-tabler:chevron-down size-5"></div>
+      </div>
+      <ul
+        tabindex="0"
+        class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-100"
+      >
+        {#each config.others as item}
+          <li><a href={item.url} target="_blank">{item.label}</a></li>
+        {/each}
+      </ul>
+    </div>
   {/if}
-</a>
+</div>
