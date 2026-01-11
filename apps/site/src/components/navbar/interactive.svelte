@@ -9,7 +9,7 @@
   }: {
     git_star_count: number;
     nav_links: Record<string, string>;
-    logo: Snippet;
+    logo?: Snippet;
   } = $props();
 
   let y = $state(0);
@@ -27,14 +27,16 @@
     class="font-nightingale justify-self-start font-recoleta gap-2 h-full items-center flex text-2xl"
     href={base}
   >
-    {@render logo()}
+    {#if logo}
+      {@render logo()}
+    {/if}
     <p>Cherit</p>
   </a>
   <nav
     class="flex flex-row gap-6 items-center font-semibold justify-self-center"
   >
     {#each Object.entries(nav_links) as [key, value]}
-      <a class="capitalize" href={value}>{key}</a>
+      <a class="capitalize btn btn-ghost" href={value}>{key}</a>
     {/each}
   </nav>
   <div class=" flex items-center gap-2 justify-self-end">
