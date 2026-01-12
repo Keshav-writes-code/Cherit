@@ -23,7 +23,7 @@ let { class: classes, page_metadata }: Props = Astro.props;
     <Navbar />
   </div>
   <main
-    class=`isolate w-full grid place-items-center px-5 max-w-screen-xl ${classes} `
+    class=`isolate w-full max-w-screen-xl ${classes} `
     transition:animate="slide"
   >
     <slot />

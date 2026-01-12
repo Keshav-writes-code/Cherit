@@ -121,6 +121,14 @@ let { class: classes } = Astro.props;
               >Contact</a
             >
           </div>
+
+          <div>
+            <a
+              href=`${base}/license`
+              class="text-gray-400 transition duration-100 hover:text-indigo-500 active:text-indigo-600"
+              >License</a
+            >
+          </div>
         </nav>
       </div>
       <!-- nav - end -->
@@ -142,8 +150,7 @@ let { class: classes } = Astro.props;
         <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
           Licensed under the
           <a
-            href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
-            target="_blank"
+            href=`${base}/license`
             class="link hover:link-primary"
           >
             GPLv2
