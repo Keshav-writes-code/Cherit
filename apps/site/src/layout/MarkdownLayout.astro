@@ -3,9 +3,11 @@ import SiteLayout from "@/layout/SiteLayout.astro";
 import PagetopBG from "@/components/common/pagetop_background.html";
 import type { PageMetadata } from "@/types";
 interface Props {
-  page_metadata: PageMetadata;
+  frontmatter: { page_metadata: PageMetadata };
 }
-const { page_metadata }: Props = Astro.props;
+const {
+  frontmatter: { page_metadata },
+}: Props = Astro.props;
 ---
 
 <SiteLayout
