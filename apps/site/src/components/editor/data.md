@@ -195,4 +195,4 @@ See [GitHub][gh].
 
 ---
 
-*End of Markdown Features Showcase*
+_End of Markdown Features Showcase_
