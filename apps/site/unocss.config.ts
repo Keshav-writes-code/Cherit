@@ -13,7 +13,7 @@ import {
 export default defineConfig({
   shortcuts: {
     "section-container":
-      "flex flex-col justify-center items-center px-6 py-24 relative overflow-hidden",
+      "w-full flex flex-col justify-center items-center px-6 py-24 relative overflow-hidden",
     "animate-on-scroll":
       "opacity-0 translate-y-10 transition-all duration-1000 ease-out",
     visible: "opacity-100 translate-y-0",
