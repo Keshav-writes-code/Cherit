@@ -3,8 +3,6 @@
   import type { Snippet } from "svelte";
 
   interface Props {
-    owner: string;
-    repo: string;
     class?: string;
     children?: Snippet;
   }
