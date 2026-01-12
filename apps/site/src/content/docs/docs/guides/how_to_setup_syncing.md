@@ -1,10 +1,6 @@
 ---
-layout: ../../layout/MarkdownLayout.astro
-page_metadata:
-  title: "Syncing Guide"
-  description: "How to sync your Cherit notes privately using Syncthing."
-  open_graph:
-    title: "Syncing Guide | Cherit"
+title: "Syncing Guide"
+description: "How to sync your Cherit notes privately using Syncthing."
 ---
 
 # How to Setup Syncing
