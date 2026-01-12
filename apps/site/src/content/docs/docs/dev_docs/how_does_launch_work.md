@@ -1,3 +1,8 @@
+---
+title: How Launch Works
+description: Explanation of the application launch process and state loading.
+---
+
 ## How does Launch work?
 
 - first, the app loads **recent path** from the local storage by using the [ _LazyStore_ API from tauri ](https://v2.tauri.app/plugin/store/#lazystore)

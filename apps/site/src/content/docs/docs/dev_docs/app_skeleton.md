@@ -1,3 +1,8 @@
+---
+title: App Skeleton
+description: Overview of the Cherit frontend file structure.
+---
+
 ## Frontend
 
 ```sh
