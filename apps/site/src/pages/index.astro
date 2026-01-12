@@ -2,9 +2,26 @@
 import SiteLayout from "@/layout/SiteLayout.astro";
 import Section1 from "@/components/home_page/section1/index.astro";
 import Section2 from "@/components/home_page/section2/index.astro";
+import type { PageMetadata } from "@/types";
+
+let metadata: PageMetadata = {
+  title: "Home",
+  description:
+    "Cherit is the 2MB note-taking powerhouse. Native performance on every platform. Markdown native, offline-first, and completely private. Just you and your thoughts.",
+  open_graph: {
+    title: "Cherit - Think Fast. Write Faster.",
+    description:
+      "Stop downloading entire web browsers just to write a grocery list. Cherit is a lightweight, local-first markdown editor.",
+  },
+  twitter: {
+    title: "Cherit - The Lightweight Note-Taking App",
+    description:
+      "Native performance, 2MB size, Markdown support. Available on all platforms.",
+  },
+};
 ---
 
-<SiteLayout>
+<SiteLayout page_metadata={metadata} class="grid place-items-center">
   <div class="-z-10 isolate w-full">
     <div
       class="absolute inset-0 h-full items-center px-5 py-24 [background:radial-gradient(60%_140%_at_50%_0%,rgba(102,51,238,0.35)_0%,#000_100%)]"

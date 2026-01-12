@@ -7,11 +7,16 @@ import "../styles/fonts.css";
 import "../styles/global.css";
 
 import { ClientRouter } from "astro:transitions";
+import SeoHead from "@/components/common/seo_head.astro";
+import { type PageMetadata } from "@/types";
+
 interface Props {
   class?: string;
   theme?: string;
+  page_metadata: PageMetadata;
 }
-const { class: classes, theme = "dark" }: Props = Astro.props;
+
+const { class: classes, theme = "dark", page_metadata }: Props = Astro.props;
 ---
 
 <!doctype html>
@@ -19,7 +24,7 @@ const { class: classes, theme = "dark" }: Props = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title></title>
+    <SeoHead page_metadata={page_metadata} />
     <ClientRouter />
   </head>
   <body class={`${classes}`}>
