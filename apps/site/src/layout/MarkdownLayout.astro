@@ -1,5 +1,6 @@
 ---
 import SiteLayout from "@/layout/SiteLayout.astro";
+import PagetopBG from "@/components/common/pagetop_background.html";
 import type { PageMetadata } from "@/types";
 interface Props {
   page_metadata: PageMetadata;
@@ -11,5 +12,7 @@ const { page_metadata }: Props = Astro.props;
   class="prose dark:prose-invert pt-40 px-10"
   page_metadata={page_metadata}
 >
-  <slot />
+  <PagetopBG />
+
+  <div class="isolate"><slot /></div>
 </SiteLayout>
