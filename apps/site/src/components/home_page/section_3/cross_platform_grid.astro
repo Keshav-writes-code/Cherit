@@ -1,0 +1,105 @@
+---
+import { Image } from "astro:assets";
+
+interface Props {
+  desktop_img: ImageMetadata;
+  mobile_img: ImageMetadata;
+}
+
+const { desktop_img, mobile_img } = Astro.props;
+
+// Platform icons using iconify class names
+const platforms = [
+  { icon: "i-mdi:linux", name: "Linux" },
+  { icon: "i-mdi:microsoft-windows", name: "Windows" },
+  { icon: "i-mdi:apple", name: "macOS" },
+  { icon: "i-mdi:android", name: "Android" },
+  { icon: "i-mdi:apple-ios", name: "iOS" },
+];
+---
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto p-4">
+  <!-- Desktop Card - Spans 2 columns -->
+  <div
+    class="bento-card lg:col-span-2 min-h-[400px] flex flex-col relative group overflow-hidden"
+  >
+    <div class="z-10 mb-8">
+      <h3 class="text-2xl font-bold flex items-center gap-2">
+        <span class="i-tabler:device-desktop text-primary"></span>
+        Desktop Powerhouse
+      </h3>
+      <p class="text-base-content/60 mt-2 max-w-md">
+        Full-featured markdown editing with VIM mode, multiple tabs, and split
+        views. Optimized for large screens.
+      </p>
+    </div>
+
+    <!-- Image Container with Parallax-ish hover effect -->
+    <div
+      class="absolute right-0 bottom-0 w-[85%] h-[70%] rounded-tl-xl overflow-hidden border-t border-l border-white/10 shadow-2xl transition-transform duration-500 group-hover:-translate-y-2 group-hover:-translate-x-2"
+    >
+      <Image
+        src={desktop_img}
+        alt="Desktop Interface"
+        class="w-full h-full object-cover object-left-top"
+      />
+      <!-- Overlay gradient to blend it in if needed, or just let it shine -->
+      <div
+        class="absolute inset-0 pointer-events-none shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]"
+      >
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Card - Spans 1 column -->
+  <div
+    class="bento-card lg:col-span-1 min-h-[400px] flex flex-col relative group overflow-hidden"
+  >
+    <div class="z-10 mb-8">
+      <h3 class="text-2xl font-bold flex items-center gap-2">
+        <span class="i-tabler:device-mobile text-accent"></span>
+        Mobile Freedom
+      </h3>
+      <p class="text-base-content/60 mt-2">
+        The same powerful engine, optimized for touch.
+      </p>
+    </div>
+
+    <!-- Phone Mockup centered at bottom -->
+    <div
+      class="absolute bottom-[-20px] left-1/2 -translate-x-1/2 w-[200px] h-[350px] transition-transform duration-500 group-hover:translate-y-[-10px]"
+    >
+      <div
+        class="relative w-full h-full bg-gray-900 rounded-[2rem] border-[6px] border-gray-800 overflow-hidden shadow-xl"
+      >
+        <Image
+          src={mobile_img}
+          alt="Mobile Interface"
+          class="w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Platform Support Card - Spans full width -->
+  <div
+    class="bento-card lg:col-span-3 flex flex-col md:flex-row items-center justify-between gap-8"
+  >
+    <div class="text-center md:text-left">
+      <h3 class="text-xl font-bold">Native Performance Everywhere</h3>
+      <p class="text-base-content/60">
+        Built with Rust and Tauri for maximum efficiency on any OS.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-8 items-center">
+      {
+        platforms.map((platform) => (
+          <div class="tooltip" data-tip={platform.name}>
+            <div class={`${platform.icon} text-4xl`} />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</div>

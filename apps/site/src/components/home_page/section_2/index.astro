@@ -66,25 +66,10 @@ let { class: classes } = Astro.props;
   </div>
 </section>
 <script>
-  /** Canvas Animation (Starry Network) */
+  import { initScrollAnimation } from "@/utils/animate_on_scroll";
 
-  /** Scroll Observer */
   document.addEventListener("DOMContentLoaded", () => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 },
-    );
-
-    document
-      .querySelectorAll(".animate-on-scroll")
-      .forEach((el) => observer.observe(el));
+    initScrollAnimation(".animate-on-scroll", ["visible"]);
   });
 </script>
 <style>
