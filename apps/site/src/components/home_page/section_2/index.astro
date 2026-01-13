@@ -1,0 +1,120 @@
+---
+interface Props {
+  class?: string;
+}
+let { class: classes } = Astro.props;
+---
+
+<!-- Screen 2: The Weight Problem (Comparison) -->
+<section class=`${classes} section-container isolate z-0 ` transition:persist>
+  <div class="w-full">
+    <div class="text-center mb-16 animate-on-scroll">
+      <h2 class="text-4xl md:text-5xl font-bold mb-4">Size Matters</h2>
+      <p class="text-xl text-base-content/60">
+        Stop downloading entire web browsers just to write a grocery list.
+      </p>
+    </div>
+
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center animate-on-scroll"
+    >
+      <!-- Standard App -->
+      <div class="card bg-base-200/20 p-8 border border-white/5">
+        <h3 class="text-2xl font-bold mb-4 flex items-center gap-2 opacity-50">
+          <iconify-icon icon="tabler:turtle" class="text-error"></iconify-icon>
+          Standard "Modern" App
+        </h3>
+        <div
+          class="w-full bg-base-300/30 rounded-full h-12 mb-2 relative overflow-hidden"
+        >
+          <div
+            class="bg-error/30 h-full flex items-center justify-end px-4 text-error font-bold w-[95%]"
+          >
+            250 MB
+          </div>
+        </div>
+        <p class="text-sm text-base-content/30 font-mono">
+          Electron Backend + Chrome Runtime + Node Modules
+        </p>
+      </div>
+
+      <!-- Cherit -->
+      <div
+        class="card bg-base-200 border border-primary p-8 shadow-2xl shadow-primary/10 relative overflow-visible"
+      >
+        <div
+          class="absolute -top-4 -right-4 badge badge-primary badge-lg rotate-12"
+        >
+          Winner
+        </div>
+        <h3 class="text-2xl font-bold mb-4 flex items-center gap-2">
+          <iconify-icon icon="tabler:bolt" class="text-primary"></iconify-icon>
+          Cherit
+        </h3>
+        <div class="w-full bg-base-300 rounded-full h-12 mb-2 relative">
+          <div
+            class="bg-primary h-full flex items-center justify-center text-primary-content font-bold w-[4%] min-w-[3rem] shadow-[0_0_20px_rgba(var(--p),0.5)]"
+          >
+            4 MB
+          </div>
+        </div>
+        <p class="text-sm text-base-content/40 font-mono">
+          Rust Core + Native UI WebView
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  import { initScrollAnimation } from "@/utils/animate_on_scroll";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    initScrollAnimation(".animate-on-scroll", ["visible"]);
+  });
+</script>
+<style>
+  /* Custom Font */
+  @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
+
+  body {
+    font-family: "Space Grotesk", sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Icon Utility */
+  .i-tabler {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 1.5rem;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Canvas */
+  #hero-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #000;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+</style>

@@ -1,0 +1,7 @@
+:root {
+  --radius-selector: 2rem;
+  --radius-field: 1rem;
+  --radius-box: 1rem;
+  --color-primary: oklch(0.5727 0.1808 294.1);
+  --noise: 1;
+}

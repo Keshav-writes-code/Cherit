@@ -1,0 +1,33 @@
+---
+import SiteLayout from "@/layout/SiteLayout.astro";
+import PagetopBG from "@/components/common/pagetop_background.html";
+import Section1 from "@/components/home_page/section_1/index.astro";
+import Section2 from "@/components/home_page/section_2/index.astro";
+import Section3 from "@/components/home_page/section_3/index.astro";
+import Section4 from "@/components/home_page/section_4/index.astro";
+import type { PageMetadata } from "@/types";
+
+let metadata: PageMetadata = {
+  title: "Home",
+  description:
+    "Cherit is the 2MB note-taking powerhouse. Native performance on every platform. Markdown native, offline-first, and completely private. Just you and your thoughts.",
+  open_graph: {
+    title: "Cherit - Think Fast. Write Faster.",
+    description:
+      "Stop downloading entire web browsers just to write a grocery list. Cherit is a lightweight, local-first markdown editor.",
+  },
+  twitter: {
+    title: "Cherit - The Lightweight Note-Taking App",
+    description:
+      "Native performance, 2MB size, Markdown support. Available on all platforms.",
+  },
+};
+---
+
+<SiteLayout page_metadata={metadata} class="grid place-items-center">
+  <PagetopBG />
+  <Section1 class="mt-20" />
+  <Section2 class="mt-20" />
+  <Section3 class="mt-20" />
+  <Section4 />
+</SiteLayout>

@@ -1,0 +1,122 @@
+name: 'tauri-build-debug'
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+      - staging
+      - main
+    paths:
+      - 'apps/app/**'
+      - '.github/workflows/tauri-build-debug.yml'
+
+jobs:
+  publish-tauri:
+    environment: production
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+            args: '--target aarch64-apple-darwin --debug'
+          - platform: 'macos-latest' # for Intel based macs.
+            args: '--target x86_64-apple-darwin --debug'
+          - platform: 'ubuntu-22.04'
+            args: '--debug'
+          - platform: 'windows-latest'
+            args: '--debug'
+          - platform: 'ubuntu-latest'
+            args: '--apk true --split-per-abi --debug'
+            mobile: 'android'
+    runs-on: ${{ matrix.platform }}
+    steps:
+      #  ------------ Git Clone ----------------
+      - uses: actions/checkout@v6
+
+      # ------------ Desktop OS ----------------
+      - name: Free up disk space on Linux runners
+        uses: mathio/gha-cleanup@v1
+        if: startsWith(matrix.platform, 'ubuntu')
+        with:
+          remove-browsers: true
+          verbose: true
+      - name: Fix Android Directory Permissions
+        if: startsWith(matrix.platform, 'ubuntu')
+        run: |
+          sudo mkdir -p /usr/local/lib/android
+          sudo chown -R $USER:$USER /usr/local/lib/android
+      - name: install dependencies (ubuntu only)
+        if: startsWith(matrix.platform, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev
+
+      # ------------- Node -------------
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: setup bun
+        uses: oven-sh/setup-bun@v2
+      - name: install frontend dependencies
+        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
+        run: bun i # change this to npm or pnpm depending on which one you use.
+
+      # ------------- Rust -------------
+      - name: install Rust stable (desktop)
+        if: matrix.mobile == ''
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - name: install Rust stable (android)
+        if: matrix.mobile == 'android'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+          workspaces: apps/app/src-tauri/ -> target
+
+      # ------------- Android -------------
+      - name: Set up JDK
+        if: matrix.mobile == 'android'
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17' # Maybe 17
+          distribution: 'temurin'
+      - name: Setup Android SDK
+        if: matrix.mobile == 'android'
+        uses: android-actions/setup-android@v3
+      - name: Setup Android NDK
+        if: matrix.mobile == 'android'
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r29
+          link-to-sdk: true
+      - name: setup Android signing
+        if: matrix.mobile == 'android'
+        run: |
+          cd apps/app/src-tauri/gen/android
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" > keystore.properties
+          echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" >> keystore.properties
+          base64 -d <<< "${{ secrets.ANDROID_KEY_BASE64 }}" > $RUNNER_TEMP/keystore.jks
+          echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
+
+      # ---------------- Tauri -----------------
+      - name: Build Tauri Project
+        uses: tauri-apps/tauri-action@9ce1dcc1a78395184050946b71457a6c242beab6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        with:
+          projectPath: 'apps/app'
+          uploadWorkflowArtifacts: true
+          workflowArtifactNamePattern: '[name]-v[version]-[platform]-[arch]-[mode][ext]'
+          args: ${{ matrix.args }}
+          mobile: ${{ matrix.mobile }}

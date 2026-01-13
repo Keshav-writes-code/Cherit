@@ -1,0 +1,20 @@
+---
+import SiteLayout from "@/layout/SiteLayout.astro";
+import PagetopBG from "@/components/common/pagetop_background.html";
+import type { PageMetadata } from "@/types";
+interface Props {
+  frontmatter: { page_metadata: PageMetadata };
+}
+const {
+  frontmatter: { page_metadata },
+}: Props = Astro.props;
+---
+
+<SiteLayout
+  class="prose dark:prose-invert pt-40 px-10"
+  page_metadata={page_metadata}
+>
+  <PagetopBG />
+
+  <div class="isolate"><slot /></div>
+</SiteLayout>

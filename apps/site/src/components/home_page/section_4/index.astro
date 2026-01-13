@@ -1,0 +1,88 @@
+---
+interface Props {
+  class?: string;
+}
+let { class: classes } = Astro.props;
+import { base } from "astro:config/client";
+---
+
+<section class=`${classes} section-container isolate z-0`>
+  <div class="w-full">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <!-- Text Content -->
+      <div class="text-center lg:text-left animate-on-scroll order-2 lg:order-1">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6 border border-primary/20">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+          </span>
+          Native P2P Sync Coming Soon
+        </div>
+        
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">
+          Sync Without The Cloud
+        </h2>
+        
+        <div class="space-y-4 text-xl text-base-content/60 mb-8">
+          <p>
+            Your thoughts shouldn't live on someone else's server. Cherit is built to work seamlessly with <span class="text-primary font-bold">Syncthing</span>.
+          </p>
+          <p class="text-base">
+            Enjoy completely private, peer-to-peer syncing between all your devices. No subscription fees, no data mining, just you and your notes.
+          </p>
+        </div>
+
+        <a
+          href=`${base}/docs/guides/how_to_setup_syncing`
+          class="btn btn-primary btn-lg group"
+        >
+          <span class="i-tabler:book"></span>
+          See How It Works
+          <span class="i-tabler:arrow-right transition-transform group-hover:translate-x-1"></span>
+        </a>
+      </div>
+
+      <!-- Visual -->
+      <div class="relative animate-on-scroll order-1 lg:order-2 flex justify-center">
+        <!-- Abstract Network Visual -->
+        <div class="relative w-full max-w-md aspect-square">
+            <!-- Central Node (User) -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-base-200 rounded-full border-4 border-primary flex items-center justify-center z-20 shadow-[0_0_50px_rgba(var(--p),0.3)]">
+                <span class="i-tabler:lock text-5xl text-primary"></span>
+            </div>
+
+            <!-- Satellite Nodes (Devices) -->
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 w-16 h-16 bg-base-300 rounded-2xl flex items-center justify-center border border-white/10 animate-bounce animate-duration-[3000ms]">
+                <span class="i-mdi:laptop text-2xl"></span>
+            </div>
+            <div class="absolute bottom-10 right-0 w-16 h-16 bg-base-300 rounded-2xl flex items-center justify-center border border-white/10 animate-bounce animate-duration-[3500ms]">
+                 <span class="i-mdi:cellphone text-2xl"></span>
+            </div>
+            <div class="absolute bottom-10 left-0 w-16 h-16 bg-base-300 rounded-2xl flex items-center justify-center border border-white/10 animate-bounce animate-duration-[4000ms]">
+                 <span class="i-mdi:tablet text-2xl"></span>
+            </div>
+
+            <!-- Connections (SVG Lines) -->
+            <svg class="absolute inset-0 w-full h-full -z-10 text-primary/30" viewBox="0 0 400 400">
+                <path d="M200 200 L200 50" stroke="currentColor" stroke-width="2" stroke-dasharray="8 8" class="animate-pulse" />
+                <path d="M200 200 L350 350" stroke="currentColor" stroke-width="2" stroke-dasharray="8 8" class="animate-pulse" />
+                <path d="M200 200 L50 350" stroke="currentColor" stroke-width="2" stroke-dasharray="8 8" class="animate-pulse" />
+            </svg>
+
+             <!-- Syncthing Logo Badge -->
+            <div class="absolute top-10 right-10 bg-[#0886c3]/10 text-[#0886c3] px-4 py-2 rounded-xl border border-[#0886c3]/20 flex items-center gap-2 backdrop-blur-sm transform rotate-6">
+                <span class="i-simple-icons:syncthing text-xl"></span>
+                <span class="font-bold">Powered by Syncthing</span>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initScrollAnimation } from "@/utils/animate_on_scroll";
+  document.addEventListener("DOMContentLoaded", () => {
+    initScrollAnimation();
+  });
+</script>
