@@ -93,7 +93,7 @@ let platforms: Platform[] = [
         <div class="grid grid-cols-2 gap-2 mt-4" >
 
           {!binaries || !binaries.length && (
-          <p>No Build for IOS Avaliable for now</p>
+          <p>No Build for {label} Avaliable for now</p>
           )}
           { binaries.map(({label: text, link})=>(
           <a href={link} class="btn btn-lg" > 
