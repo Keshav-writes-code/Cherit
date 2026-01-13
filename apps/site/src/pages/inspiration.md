@@ -34,7 +34,7 @@ i like it because
 
 ## Solution (Proper)
 
-at some point, i got self motivated enough to tacle all these problems in a **proper** way by:
+at some point, i got self motivated enough to tackle all these problems in a **proper** way by:
 
 - creating a free and open source replica of Obsidian
 - fixing storage space issues with [Tauri](https://v2.tauri.app/), which is a new framework for developing cross platform apps in a much much smaller footprint
