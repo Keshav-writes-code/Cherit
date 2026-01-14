@@ -1,6 +1,7 @@
 import { create, mkdir, remove, rename } from '@tauri-apps/plugin-fs';
 import { type Node, type GenericPath } from '@/types';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
+import { invoke } from '@tauri-apps/api/core';
 import {
   current_platform,
   find_unused_name,
@@ -40,13 +41,29 @@ export function find_filenode_by_path(
 export async function move_node(
   node: Node,
   new_parent_path: string,
-  tree: Node[]
+  tree: Node[],
+  document_top_tree_uri: string | null
 ) {
-  const new_path = new_parent_path
-    ? join_path(new_parent_path, node.name)
-    : node.name;
+  let new_path = '';
 
-  await rename(node.path, new_path);
+  if (current_platform === 'android') {
+    try {
+      new_path = await invoke('move_file_android', {
+        uri: node.path,
+        newParentUri: new_parent_path,
+        documentTopTreeUri: document_top_tree_uri,
+      });
+    } catch (e) {
+      console.error(e);
+      toast.error('Error Moving File', { description: String(e) });
+      return;
+    }
+  } else {
+    new_path = new_parent_path
+      ? join_path(new_parent_path, node.name)
+      : node.name;
+    await rename(node.path, new_path);
+  }
 
   const remove = (list: Node[]) => {
     const i = list.findIndex((n) => n === node);
@@ -57,7 +74,21 @@ export async function move_node(
 
   const update = (n: Node, p: string) => {
     n.path = p;
-    n.children.forEach((c) => update(c, join_path(p, c.name)));
+    // For Android, children paths might need full reconstruction if they were path-based strings.
+    // However, build_tree_recursive_android constructs them as parent + encoded_name.
+    // If we have the new parent path, we can update children recursively.
+    // The rust backend only returns the new path for the moved node itself.
+    // We can assume the same pattern:
+    if (current_platform === 'android') {
+      n.children.forEach((c) =>
+        update(
+          c,
+          p + '%2F' + encodeURIComponent(c.is_directory ? c.name : c.name + '.md')
+        )
+      );
+    } else {
+      n.children.forEach((c) => update(c, join_path(p, c.name)));
+    }
   };
   update(node, new_path);
 
@@ -142,13 +173,30 @@ export async function add_new_folder(
 export async function rename_file(
   file_node: Node,
   new_name: string,
-  parent_tree: Node[]
+  parent_tree: Node[],
+  document_top_tree_uri: string | null
 ) {
-  const parent = get_parent_path(file_node.path);
-  const new_path = join_path(parent, new_name + '.md');
-  rename(file_node.path, new_path);
-  file_node.name = new_name;
-  file_node.path = new_path;
+  if (current_platform === 'android') {
+    try {
+      const new_path = await invoke<string>('rename_file_android', {
+        uri: file_node.path,
+        newName: new_name + '.md',
+        documentTopTreeUri: document_top_tree_uri,
+      });
+      file_node.name = new_name;
+      file_node.path = new_path;
+    } catch (e) {
+      console.error(e);
+      toast.error('Error Renaming File', { description: String(e) });
+      return;
+    }
+  } else {
+    const parent = get_parent_path(file_node.path);
+    const new_path = join_path(parent, new_name + '.md');
+    await rename(file_node.path, new_path);
+    file_node.name = new_name;
+    file_node.path = new_path;
+  }
   sort_nodes(parent_tree);
 }
 
