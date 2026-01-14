@@ -208,7 +208,7 @@ async fn rename_file_android_impl(
     };
 
     let new_file_uri = api
-        .create_new_file(&parent_file_uri, &new_name, mime_type)
+        .create_new_file(&parent_file_uri, &new_name, Some(mime_type))
         .map_err(|e| format!("Failed to create new file: {}", e))?;
 
     // 4. Write content to new file
@@ -216,7 +216,7 @@ async fn rename_file_android_impl(
         .map_err(|e| format!("Failed to write to new file: {}", e))?;
 
     // 5. Delete old file
-    api.delete(&source_file_uri)
+    api.remove_file(&source_file_uri)
         .map_err(|e| format!("Failed to delete source file: {}", e))?;
 
     let new_constructed_path = format!("{}%2F{}", parent_uri, urlencoding::encode(&new_name));
@@ -271,7 +271,7 @@ async fn move_file_android_impl(
     };
 
     let new_file_uri = api
-        .create_new_file(&parent_file_uri, &name, mime_type)
+        .create_new_file(&parent_file_uri, &name, Some(mime_type))
         .map_err(|e| format!("Failed to create new file: {}", e))?;
 
     // 4. Write content
@@ -279,7 +279,7 @@ async fn move_file_android_impl(
         .map_err(|e| format!("Failed to write to new file: {}", e))?;
 
     // 5. Delete old
-    api.delete(&source_file_uri)
+    api.remove_file(&source_file_uri)
         .map_err(|e| format!("Failed to delete source file: {}", e))?;
 
     // Return constructed path
