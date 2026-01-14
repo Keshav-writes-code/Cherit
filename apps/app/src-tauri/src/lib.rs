@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+#[cfg(test)]
+mod desktop_test;
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct FileNode {
     pub name: String,
@@ -31,12 +34,16 @@ fn sort_nodes(nodes: &mut Vec<FileNode>) {
 
 #[cfg(not(target_os = "android"))]
 fn build_tree_recursive_desktop(path_str: &str) -> std::io::Result<Vec<FileNode>> {
+    use rayon::prelude::*;
     use std::fs;
-    let mut nodes = Vec::new();
-    let entries = fs::read_dir(path_str)?;
 
-    for entry in entries {
-        if let Ok(entry) = entry {
+    // Collect entries first to handle errors and prepare for parallel iteration
+    let entries = fs::read_dir(path_str)?
+        .collect::<Result<Vec<_>, std::io::Error>>()?;
+
+    let nodes = entries
+        .into_par_iter()
+        .filter_map(|entry| {
             if let Ok(metadata) = entry.metadata() {
                 let file_name = entry.file_name().to_string_lossy().to_string();
 
@@ -59,16 +66,21 @@ fn build_tree_recursive_desktop(path_str: &str) -> std::io::Result<Vec<FileNode>
                         }
                     }
 
-                    nodes.push(FileNode {
+                    Some(FileNode {
                         name: file_name.trim_end_matches(".md").to_string(),
                         path,
                         is_directory,
                         children,
-                    });
+                    })
+                } else {
+                    None
                 }
+            } else {
+                None
             }
-        }
-    }
+        })
+        .collect();
+
     Ok(nodes)
 }
 
@@ -93,7 +105,9 @@ fn build_tree_recursive_android(
 
         let entries = api.read_dir(&file_uri).map_err(|e| e.to_string())?;
 
-        let mut nodes = Vec::new();
+        let mut child_handles = Vec::new();
+        let mut files = Vec::new();
+
         for entry in entries {
             let name = entry.name().to_string();
             let is_directory = entry.is_dir();
@@ -104,29 +118,56 @@ fn build_tree_recursive_android(
             if (is_directory && !starts_with_dot) || ends_with_md {
                 let path_uri = format!("{}%2F{}", path, urlencoding::encode(&name));
 
-                let mut children = Vec::new();
                 if is_directory {
-                    children = build_tree_recursive_android(
-                        app.clone(),
-                        path_uri.clone(),
-                        document_top_tree_uri.clone(),
-                    )
-                    .await?;
-                }
+                    let app_clone = app.clone();
+                    let path_uri_clone = path_uri.clone();
+                    let doc_uri_clone = document_top_tree_uri.clone();
+                    let name_clone = name.clone();
 
-                nodes.push(FileNode {
-                    name: name.trim_end_matches(".md").to_string(),
-                    path: path_uri,
-                    is_directory,
-                    children,
-                });
+                    child_handles.push(tauri::async_runtime::spawn(async move {
+                        let children = build_tree_recursive_android(
+                            app_clone,
+                            path_uri_clone.clone(),
+                            doc_uri_clone,
+                        )
+                        .await?;
+                        Ok::<FileNode, String>(FileNode {
+                            name: name_clone.trim_end_matches(".md").to_string(),
+                            path: path_uri_clone,
+                            is_directory: true,
+                            children,
+                        })
+                    }));
+                } else {
+                    files.push(FileNode {
+                        name: name.trim_end_matches(".md").to_string(),
+                        path: path_uri,
+                        is_directory: false,
+                        children: Vec::new(),
+                    });
+                }
             }
         }
+
+        let mut nodes = files;
+        let results = futures::future::join_all(child_handles).await;
+
+        for res in results {
+            match res {
+                Ok(inner_res) => match inner_res {
+                    Ok(node) => nodes.push(node),
+                    Err(e) => return Err(e),
+                },
+                Err(e) => return Err(format!("Task failed: {}", e)),
+            }
+        }
+
         Ok(nodes)
     })
 }
 
 #[tauri::command]
+#[allow(unused_variables)]
 async fn build_file_tree(
     app: tauri::AppHandle,
     path: String,
