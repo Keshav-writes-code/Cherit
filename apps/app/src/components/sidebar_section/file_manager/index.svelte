@@ -20,7 +20,12 @@
     on_move={async (node, path) => {
       if (file_tree.data === undefined) return;
       try {
-        await move_node(node, path, file_tree.data);
+        await move_node(
+          node,
+          path,
+          file_tree.data,
+          root_path.data?.document_top_tree_uri ?? null
+        );
       } catch (e) {
         toast.error('Error Moving File: \n' + e);
         console.error(e);

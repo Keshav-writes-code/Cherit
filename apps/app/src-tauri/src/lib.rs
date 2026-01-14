@@ -160,6 +160,167 @@ async fn build_file_tree(
     Ok(nodes)
 }
 
+#[cfg(target_os = "android")]
+async fn rename_file_android_impl(
+    app: tauri::AppHandle,
+    uri: String,
+    new_name: String,
+    document_top_tree_uri: Option<String>,
+) -> Result<String, String> {
+    use tauri_plugin_android_fs::AndroidFsExt;
+    use tauri_plugin_android_fs::FileUri;
+
+    let api = app.android_fs();
+
+    // 1. Derive parent URI
+    let parent_uri = match uri.rsplit_once("%2F") {
+        Some((parent, _)) => parent.to_string(),
+        None => {
+            return Err("Could not determine parent URI from path".to_string());
+        }
+    };
+
+    let source_json = serde_json::json!({
+        "uri": uri,
+        "documentTopTreeUri": document_top_tree_uri
+    });
+    let source_file_uri = FileUri::from_json_str(&source_json.to_string())
+        .map_err(|e| format!("Failed to create Source FileUri: {}", e))?;
+
+    // 2. Read content
+    let content = api
+        .read(&source_file_uri)
+        .map_err(|e| format!("Failed to read source file: {}", e))?;
+
+    // 3. Create new file in parent
+    let parent_json = serde_json::json!({
+        "uri": parent_uri,
+        "documentTopTreeUri": document_top_tree_uri
+    });
+    let parent_file_uri = FileUri::from_json_str(&parent_json.to_string())
+        .map_err(|e| format!("Failed to create Parent FileUri: {}", e))?;
+
+    // Determine mime type
+    let mime_type = if new_name.ends_with(".md") {
+        "text/markdown"
+    } else {
+        "application/octet-stream"
+    };
+
+    let new_file_uri = api
+        .create_new_file(&parent_file_uri, &new_name, mime_type)
+        .map_err(|e| format!("Failed to create new file: {}", e))?;
+
+    // 4. Write content to new file
+    api.write(&new_file_uri, &content)
+        .map_err(|e| format!("Failed to write to new file: {}", e))?;
+
+    // 5. Delete old file
+    api.delete(&source_file_uri)
+        .map_err(|e| format!("Failed to delete source file: {}", e))?;
+
+    let new_constructed_path = format!("{}%2F{}", parent_uri, urlencoding::encode(&new_name));
+    Ok(new_constructed_path)
+}
+
+#[cfg(target_os = "android")]
+async fn move_file_android_impl(
+    app: tauri::AppHandle,
+    uri: String,
+    new_parent_uri: String,
+    document_top_tree_uri: Option<String>,
+) -> Result<String, String> {
+    use tauri_plugin_android_fs::AndroidFsExt;
+    use tauri_plugin_android_fs::FileUri;
+
+    let api = app.android_fs();
+
+    // 1. Derive filename from source URI
+    let name_encoded = match uri.rsplit_once("%2F") {
+        Some((_, name)) => name,
+        None => return Err("Could not extract filename from URI".to_string()),
+    };
+    let name = urlencoding::decode(name_encoded)
+        .map_err(|e| format!("Failed to decode filename: {}", e))?
+        .to_string();
+
+    let source_json = serde_json::json!({
+        "uri": uri,
+        "documentTopTreeUri": document_top_tree_uri
+    });
+    let source_file_uri = FileUri::from_json_str(&source_json.to_string())
+        .map_err(|e| format!("Failed to create Source FileUri: {}", e))?;
+
+    // 2. Read content
+    let content = api
+        .read(&source_file_uri)
+        .map_err(|e| format!("Failed to read source file: {}", e))?;
+
+    // 3. Create new file in new parent
+    let parent_json = serde_json::json!({
+        "uri": new_parent_uri,
+        "documentTopTreeUri": document_top_tree_uri
+    });
+    let parent_file_uri = FileUri::from_json_str(&parent_json.to_string())
+        .map_err(|e| format!("Failed to create Parent FileUri: {}", e))?;
+
+    let mime_type = if name.ends_with(".md") {
+        "text/markdown"
+    } else {
+        "application/octet-stream"
+    };
+
+    let new_file_uri = api
+        .create_new_file(&parent_file_uri, &name, mime_type)
+        .map_err(|e| format!("Failed to create new file: {}", e))?;
+
+    // 4. Write content
+    api.write(&new_file_uri, &content)
+        .map_err(|e| format!("Failed to write to new file: {}", e))?;
+
+    // 5. Delete old
+    api.delete(&source_file_uri)
+        .map_err(|e| format!("Failed to delete source file: {}", e))?;
+
+    // Return constructed path
+    let new_constructed_path = format!("{}%2F{}", new_parent_uri, name_encoded);
+    Ok(new_constructed_path)
+}
+
+#[tauri::command]
+async fn rename_file_android(
+    app: tauri::AppHandle,
+    uri: String,
+    new_name: String,
+    document_top_tree_uri: Option<String>,
+) -> Result<String, String> {
+    #[cfg(target_os = "android")]
+    {
+        rename_file_android_impl(app, uri, new_name, document_top_tree_uri).await
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        Err("Not supported on this platform".to_string())
+    }
+}
+
+#[tauri::command]
+async fn move_file_android(
+    app: tauri::AppHandle,
+    uri: String,
+    new_parent_uri: String,
+    document_top_tree_uri: Option<String>,
+) -> Result<String, String> {
+    #[cfg(target_os = "android")]
+    {
+        move_file_android_impl(app, uri, new_parent_uri, document_top_tree_uri).await
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        Err("Not supported on this platform".to_string())
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -171,7 +332,11 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_android_fs::init())
         .plugin(tauri_plugin_safe_area_insets_css::init())
-        .invoke_handler(tauri::generate_handler![build_file_tree])
+        .invoke_handler(tauri::generate_handler![
+            build_file_tree,
+            rename_file_android,
+            move_file_android
+        ])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(
