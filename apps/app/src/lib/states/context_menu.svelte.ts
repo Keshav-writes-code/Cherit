@@ -8,15 +8,24 @@ class MenuState {
   on_close: (() => void) | null = null;
 
   // Open the menu
-  open(e: MouseEvent, items: MenuItem[], pos?: { x: number; y: number }) {
-    e.preventDefault(); // Stop browser context menu
-    e.stopPropagation(); // Stop bubbling
+  open(
+    e: MouseEvent | null | undefined,
+    items: MenuItem[],
+    pos?: { x: number; y: number }
+  ) {
+    if (e) {
+      e.preventDefault(); // Stop browser context menu
+      e.stopPropagation(); // Stop bubbling
+    }
     if (pos) {
       this.x = pos.x;
       this.y = pos.y;
-    } else {
+    } else if (e) {
       this.x = e.clientX;
       this.y = e.clientY;
+    } else {
+      this.x = 0;
+      this.y = 0;
     }
 
     this.items = items;

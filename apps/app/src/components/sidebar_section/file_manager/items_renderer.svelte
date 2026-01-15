@@ -35,12 +35,17 @@
   let dragged_node: Node | null = $state(null);
   let drop_target: string | null = $state(null);
 
+  let long_press_timer: number | undefined;
+  let long_press_triggered = false;
+  let is_dragging = false;
+  let touch_start_coords: { x: number; y: number } | null = null;
+
   $effect(() => {
     if (collapsed_state) return;
     expanded_nodes_ever = {};
   });
   function handle_node_right_click(
-    e: MouseEvent,
+    e: MouseEvent | null,
     node: Node,
     parent_tree: Node[]
   ) {
@@ -64,7 +69,53 @@
       focused_node = undefined;
     });
   }
+
+  function handle_touch_start(e: TouchEvent) {
+    if (current_platform_type !== 'mobile') return;
+    long_press_triggered = false;
+    is_dragging = false;
+    touch_start_coords = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+
+    long_press_timer = setTimeout(() => {
+      if (is_dragging) return;
+      if (navigator.vibrate) navigator.vibrate(50);
+      long_press_triggered = true;
+    }, 500) as unknown as number;
+  }
+
+  function handle_touch_move(e: TouchEvent) {
+    if (current_platform_type !== 'mobile' || !touch_start_coords) return;
+    const move_x = e.touches[0].clientX;
+    const move_y = e.touches[0].clientY;
+    const distance = Math.hypot(
+      move_x - touch_start_coords.x,
+      move_y - touch_start_coords.y
+    );
+
+    if (distance > 10) {
+      clearTimeout(long_press_timer);
+    }
+  }
+
+  function handle_touch_end(e: TouchEvent, node: Node, parent_node: Node[]) {
+    if (current_platform_type !== 'mobile') return;
+    clearTimeout(long_press_timer);
+    if (long_press_triggered && !is_dragging) {
+      e.preventDefault();
+      handle_node_right_click(null, node, parent_node);
+    }
+    long_press_triggered = false;
+    touch_start_coords = null;
+  }
+
   function handle_drag_start(e: DragEvent, node: Node) {
+    is_dragging = true;
+    clearTimeout(long_press_timer);
+    long_press_triggered = false;
+
     dragged_node = node;
     if (e.dataTransfer) {
       e.dataTransfer.effectAllowed = 'move';
@@ -247,7 +298,16 @@
     ondragover={(e) => handle_drag_over(e, node.path)}
     ondrop={(e) => handle_drop(e, node.path)}
     ondragend={reset_dnd}
-    oncontextmenu={(e) => handle_node_right_click(e, node, parent_node)}
+    oncontextmenu={(e) => {
+      if (current_platform_type === 'mobile') {
+        e.preventDefault();
+      } else {
+        handle_node_right_click(e, node, parent_node);
+      }
+    }}
+    ontouchstart={handle_touch_start}
+    ontouchmove={handle_touch_move}
+    ontouchend={(e) => handle_touch_end(e, node, parent_node)}
     class="
       {is_focused_and_collapsed_and_hover &&
       'outline-solid outline-2 outline-accent'} 
@@ -280,7 +340,16 @@
     draggable="true"
     ondragstart={(e) => handle_drag_start(e, node)}
     ondragend={reset_dnd}
-    oncontextmenu={(e) => handle_node_right_click(e, node, subtree)}
+    oncontextmenu={(e) => {
+      if (current_platform_type === 'mobile') {
+        e.preventDefault();
+      } else {
+        handle_node_right_click(e, node, subtree);
+      }
+    }}
+    ontouchstart={handle_touch_start}
+    ontouchmove={handle_touch_move}
+    ontouchend={(e) => handle_touch_end(e, node, subtree)}
     class="
     {opened_filenode.data?.path === node.path && 'bg-base-content/10'} 
       {dragged_node?.path === node.path ? 'opacity-50' : ''}
