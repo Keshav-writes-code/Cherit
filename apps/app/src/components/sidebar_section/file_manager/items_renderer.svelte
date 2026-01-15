@@ -43,7 +43,7 @@
     expanded_nodes_ever = {};
   });
   function handle_node_right_click(
-    e: MouseEvent,
+    e: MouseEvent | null,
     node: Node,
     parent_tree: Node[]
   ) {
@@ -62,15 +62,28 @@
         root_path
       );
 
-    context_menu.open(e, context_menu_items);
+    const event =
+      e ||
+      new MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 0,
+        clientY: 0,
+      });
+    context_menu.open(event, context_menu_items);
     context_menu.run_on_close(() => {
       focused_node = undefined;
     });
   }
 
+  function cancel_long_press() {
+    clearTimeout(long_press_timer);
+    long_press_triggered = false;
+  }
+
   function handle_touch_start(e: TouchEvent) {
     if (current_platform_type !== 'mobile') return;
-    long_press_triggered = false;
+    cancel_long_press();
 
     long_press_timer = setTimeout(() => {
       if (navigator.vibrate) navigator.vibrate(50);
@@ -78,33 +91,18 @@
     }, 500) as unknown as number;
   }
 
-  function handle_touch_cancel() {
-    clearTimeout(long_press_timer);
-    long_press_triggered = false;
-  }
-
   function handle_touch_end(e: TouchEvent, node: Node, parent_node: Node[]) {
     if (current_platform_type !== 'mobile') return;
     clearTimeout(long_press_timer);
     if (long_press_triggered) {
       e.preventDefault();
-      handle_node_right_click(
-        {
-          clientX: 0,
-          clientY: 0,
-          preventDefault: () => {},
-          stopPropagation: () => {},
-        } as unknown as MouseEvent,
-        node,
-        parent_node
-      );
+      handle_node_right_click(null, node, parent_node);
     }
-    long_press_triggered = false;
+    cancel_long_press();
   }
 
   function handle_drag_start(e: DragEvent, node: Node) {
-    clearTimeout(long_press_timer);
-    long_press_triggered = false;
+    cancel_long_press();
 
     dragged_node = node;
     if (e.dataTransfer) {
@@ -296,7 +294,7 @@
       }
     }}
     ontouchstart={handle_touch_start}
-    ontouchcancel={handle_touch_cancel}
+    ontouchcancel={cancel_long_press}
     ontouchend={(e) => handle_touch_end(e, node, parent_node)}
     class="
       {is_focused_and_collapsed_and_hover &&
@@ -338,7 +336,7 @@
       }
     }}
     ontouchstart={handle_touch_start}
-    ontouchcancel={handle_touch_cancel}
+    ontouchcancel={cancel_long_press}
     ontouchend={(e) => handle_touch_end(e, node, subtree)}
     class="
     {opened_filenode.data?.path === node.path && 'bg-base-content/10'} 
