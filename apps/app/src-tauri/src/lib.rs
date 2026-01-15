@@ -94,16 +94,18 @@ fn build_tree_recursive_android(
         use tauri_plugin_android_fs::AndroidFsExt;
         use tauri_plugin_android_fs::FileUri;
 
-        let api = app.android_fs();
-
         let json_obj = serde_json::json!({
             "uri": path,
             "documentTopTreeUri": document_top_tree_uri
         });
-        let file_uri = FileUri::from_json_str(&json_obj.to_string())
-            .map_err(|e| format!("Failed to create FileUri: {}", e))?;
+        let file_uri_str = json_obj.to_string();
+
+        let app_clone = app.clone();
 
         let entries = tauri::async_runtime::spawn_blocking(move || {
+            let api = app_clone.android_fs();
+            let file_uri = FileUri::from_json_str(&file_uri_str)
+                .map_err(|e| format!("Failed to create FileUri: {}", e))?;
             api.read_dir(&file_uri).map_err(|e| e.to_string())
         })
         .await
