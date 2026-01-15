@@ -37,6 +37,7 @@
 
   let long_press_timer: number | undefined;
   let long_press_triggered = false;
+  let touch_start_coords: { x: number; y: number } | null = null;
 
   $effect(() => {
     if (collapsed_state) return;
@@ -84,11 +85,29 @@
   function handle_touch_start(e: TouchEvent) {
     if (current_platform_type !== 'mobile') return;
     cancel_long_press();
+    touch_start_coords = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
 
     long_press_timer = setTimeout(() => {
       if (navigator.vibrate) navigator.vibrate(50);
       long_press_triggered = true;
     }, 500) as unknown as number;
+  }
+
+  function handle_touch_move(e: TouchEvent) {
+    if (current_platform_type !== 'mobile' || !touch_start_coords) return;
+    const move_x = e.touches[0].clientX;
+    const move_y = e.touches[0].clientY;
+    const distance = Math.hypot(
+      move_x - touch_start_coords.x,
+      move_y - touch_start_coords.y
+    );
+
+    if (distance > 10) {
+      cancel_long_press();
+    }
   }
 
   function handle_touch_end(e: TouchEvent, node: Node, parent_node: Node[]) {
@@ -101,9 +120,35 @@
     cancel_long_press();
   }
 
-  function handle_drag_start(e: DragEvent, node: Node) {
-    cancel_long_press();
+  function handle_drag(e: DragEvent) {
+    if (!touch_start_coords) return;
+    // drag event client coordinates might be 0 on some browsers if end of drag
+    if (e.clientX === 0 && e.clientY === 0) return;
 
+    const distance = Math.hypot(
+      e.clientX - touch_start_coords.x,
+      e.clientY - touch_start_coords.y
+    );
+
+    if (distance > 10) {
+      cancel_long_press();
+    }
+  }
+
+  function handle_drag_end(e: DragEvent, node: Node, parent_node: Node[]) {
+    if (current_platform_type !== 'mobile') {
+      reset_dnd();
+      return;
+    }
+    if (long_press_triggered) {
+      e.preventDefault();
+      handle_node_right_click(null, node, parent_node);
+    }
+    cancel_long_press();
+    reset_dnd();
+  }
+
+  function handle_drag_start(e: DragEvent, node: Node) {
     dragged_node = node;
     if (e.dataTransfer) {
       e.dataTransfer.effectAllowed = 'move';
@@ -285,7 +330,6 @@
     ondragstart={(e) => handle_drag_start(e, node)}
     ondragover={(e) => handle_drag_over(e, node.path)}
     ondrop={(e) => handle_drop(e, node.path)}
-    ondragend={reset_dnd}
     oncontextmenu={(e) => {
       if (current_platform_type === 'mobile') {
         e.preventDefault();
@@ -294,8 +338,11 @@
       }
     }}
     ontouchstart={handle_touch_start}
+    ontouchmove={handle_touch_move}
     ontouchcancel={cancel_long_press}
     ontouchend={(e) => handle_touch_end(e, node, parent_node)}
+    ondrag={handle_drag}
+    ondragend={(e) => handle_drag_end(e, node, parent_node)}
     class="
       {is_focused_and_collapsed_and_hover &&
       'outline-solid outline-2 outline-accent'} 
@@ -327,7 +374,6 @@
   <button
     draggable="true"
     ondragstart={(e) => handle_drag_start(e, node)}
-    ondragend={reset_dnd}
     oncontextmenu={(e) => {
       if (current_platform_type === 'mobile') {
         e.preventDefault();
@@ -336,8 +382,11 @@
       }
     }}
     ontouchstart={handle_touch_start}
+    ontouchmove={handle_touch_move}
     ontouchcancel={cancel_long_press}
     ontouchend={(e) => handle_touch_end(e, node, subtree)}
+    ondrag={handle_drag}
+    ondragend={(e) => handle_drag_end(e, node, subtree)}
     class="
     {opened_filenode.data?.path === node.path && 'bg-base-content/10'} 
       {dragged_node?.path === node.path ? 'opacity-50' : ''}
