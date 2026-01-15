@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[cfg(test)]
+#[cfg(all(test, not(target_os = "android")))]
 mod desktop_test;
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -103,7 +103,11 @@ fn build_tree_recursive_android(
         let file_uri = FileUri::from_json_str(&json_obj.to_string())
             .map_err(|e| format!("Failed to create FileUri: {}", e))?;
 
-        let entries = api.read_dir(&file_uri).map_err(|e| e.to_string())?;
+        let entries = tauri::async_runtime::spawn_blocking(move || {
+            api.read_dir(&file_uri).map_err(|e| e.to_string())
+        })
+        .await
+        .map_err(|e| format!("Task join failed: {}", e))??;
 
         let mut child_handles = Vec::new();
         let mut files = Vec::new();
