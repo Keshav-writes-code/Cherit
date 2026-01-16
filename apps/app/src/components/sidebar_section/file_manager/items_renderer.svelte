@@ -254,7 +254,7 @@
       {drop_target === node.path &&
       (!expanded_state[node.path] || node.children.length === 0) &&
       'bg-accent/20 duration-0 outline-dashed outline-2 outline-accent z-50 '}
-      py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] rounded-md transition-colors"
+      py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] rounded-field transition-colors"
     onmousedown={() => {
       expanded_nodes_ever[node.path] = true;
     }}

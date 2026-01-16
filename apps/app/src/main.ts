@@ -3,7 +3,8 @@ import App from '@/App.svelte';
 
 import 'uno.css';
 import 'daisyui/theme/dark.css';
-import '@/fonts.css';
+import '@/styles/global.css';
+import '@/styles/fonts.css';
 
 import '@saurl/tauri-plugin-safe-area-insets-css-api';
 
