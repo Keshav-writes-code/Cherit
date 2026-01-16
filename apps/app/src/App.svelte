@@ -19,7 +19,7 @@
   <div
     class="
     drawer-content flex overflow-y-auto flex-col items-center h-full"
-    style="padding-top: env(safe-area-inset-top);padding-bottom: env(safe-area-inset-bottom);"
+    style="padding-bottom: env(safe-area-inset-bottom);"
   >
     <Main />
   </div>

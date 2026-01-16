@@ -34,7 +34,11 @@
   });
 </script>
 
-<div class="w-full px-8 flex justify-center flex-1 overflow-auto">
+<div
+  class="w-full isolate px-8 flex justify-center flex-1 overflow-auto
+{current_platform_type == 'mobile' && 'pt-22'}
+  "
+>
   <div class="max-w-170 w-full font-sans" id="text_editor">
     <input
       type="text"

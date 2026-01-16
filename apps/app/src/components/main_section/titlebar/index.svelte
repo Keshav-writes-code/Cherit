@@ -1,6 +1,5 @@
 <script lang="ts">
   import { getCurrentWindow } from '@tauri-apps/api/window';
-  import Breadcrumb from '@/components/general/breadcrumb_path/index.svelte';
   import { current_platform_type } from '@/lib/file_tree';
   import { opened_filenode } from '@/lib/states';
   import PaneMenu from '@/components/main_section/pane_menu/index.svelte';
@@ -52,16 +51,18 @@
     </div>
   </div>
 {:else}
-  <div class=" w-full h-10 grid grid-cols-[1fr_auto_1fr] items-center px-3">
+  <div
+    class=" isolate z-2 w-full fixed h-12 flex justify-between items-center px-3"
+    style="margin-top: env(safe-area-inset-top);"
+  >
     <label
       for="my-drawer-3"
-      class="btn btn-ghost text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] min-h-none max-h-none h-full w-10 p-none drawer-button"
+      class="btn btn-soft btn-circle btn-lg text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] min-h-none max-h-none h-full aspect-ratio-square drawer-button"
     >
       <div
         class="i-tabler:layout-sidebar-filled color-[var(--color-primary)] size-7.5"
       ></div>
     </label>
-    <Breadcrumb class="h-min text-lg" filenode={opened_filenode.data} />
     <div class="justify-self-end">
       <PaneMenu filenode={opened_filenode.data} />
     </div>
