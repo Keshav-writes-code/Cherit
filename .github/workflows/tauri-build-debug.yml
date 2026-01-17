@@ -1,7 +1,6 @@
 name: 'tauri-build-debug'
 
 on:
-  workflow_dispatch:
   pull_request:
   push:
     branches:
@@ -11,6 +10,7 @@ on:
     paths:
       - 'apps/app/**'
       - '.github/workflows/tauri-build-debug.yml'
+  workflow_dispatch:
 
 jobs:
   publish-tauri:

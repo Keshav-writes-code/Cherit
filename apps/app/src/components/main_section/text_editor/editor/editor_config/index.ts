@@ -13,13 +13,13 @@ import { languages } from '@codemirror/language-data';
 import { indentUnit } from '@codemirror/language';
 import { defaultKeymap } from '@codemirror/commands';
 import { custom_keymaps } from './keymaps';
-import { obsidian_theme } from './editor_theme/theme';
+import { obsidian_theme } from './theme';
 
 export function create_editor(
   text_content: string,
   html_element: HTMLElement,
   is_contents_changed_state?: boolean
-) {
+): EditorView {
   return new EditorView({
     doc: text_content,
     parent: html_element,

@@ -9,6 +9,7 @@
 </script>
 
 <TitleBar />
+
 {#if current_platform_type == 'desktop'}
   <div class=" w-full h-10 grid grid-cols-[1fr_auto_1fr] items-center px-2">
     <!-- FOr later Use -->
@@ -18,6 +19,10 @@
       <PaneMenu filenode={opened_filenode.data} />
     </div>
   </div>
+{:else}
+  <div
+    class="w-full z-1 bg-[linear-gradient(to_bottom,var(--color-base-100),transparent)] h-20 absolute top-0"
+  ></div>
 {/if}
 <TextEditior bind:filenode={opened_filenode.data} />
 
