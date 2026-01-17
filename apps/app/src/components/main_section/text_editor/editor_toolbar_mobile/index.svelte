@@ -8,9 +8,10 @@
     class: classes,
   }: { editor_view: EditorView; class?: string } = $props();
   const vp = window.visualViewport;
+  let elem = $state<HTMLDivElement>();
   function resize() {
-    if (!vp) return;
-    document.body.style.height = vp.height + 'px';
+    if (!vp || !elem?.parentElement) return;
+    elem.parentElement.style.height = vp.height + 'px';
     window.scrollTo(0, 0);
   }
   if (vp) {
@@ -20,7 +21,7 @@
   }
 </script>
 
-<div class="absolute bottom-2 w-full px-2 h-11 {classes}">
+<div class="absolute bottom-2 w-full px-2 h-11 {classes}" bind:this={elem}>
   <ul
     transition:fade={{ duration: 100 }}
     class="menu menu-horizontal overflow-x-auto flex-nowrap bg-[oklch(from_var(--color-base-100)_calc(l*1.2)_c_h)] b-y-1 b-t-[oklch(from_var(--color-base-100)_calc(l*1.4)_c_h)] b-b-[oklch(from_var(--color-base-100)_calc(l*0.9)_c_h)] shadow-md color-[color-mix(in_srgb,var(--color-base-content)_70%,black)] rounded-field w-full h-full p-0"
