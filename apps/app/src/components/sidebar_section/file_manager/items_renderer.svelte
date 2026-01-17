@@ -119,7 +119,7 @@
       'shadow-[inset_0_0_0_1px_var(--color-accent)]'}
       {drop_target === root_path.data?.path &&
       'bg-accent/10 outline-dashed outline-2 outline-accent'} 
-      {current_platform_type == 'mobile' ? ' menu-lg pt-3' : 'menu-sm'}
+      {current_platform_type == 'mobile' ? ' menu-lg pt-3' : ' pt-2 menu-sm'}
       menu h-full rounded-box relative w-full select-none overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide flex before:content-none flex-col gap-0.5 pt-0.5"
   >
     {#each file_tree.data as node (node.path)}
