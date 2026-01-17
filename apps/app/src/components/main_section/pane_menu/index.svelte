@@ -19,7 +19,9 @@
 
 <button
   aria-label="menu button"
-  class="  btn btn-soft btn-circle btn-lg text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] min-h-none max-h-none h-full aspect-square p-none"
+  class=" btn btn-ghost text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] min-h-none max-h-none h-full aspect-square p-none
+  {current_platform_type == 'mobile' && 'btn-soft btn-circle btn-lg'}
+  "
   onclick={(e) => {
     const { right: x, bottom: y } = (
       e.currentTarget as HTMLButtonElement
