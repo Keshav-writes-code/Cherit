@@ -126,7 +126,7 @@
       <li
         animate:flip={{ duration: 300 }}
         class="{focused_node == node &&
-          'outline-[color-mix(in_srgb,var(--color-base-content)_30%,black)] outline-2 outline-solid '} rounded-box"
+          'outline-[color-mix(in_srgb,var(--color-base-content)_30%,black)] outline-2 outline-solid '} rounded-field"
       >
         {#if node.is_directory}
           {@render folder_node(node, file_tree.data)}
@@ -222,7 +222,7 @@
         <li
           animate:flip={{ duration: 300 }}
           class="{focused_node == node &&
-            'outline-[color-mix(in_srgb,var(--color-base-content)_30%,black)] outline-2 outline-solid '} rounded-box"
+            'outline-[color-mix(in_srgb,var(--color-base-content)_30%,black)] outline-2 outline-solid '} rounded-field"
         >
           {#if node.is_directory}
             {@render folder_node(node, nodes)}
