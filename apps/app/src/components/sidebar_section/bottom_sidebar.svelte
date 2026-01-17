@@ -5,7 +5,7 @@
 <div
   class="w-full b-t-1 b-t-[color-mix(in_srgb,var(--color-base-content)_22%,black)]"
 >
-  <ul class="menu menu-xs bg-base-200 rounded-box w-full">
+  <ul class="menu menu-lg sm:menu-xs bg-base-200 rounded-box w-full">
     <li>
       <button
         onclick={() => {
