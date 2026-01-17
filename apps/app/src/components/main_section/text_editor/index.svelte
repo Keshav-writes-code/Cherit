@@ -91,6 +91,6 @@
   </div>
 </div>
 
-{#if current_platform_type == 'mobile' && mobile_toolbar_visible}
-  <MobileToolbar />
+{#if current_platform_type == 'mobile' && mobile_toolbar_visible && editor_view.data}
+  <MobileToolbar editor_view={editor_view.data} />
 {/if}

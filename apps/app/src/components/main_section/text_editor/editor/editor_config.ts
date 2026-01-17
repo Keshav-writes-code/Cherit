@@ -19,7 +19,7 @@ export function create_editor(
   text_content: string,
   html_element: HTMLElement,
   is_contents_changed_state?: boolean
-) {
+): EditorView {
   return new EditorView({
     doc: text_content,
     parent: html_element,
