@@ -23,9 +23,9 @@
     "@codemirror/language": "^6.12.1",
     "@codemirror/language-data": "^6.5.2",
     "@codemirror/state": "^6.5.3",
-    "@codemirror/view": "^6.39.9",
+    "@codemirror/view": "^6.39.11",
+    "@lezer/markdown": "^1.6.3",
     "@prosemark/core": "^0.0.4",
-    "@prosemark/render-html": "^0.0.5",
-    "@lezer/markdown": "^1.6.3"
+    "@prosemark/render-html": "^0.0.5"
   }
 }
