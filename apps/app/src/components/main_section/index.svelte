@@ -10,7 +10,7 @@
 
 <TitleBar />
 <div
-  class="w-full z-1 bg-[linear-gradient(to_bottom,var(--color-base-100)_20%,transparent)] h-20 absolute top-0"
+  class="w-full z-1 bg-[linear-gradient(to_bottom,var(--color-base-100),transparent)] h-20 absolute top-0"
 ></div>
 
 {#if current_platform_type == 'desktop'}
