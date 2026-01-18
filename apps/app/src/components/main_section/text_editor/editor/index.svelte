@@ -6,7 +6,7 @@
   import { get_desktop_context_menu } from './context_menu';
   import { context_menu } from '@/lib/states';
   import { create_editor } from './editor_config';
-  import './editor_theme/theme.css';
+  import './editor_config/theme.css';
   let {
     text_content,
     write_to_file,
