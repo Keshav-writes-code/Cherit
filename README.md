@@ -6,8 +6,9 @@
 
 ## Project Screenshots :
 
-![project screenshot](https://i.vgy.me/3DPkAd.png)
-![project screenshot](https://i.vgy.me/CB0d8M.png)
+<img width="1210" height="837" alt="image" src="https://github.com/user-attachments/assets/920c3f9e-f2d0-498e-bcf4-a27b7117f71f" />
+<img width="1210" height="838" alt="image" src="https://github.com/user-attachments/assets/a87a2221-1d46-4348-b382-880c9da05196" />
+
 
 ## Motivation
 
