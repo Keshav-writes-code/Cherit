@@ -44,7 +44,7 @@ export default defineConfig({
     mdx(),
   ],
   site: "https://Keshav-writes-code.github.io",
-  base: "cherit",
+  base: "Cherit",
   devToolbar: {
     enabled: false,
   },
