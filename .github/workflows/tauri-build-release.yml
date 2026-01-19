@@ -1,7 +1,6 @@
 name: 'tauri-build-release'
 
 on:
-  workflow_dispatch:
   pull_request:
   push:
     branches:
@@ -10,6 +9,7 @@ on:
     paths:
       - 'apps/app/**'
       - '.github/workflows/tauri-build-release.yml'
+  workflow_dispatch:
 
 jobs:
   publish-tauri:
