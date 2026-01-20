@@ -23,7 +23,7 @@
 
     if (ua.includes("android")) {
       return {
-        main: { label: "Android (apk)", url: file("android-universal.apk") },
+        main: { label: "Android (apk)", url: file("android-arm.apk") },
         others: [
           { label: "Android Arm64 (apk)", url: file("android-arm64.apk") },
         ],
