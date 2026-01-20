@@ -110,7 +110,7 @@ jobs:
 
       # ---------------- Tauri -----------------
       - name: Build Tauri Project
-        uses: tauri-apps/tauri-action@9ce1dcc1a78395184050946b71457a6c242beab6
+        uses: tauri-apps/tauri-action@e3ec38d49ea445df6d61ebaf015a85b1846b63f3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
