@@ -3,7 +3,7 @@ import { jsPDF } from 'jspdf';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { current_platform, join_path } from '@/lib/file_system';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
-import { root_path } from '../states';
+import { root_path } from '@/lib/states';
 
 export async function pdf_rendered(file_name: string, location: string) {
   const el = document.getElementById('text_editor');

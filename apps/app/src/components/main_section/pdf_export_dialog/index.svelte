@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { pdf_rendered } from '@/lib/pdf_export_dialog';
+  import { pdf_rendered } from '@/lib/features/pdf_export';
   import { show_folder_picker } from '@/lib/file_system/picker_dialog';
   import type { Node } from '@/types';
   import { toast } from 'svelte-sonner';
