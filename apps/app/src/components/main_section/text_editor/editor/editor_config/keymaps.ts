@@ -2,7 +2,7 @@ import {
   trigger_redo,
   trigger_undo,
   wrap_selection,
-} from '../../../../../lib/editor_commands';
+} from '../../../../../lib/features/editor/commands';
 import { keymap } from '@codemirror/view';
 
 export const custom_keymaps = keymap.of([
