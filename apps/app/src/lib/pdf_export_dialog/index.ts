@@ -1,7 +1,7 @@
 import html2canvas from 'html2canvas-pro';
 import { jsPDF } from 'jspdf';
 import { writeFile } from '@tauri-apps/plugin-fs';
-import { current_platform, join_path } from '../file_tree';
+import { current_platform, join_path } from '@/lib/file_system';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
 import { root_path } from '../states';
 

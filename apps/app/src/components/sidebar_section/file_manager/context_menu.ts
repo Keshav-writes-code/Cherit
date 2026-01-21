@@ -1,5 +1,5 @@
 // @unocss-include
-import { delete_node } from '@/lib/file_tree';
+import { delete_node } from '@/lib/file_system';
 import type { MenuItem } from '@/types';
 import type { GenericPath, Node } from '@/types';
 import { revealItemInDir } from '@tauri-apps/plugin-opener';

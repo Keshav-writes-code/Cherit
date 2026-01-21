@@ -1,8 +1,8 @@
 import {
   build_file_tree_from_fs,
   find_filenode_by_path,
-} from '@/lib/file_tree';
-import { current_platform } from '@/lib/file_tree/utils/platform_utils';
+} from '@/lib/file_system';
+import { current_platform } from '@/lib/file_system';
 import {
   opened_filenode,
   file_tree,
@@ -38,7 +38,10 @@ export async function update_workspace(
     is_filetree_loading.data = false;
     update_opened_filenode(last_filenode_path, generic_path.path);
     if (current_platform == 'android') {
-      await AndroidFs.persistUriPermission({ uri: path, documentTopTreeUri: document_top_tree_uri });
+      await AndroidFs.persistUriPermission({
+        uri: path,
+        documentTopTreeUri: document_top_tree_uri,
+      });
     }
 
     await touch_recent_workspaces(new_workspace);

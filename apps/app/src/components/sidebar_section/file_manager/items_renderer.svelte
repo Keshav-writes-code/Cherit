@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Node, MenuItem } from '@/types';
   import animatedDetails from 'svelte-animated-details';
-  import { current_platform_type, get_parent_path } from '@/lib/file_tree';
+  import { current_platform_type, get_parent_path } from '@/lib/file_system';
   import {
     file_tree,
     focused_subtree,

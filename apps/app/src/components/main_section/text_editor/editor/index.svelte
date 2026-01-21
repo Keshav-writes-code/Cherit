@@ -2,7 +2,7 @@
   import { EditorView } from '@codemirror/view';
   import { editor_view } from '../editor_state.svelte';
   import type { MenuItem } from '@/types';
-  import { current_platform_type } from '@/lib/file_tree';
+  import { current_platform_type } from '@/lib/file_system';
   import { get_desktop_context_menu } from './context_menu';
   import { context_menu } from '@/lib/states';
   import { create_editor } from './editor_config';

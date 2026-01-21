@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { current_platform_type, rename_file } from '@/lib/file_tree';
+  import { current_platform_type, rename_file } from '@/lib/file_system';
   import { focused_subtree, root_path } from '@/lib/states';
   import type { Node } from '@/types';
   import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';

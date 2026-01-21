@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { get_relative_path_parts } from '@/lib/file_tree';
+  import { get_relative_path_parts } from '@/lib/file_system';
   import { root_path } from '@/lib/states';
   import type { Node } from '@/types';
   let {
