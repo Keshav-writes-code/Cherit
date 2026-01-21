@@ -3,7 +3,7 @@
     add_new_folder,
     add_new_note,
     current_platform_type,
-  } from '@/lib/file_tree';
+  } from '@/lib/file_system';
   import {
     file_tree,
     focused_subtree,

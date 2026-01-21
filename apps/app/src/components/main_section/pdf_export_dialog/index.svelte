@@ -1,6 +1,6 @@
 <script lang="ts">
   import { pdf_rendered } from '@/lib/pdf_export_dialog';
-  import { show_folder_picker } from '@/lib/system_dialogs';
+  import { show_folder_picker } from '@/lib/file_system/picker_dialog';
   import type { Node } from '@/types';
   import { toast } from 'svelte-sonner';
   import type { SubmitStates } from '@/types';

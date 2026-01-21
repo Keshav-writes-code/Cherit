@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { move_node } from '@/lib/file_tree';
+  import { move_node } from '@/lib/file_system';
   import ItemsRender from './items_renderer.svelte';
   import Toolbar from './toolbar.svelte';
   import { toast } from 'svelte-sonner';

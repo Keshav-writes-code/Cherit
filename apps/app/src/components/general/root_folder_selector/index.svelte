@@ -3,7 +3,7 @@
     current_platform,
     current_platform_type,
     get_relative_path_parts,
-  } from '@/lib/file_tree';
+  } from '@/lib/file_system';
   import {
     get_most_recent_workspace,
     RecentWorkspaces,
@@ -15,7 +15,7 @@
   } from '@/lib/states';
   import type { Workspace } from '@/types';
   import { onMount } from 'svelte';
-  import { show_folder_picker } from '@/lib/system_dialogs';
+  import { show_folder_picker } from '@/lib/file_system/picker_dialog';
   import {
     recent_workspaces,
     user_activity,

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { current_platform_type } from '@/lib/file_tree';
+  import { current_platform_type } from '@/lib/file_system';
   import { context_menu, pdf_export_status } from '@/lib/states';
   import type { Node } from '@/types';
   import { type MenuItem } from '@/types';
