@@ -48,7 +48,7 @@ export async function move_node(
 
   if (current_platform === 'android') {
     try {
-      new_path = await invoke('move_file_android', {
+      new_path = await invoke('move_node_android', {
         uri: node.path,
         newParentUri: new_parent_path,
         documentTopTreeUri: document_top_tree_uri,
@@ -87,7 +87,9 @@ export async function move_node(
         )
       );
     } else {
-      n.children.forEach((c) => update(c, join_path(p, c.name)));
+      n.children.forEach((c) =>
+        update(c, join_path(p, c.is_directory ? c.name : c.name + '.md'))
+      );
     }
   };
   update(node, new_path);
@@ -170,33 +172,60 @@ export async function add_new_folder(
   sort_nodes(subtree);
 }
 
-export async function rename_file(
-  file_node: Node,
+export async function rename_node(
+  node: Node,
   new_name: string,
   parent_tree: Node[],
   document_top_tree_uri: string | null
 ) {
+  let new_path = '';
+  // Handle naming convention
+  const final_name = node.is_directory ? new_name : new_name + '.md';
+
   if (current_platform === 'android') {
     try {
-      const new_path = await invoke<string>('rename_file_android', {
-        uri: file_node.path,
-        newName: new_name + '.md',
+      new_path = await invoke<string>('rename_node_android', {
+        uri: node.path,
+        newName: final_name,
         documentTopTreeUri: document_top_tree_uri,
       });
-      file_node.name = new_name;
-      file_node.path = new_path;
     } catch (e) {
       console.error(e);
-      toast.error('Error Renaming File', { description: String(e) });
+      toast.error('Error Renaming Node', { description: String(e) });
       return;
     }
   } else {
-    const parent = get_parent_path(file_node.path);
-    const new_path = join_path(parent, new_name + '.md');
-    await rename(file_node.path, new_path);
-    file_node.name = new_name;
-    file_node.path = new_path;
+    try {
+      const parent = get_parent_path(node.path);
+      new_path = join_path(parent, final_name);
+      await rename(node.path, new_path);
+    } catch (e) {
+      console.error(e);
+      toast.error('Error Renaming Node', { description: String(e) });
+      return;
+    }
   }
+
+  // Update State (Node and Children)
+  node.name = new_name;
+
+  const update_paths = (n: Node, p: string) => {
+    n.path = p;
+    if (current_platform === 'android') {
+      n.children.forEach((c) =>
+        update_paths(
+          c,
+          p + '%2F' + encodeURIComponent(c.is_directory ? c.name : c.name + '.md')
+        )
+      );
+    } else {
+      n.children.forEach((c) =>
+        update_paths(c, join_path(p, c.is_directory ? c.name : c.name + '.md'))
+      );
+    }
+  };
+  update_paths(node, new_path);
+
   sort_nodes(parent_tree);
 }
 

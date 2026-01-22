@@ -208,134 +208,177 @@ async fn build_file_tree(
 }
 
 #[cfg(target_os = "android")]
-async fn rename_file_android_impl(
+fn copy_recursive_android(
     app: tauri::AppHandle,
-    uri: String,
-    new_name: String,
+    source_uri: String,
+    target_parent_uri: String,
+    target_name: String,
     document_top_tree_uri: Option<String>,
-) -> Result<String, String> {
-    use tauri_plugin_android_fs::AndroidFsExt;
-    use tauri_plugin_android_fs::FileUri;
+) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<(), String>> + Send>> {
+    Box::pin(async move {
+        use tauri_plugin_android_fs::AndroidFsExt;
+        use tauri_plugin_android_fs::FileUri;
 
-    let api = app.android_fs();
+        let api = app.android_fs();
 
-    // 1. Derive parent URI
-    let parent_uri = match uri.rsplit_once("%2F") {
-        Some((parent, _)) => parent.to_string(),
-        None => {
-            return Err("Could not determine parent URI from path".to_string());
+        let source_json = serde_json::json!({
+            "uri": source_uri,
+            "documentTopTreeUri": document_top_tree_uri
+        });
+        let source_file_uri = FileUri::from_json_str(&source_json.to_string())
+            .map_err(|e| format!("Failed to create Source FileUri: {}", e))?;
+
+        // Check if directory by attempting to read it as one
+        let entries_result = api.read_dir(&source_file_uri);
+
+        // Prepare parent URI
+        let parent_json = serde_json::json!({
+            "uri": target_parent_uri,
+            "documentTopTreeUri": document_top_tree_uri
+        });
+        let parent_file_uri = FileUri::from_json_str(&parent_json.to_string())
+            .map_err(|e| format!("Failed to create Parent FileUri: {}", e))?;
+
+        if let Ok(entries) = entries_result {
+            // It IS a directory
+            api.create_dir_all(&parent_file_uri, &target_name)
+                .map_err(|e| format!("Failed to create new directory: {}", e))?;
+
+            let mut handles = Vec::new();
+            let new_dir_path_str =
+                format!("{}%2F{}", target_parent_uri, urlencoding::encode(&target_name));
+
+            for entry in entries {
+                let name = entry.name().to_string();
+                let child_source_path = format!("{}%2F{}", source_uri, urlencoding::encode(&name));
+
+                let app_clone = app.clone();
+                let doc_uri_clone = document_top_tree_uri.clone();
+                let new_dir_path_clone = new_dir_path_str.clone();
+
+                handles.push(copy_recursive_android(
+                    app_clone,
+                    child_source_path,
+                    new_dir_path_clone,
+                    name,
+                    doc_uri_clone,
+                ));
+            }
+
+            futures::future::try_join_all(handles).await?;
+        } else {
+            // read_dir failed. This means it's either a file, or it doesn't exist.
+            // Try to read it as a file.
+            let content_res = api.read(&source_file_uri);
+
+            match content_res {
+                Ok(content) => {
+                     // It IS a file
+                    let mime_type = if target_name.ends_with(".md") {
+                        "text/markdown"
+                    } else {
+                        "application/octet-stream"
+                    };
+
+                    let new_file_uri = api
+                        .create_new_file(&parent_file_uri, &target_name, Some(mime_type))
+                        .map_err(|e| format!("Failed to create new file: {}", e))?;
+
+                    api.write(&new_file_uri, &content)
+                        .map_err(|e| format!("Failed to write to new file: {}", e))?;
+                },
+                Err(e) => {
+                    // It failed as a directory (read_dir) AND as a file (read).
+                    // This implies it probably doesn't exist or permissions are wrong.
+                    // We return the original read_dir error or the read error.
+                    // Returning the read error is likely more useful here as we expected a file fallback.
+                     return Err(format!("Failed to read source file (and not a dir): {}", e));
+                }
+            }
         }
-    };
 
-    let source_json = serde_json::json!({
-        "uri": uri,
-        "documentTopTreeUri": document_top_tree_uri
-    });
-    let source_file_uri = FileUri::from_json_str(&source_json.to_string())
-        .map_err(|e| format!("Failed to create Source FileUri: {}", e))?;
-
-    // 2. Read content
-    let content = api
-        .read(&source_file_uri)
-        .map_err(|e| format!("Failed to read source file: {}", e))?;
-
-    // 3. Create new file in parent
-    let parent_json = serde_json::json!({
-        "uri": parent_uri,
-        "documentTopTreeUri": document_top_tree_uri
-    });
-    let parent_file_uri = FileUri::from_json_str(&parent_json.to_string())
-        .map_err(|e| format!("Failed to create Parent FileUri: {}", e))?;
-
-    // Determine mime type
-    let mime_type = if new_name.ends_with(".md") {
-        "text/markdown"
-    } else {
-        "application/octet-stream"
-    };
-
-    let new_file_uri = api
-        .create_new_file(&parent_file_uri, &new_name, Some(mime_type))
-        .map_err(|e| format!("Failed to create new file: {}", e))?;
-
-    // 4. Write content to new file
-    api.write(&new_file_uri, &content)
-        .map_err(|e| format!("Failed to write to new file: {}", e))?;
-
-    // 5. Delete old file
-    api.remove_file(&source_file_uri)
-        .map_err(|e| format!("Failed to delete source file: {}", e))?;
-
-    let new_constructed_path = format!("{}%2F{}", parent_uri, urlencoding::encode(&new_name));
-    Ok(new_constructed_path)
+        Ok(())
+    })
 }
 
 #[cfg(target_os = "android")]
-async fn move_file_android_impl(
+fn delete_recursive_android(
     app: tauri::AppHandle,
-    uri: String,
+    target_uri: String,
+    document_top_tree_uri: Option<String>,
+) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<(), String>> + Send>> {
+    Box::pin(async move {
+        use tauri_plugin_android_fs::AndroidFsExt;
+        use tauri_plugin_android_fs::FileUri;
+
+        let api = app.android_fs();
+
+        let target_json = serde_json::json!({
+            "uri": target_uri,
+            "documentTopTreeUri": document_top_tree_uri
+        });
+        let target_file_uri = FileUri::from_json_str(&target_json.to_string())
+            .map_err(|e| format!("Failed to create Target FileUri: {}", e))?;
+
+        // Strategy: Try remove_file first. If it fails, try remove_dir_all.
+        // This avoids relying on read_dir which can be ambiguous or fail unexpectedly.
+        if let Err(e_file) = api.remove_file(&target_file_uri) {
+            // If remove_file failed, it might be a directory.
+            if let Err(e_dir) = api.remove_dir_all(&target_file_uri) {
+                // Both failed. Return the file error (usually "is a directory") or dir error depending on context.
+                // But generally if it was a directory, e_dir is the relevant one.
+                // If it was a file, e_file is relevant.
+                // We'll return a combined message to be helpful.
+                return Err(format!("Failed to delete: File error: {}, Dir error: {}", e_file, e_dir));
+            }
+        }
+        Ok(())
+    })
+}
+
+#[cfg(target_os = "android")]
+async fn move_node_android_impl(
+    app: tauri::AppHandle,
+    source_uri: String,
     new_parent_uri: String,
+    new_name: Option<String>,
     document_top_tree_uri: Option<String>,
 ) -> Result<String, String> {
-    use tauri_plugin_android_fs::AndroidFsExt;
-    use tauri_plugin_android_fs::FileUri;
-
-    let api = app.android_fs();
-
-    // 1. Derive filename from source URI
-    let name_encoded = match uri.rsplit_once("%2F") {
-        Some((_, name)) => name,
-        None => return Err("Could not extract filename from URI".to_string()),
-    };
-    let name = urlencoding::decode(name_encoded)
-        .map_err(|e| format!("Failed to decode filename: {}", e))?
-        .to_string();
-
-    let source_json = serde_json::json!({
-        "uri": uri,
-        "documentTopTreeUri": document_top_tree_uri
-    });
-    let source_file_uri = FileUri::from_json_str(&source_json.to_string())
-        .map_err(|e| format!("Failed to create Source FileUri: {}", e))?;
-
-    // 2. Read content
-    let content = api
-        .read(&source_file_uri)
-        .map_err(|e| format!("Failed to read source file: {}", e))?;
-
-    // 3. Create new file in new parent
-    let parent_json = serde_json::json!({
-        "uri": new_parent_uri,
-        "documentTopTreeUri": document_top_tree_uri
-    });
-    let parent_file_uri = FileUri::from_json_str(&parent_json.to_string())
-        .map_err(|e| format!("Failed to create Parent FileUri: {}", e))?;
-
-    let mime_type = if name.ends_with(".md") {
-        "text/markdown"
+    // 1. Determine target name
+    let target_name = if let Some(n) = new_name {
+        n
     } else {
-        "application/octet-stream"
+        // Extract from source URI
+        let name_encoded = match source_uri.rsplit_once("%2F") {
+            Some((_, name)) => name,
+            None => return Err("Could not extract filename from URI".to_string()),
+        };
+        urlencoding::decode(name_encoded)
+            .map_err(|e| format!("Failed to decode filename: {}", e))?
+            .to_string()
     };
 
-    let new_file_uri = api
-        .create_new_file(&parent_file_uri, &name, Some(mime_type))
-        .map_err(|e| format!("Failed to create new file: {}", e))?;
+    // 2. Recursive Copy
+    copy_recursive_android(
+        app.clone(),
+        source_uri.clone(),
+        new_parent_uri.clone(),
+        target_name.clone(),
+        document_top_tree_uri.clone(),
+    )
+    .await?;
 
-    // 4. Write content
-    api.write(&new_file_uri, &content)
-        .map_err(|e| format!("Failed to write to new file: {}", e))?;
+    // 3. Recursive Delete (Source)
+    delete_recursive_android(app, source_uri, document_top_tree_uri).await?;
 
-    // 5. Delete old
-    api.remove_file(&source_file_uri)
-        .map_err(|e| format!("Failed to delete source file: {}", e))?;
-
-    // Return constructed path
-    let new_constructed_path = format!("{}%2F{}", new_parent_uri, name_encoded);
+    // 4. Return new path
+    let new_constructed_path =
+        format!("{}%2F{}", new_parent_uri, urlencoding::encode(&target_name));
     Ok(new_constructed_path)
 }
 
 #[tauri::command]
-async fn rename_file_android(
+async fn rename_node_android(
     app: tauri::AppHandle,
     uri: String,
     new_name: String,
@@ -343,7 +386,19 @@ async fn rename_file_android(
 ) -> Result<String, String> {
     #[cfg(target_os = "android")]
     {
-        rename_file_android_impl(app, uri, new_name, document_top_tree_uri).await
+        // For rename, parent is the same.
+        let parent_uri = match uri.rsplit_once("%2F") {
+            Some((parent, _)) => parent.to_string(),
+            None => return Err("Could not determine parent URI".to_string()),
+        };
+        move_node_android_impl(
+            app,
+            uri,
+            parent_uri,
+            Some(new_name),
+            document_top_tree_uri,
+        )
+        .await
     }
     #[cfg(not(target_os = "android"))]
     {
@@ -352,7 +407,7 @@ async fn rename_file_android(
 }
 
 #[tauri::command]
-async fn move_file_android(
+async fn move_node_android(
     app: tauri::AppHandle,
     uri: String,
     new_parent_uri: String,
@@ -360,7 +415,7 @@ async fn move_file_android(
 ) -> Result<String, String> {
     #[cfg(target_os = "android")]
     {
-        move_file_android_impl(app, uri, new_parent_uri, document_top_tree_uri).await
+        move_node_android_impl(app, uri, new_parent_uri, None, document_top_tree_uri).await
     }
     #[cfg(not(target_os = "android"))]
     {
@@ -381,8 +436,8 @@ pub fn run() {
         .plugin(tauri_plugin_safe_area_insets_css::init())
         .invoke_handler(tauri::generate_handler![
             build_file_tree,
-            rename_file_android,
-            move_file_android
+            rename_node_android,
+            move_node_android
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {
