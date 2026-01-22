@@ -228,10 +228,10 @@ fn copy_recursive_android(
         let source_file_uri = FileUri::from_json_str(&source_json.to_string())
             .map_err(|e| format!("Failed to create Source FileUri: {}", e))?;
 
-        // Check if directory by attempting to read it as one
-        let entries_result = api.read_dir(&source_file_uri);
+        // Check if directory
+        // We use read_dir to check. If it works, it's a directory.
+        let is_dir = api.read_dir(&source_file_uri).is_ok();
 
-        // Prepare parent URI
         let parent_json = serde_json::json!({
             "uri": target_parent_uri,
             "documentTopTreeUri": document_top_tree_uri
@@ -239,12 +239,20 @@ fn copy_recursive_android(
         let parent_file_uri = FileUri::from_json_str(&parent_json.to_string())
             .map_err(|e| format!("Failed to create Parent FileUri: {}", e))?;
 
-        if let Ok(entries) = entries_result {
-            // It IS a directory
+        if is_dir {
+            // Create Dir
+            // Assuming create_dir exists and returns the new URI
             api.create_dir_all(&parent_file_uri, &target_name)
                 .map_err(|e| format!("Failed to create new directory: {}", e))?;
 
+            // Recurse
+            let entries = api
+                .read_dir(&source_file_uri)
+                .map_err(|e| e.to_string())?;
+
             let mut handles = Vec::new();
+
+            // Construct new parent path string
             let new_dir_path_str =
                 format!("{}%2F{}", target_parent_uri, urlencoding::encode(&target_name));
 
@@ -267,34 +275,23 @@ fn copy_recursive_android(
 
             futures::future::try_join_all(handles).await?;
         } else {
-            // read_dir failed. This means it's either a file, or it doesn't exist.
-            // Try to read it as a file.
-            let content_res = api.read(&source_file_uri);
+            // File Copy
+            let content = api
+                .read(&source_file_uri)
+                .map_err(|e| format!("Failed to read source file: {}", e))?;
 
-            match content_res {
-                Ok(content) => {
-                     // It IS a file
-                    let mime_type = if target_name.ends_with(".md") {
-                        "text/markdown"
-                    } else {
-                        "application/octet-stream"
-                    };
+            let mime_type = if target_name.ends_with(".md") {
+                "text/markdown"
+            } else {
+                "application/octet-stream"
+            };
 
-                    let new_file_uri = api
-                        .create_new_file(&parent_file_uri, &target_name, Some(mime_type))
-                        .map_err(|e| format!("Failed to create new file: {}", e))?;
+            let new_file_uri = api
+                .create_new_file(&parent_file_uri, &target_name, Some(mime_type))
+                .map_err(|e| format!("Failed to create new file: {}", e))?;
 
-                    api.write(&new_file_uri, &content)
-                        .map_err(|e| format!("Failed to write to new file: {}", e))?;
-                },
-                Err(e) => {
-                    // It failed as a directory (read_dir) AND as a file (read).
-                    // This implies it probably doesn't exist or permissions are wrong.
-                    // We return the original read_dir error or the read error.
-                    // Returning the read error is likely more useful here as we expected a file fallback.
-                     return Err(format!("Failed to read source file (and not a dir): {}", e));
-                }
-            }
+            api.write(&new_file_uri, &content)
+                .map_err(|e| format!("Failed to write to new file: {}", e))?;
         }
 
         Ok(())
@@ -320,17 +317,14 @@ fn delete_recursive_android(
         let target_file_uri = FileUri::from_json_str(&target_json.to_string())
             .map_err(|e| format!("Failed to create Target FileUri: {}", e))?;
 
-        // Strategy: Try remove_file first. If it fails, try remove_dir_all.
-        // This avoids relying on read_dir which can be ambiguous or fail unexpectedly.
-        if let Err(e_file) = api.remove_file(&target_file_uri) {
-            // If remove_file failed, it might be a directory.
-            if let Err(e_dir) = api.remove_dir_all(&target_file_uri) {
-                // Both failed. Return the file error (usually "is a directory") or dir error depending on context.
-                // But generally if it was a directory, e_dir is the relevant one.
-                // If it was a file, e_file is relevant.
-                // We'll return a combined message to be helpful.
-                return Err(format!("Failed to delete: File error: {}, Dir error: {}", e_file, e_dir));
-            }
+        let is_dir = api.read_dir(&target_file_uri).is_ok();
+
+        if is_dir {
+            api.remove_dir_all(&target_file_uri)
+                .map_err(|e| format!("Failed to remove directory: {}", e))?;
+        } else {
+            api.remove_file(&target_file_uri)
+                .map_err(|e| format!("Failed to remove file: {}", e))?;
         }
         Ok(())
     })
