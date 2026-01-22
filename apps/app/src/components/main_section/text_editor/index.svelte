@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { current_platform_type, rename_file } from '@/lib/file_system';
+  import { current_platform_type, rename_node } from '@/lib/file_system';
   import { focused_subtree, root_path } from '@/lib/states';
   import type { Node } from '@/types';
   import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
@@ -54,7 +54,7 @@
         if (!is_file_named_changed) return;
         if (!current_file_name || !filenode || !focused_subtree.data) return;
         try {
-          await rename_file(
+          await rename_node(
             filenode,
             current_file_name,
             focused_subtree.data,
