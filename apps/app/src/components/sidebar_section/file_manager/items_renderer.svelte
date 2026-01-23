@@ -1,7 +1,11 @@
 <script lang="ts">
   import type { Node, MenuItem } from '@/types';
   import animatedDetails from 'svelte-animated-details';
-  import { current_platform_type, get_parent_path } from '@/lib/file_system';
+  import {
+    current_platform_type,
+    get_parent_path,
+    rename_node,
+  } from '@/lib/file_system';
   import {
     file_tree,
     focused_subtree,
@@ -35,6 +39,10 @@
   let dragged_node: Node | null = $state(null);
   let drop_target: string | null = $state(null);
 
+  let rename_sel_node: { data: Node | undefined } = $state({
+    data: undefined,
+  });
+  const focus = (el: HTMLInputElement) => el.focus();
   $effect(() => {
     if (collapsed_state) return;
     expanded_nodes_ever = {};
@@ -42,21 +50,23 @@
   function handle_node_right_click(
     e: MouseEvent,
     node: Node,
-    parent_tree: Node[]
+    parent_subtree: Node[]
   ) {
     focused_node = node;
     let context_menu_items: MenuItem[];
     if (current_platform_type == 'desktop')
       context_menu_items = get_desktop_context_menu(
         node,
-        parent_tree,
-        root_path
+        parent_subtree,
+        root_path,
+        rename_sel_node
       );
     else
       context_menu_items = get_mobile_context_menu(
         node,
-        parent_tree,
-        root_path
+        parent_subtree,
+        root_path,
+        rename_sel_node
       );
 
     context_menu.open(e, context_menu_items);
@@ -184,7 +194,7 @@
   </button>
 {/snippet}
 
-{#snippet folder_node(node: Node, parent_node: Node[])}
+{#snippet folder_node(node: Node, parent_subtree: Node[])}
   {@const is_focused_and_collapsed_and_hover =
     expanded_state[node.path] === false &&
     node.path === focused_directory &&
@@ -199,7 +209,7 @@
     {@render folder_button(
       node,
       is_focused_and_collapsed_and_hover,
-      parent_node
+      parent_subtree
     )}
     {#if expanded_nodes_ever[node.path] || false || !collapsed_state}
       {@render folder_content(node.children, node.path)}
@@ -239,7 +249,7 @@
 {#snippet folder_button(
   node: Node,
   is_focused_and_collapsed_and_hover: boolean,
-  parent_node: Node[]
+  parent_subtree: Node[]
 )}
   <summary
     draggable="true"
@@ -247,14 +257,14 @@
     ondragover={(e) => handle_drag_over(e, node.path)}
     ondrop={(e) => handle_drop(e, node.path)}
     ondragend={reset_dnd}
-    oncontextmenu={(e) => handle_node_right_click(e, node, parent_node)}
+    oncontextmenu={(e) => handle_node_right_click(e, node, parent_subtree)}
     class="
       {is_focused_and_collapsed_and_hover &&
       'outline-solid outline-2 outline-accent'} 
       {drop_target === node.path &&
       (!expanded_state[node.path] || node.children.length === 0) &&
       'bg-accent/20 duration-0 outline-dashed outline-2 outline-accent z-50 '}
-      py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] rounded-field transition-colors"
+      py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] rounded-field transition-colors truncate overflow-clip"
     onmousedown={() => {
       expanded_nodes_ever[node.path] = true;
     }}
@@ -271,16 +281,16 @@
       expanded_nodes_ever[node.path] = true;
     }}
   >
-    {node.name}
+    {@render node_button_content(node, parent_subtree)}
   </summary>
 {/snippet}
 
-{#snippet file_button(node: Node, subtree: Node[])}
+{#snippet file_button(node: Node, parent_subtree: Node[])}
   <button
     draggable="true"
     ondragstart={(e) => handle_drag_start(e, node)}
     ondragend={reset_dnd}
-    oncontextmenu={(e) => handle_node_right_click(e, node, subtree)}
+    oncontextmenu={(e) => handle_node_right_click(e, node, parent_subtree)}
     class="
     {opened_filenode.data?.path === node.path && 'bg-base-content/10'} 
       {dragged_node?.path === node.path ? 'opacity-50' : ''}
@@ -289,12 +299,46 @@
       opened_filenode.data = node;
       if (e.target === e.currentTarget) {
         focused_directory = get_parent_path(node.path);
-        focused_subtree.set(subtree);
+        focused_subtree.set(parent_subtree);
       }
     }}
   >
-    {node.name}
+    {@render node_button_content(node, parent_subtree)}
   </button>
+{/snippet}
+{#snippet node_button_content(node: Node, parent_subtree: Node[])}
+  {#if rename_sel_node.data == node}
+    <input
+      type="text"
+      bind:value={node.name}
+      class=" [all:_unset]"
+      use:focus
+      onblur={(e) => {
+        if (!rename_sel_node.data || !root_path.data) return;
+        rename_node(
+          rename_sel_node.data,
+          e.currentTarget.value,
+          parent_subtree,
+          root_path.data.document_top_tree_uri
+        );
+        rename_sel_node.data = undefined;
+      }}
+      onkeydown={(e: KeyboardEvent) => {
+        if (e.key !== 'Enter') return;
+        if (!rename_sel_node.data || !root_path.data) return;
+        const target = e.target as HTMLInputElement;
+        rename_node(
+          rename_sel_node.data,
+          target.value,
+          parent_subtree,
+          root_path.data.document_top_tree_uri
+        );
+        rename_sel_node.data = undefined;
+      }}
+    />
+  {:else}
+    {node.name}
+  {/if}
 {/snippet}
 
 <style>

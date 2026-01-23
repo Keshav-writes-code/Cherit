@@ -6,13 +6,16 @@ import { revealItemInDir } from '@tauri-apps/plugin-opener';
 export function get_desktop_context_menu(
   node: Node,
   parent_tree: Node[],
-  root_path: { data: GenericPath | undefined }
+  root_path: { data: GenericPath | undefined },
+  rename_node: { data: Node | undefined }
 ): MenuItem[] {
   return [
     {
       label: 'Rename',
       icon_class: 'i-tabler:pencil size-4',
-      action: () => navigator.clipboard.writeText(node.path),
+      action: () => {
+        rename_node.data = node;
+      },
     },
     {
       label: 'Delete',
@@ -36,9 +39,21 @@ export function get_desktop_context_menu(
 export function get_mobile_context_menu(
   node: Node,
   parent_tree: Node[],
-  root_path: { data: GenericPath | undefined }
+  root_path: { data: GenericPath | undefined },
+  rename_node: { data: Node | undefined }
 ): MenuItem[] {
   return [
+    {
+      label: 'Rename',
+      icon_class: 'i-tabler:pencil size-4',
+      experimental: true,
+      type: 'warning',
+      tooltip: 'Rename on andorid is unstable',
+      action: () => {
+        rename_node.data = node;
+      },
+    },
+
     {
       label: 'Delete',
       type: 'danger',
