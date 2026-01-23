@@ -70,30 +70,11 @@ export async function move_node(
     new_path = new_parent_path
       ? join_path(new_parent_path, node.name + (node.is_directory ? '' : '.md'))
       : node.name;
-    // For desktop, renaming/moving requires correct extension handling if not present in node.name (which usually doesn't have it for files in UI model?)
-    // Wait, node.name usually doesn't have .md in the UI model (see find_filenode_by_path).
-    // So for file we need to add .md.
-    // Existing move_node logic:
-    // new_path = new_parent_path ? join_path(new_parent_path, node.name) : node.name;
-    // It seems existing logic MIGHT be buggy if node.name lacks extension for files?
-    // Or maybe node.name HAS extension?
-    // In `build_tree_recursive_desktop`: `name: file_name.trim_end_matches(".md")`.
-    // So node.name does NOT have extension.
-    // Existing move_node was: `await rename(node.path, new_path);`
-    // If `new_path` is constructed from `node.name` (no extension), then we are renaming `foo.md` to `foo`.
-    // This seems wrong for files.
-    // BUT, `rename_file` logic was: `newName: new_name + '.md'`.
-    // So `move_node` might have been broken for files or I am misinterpreting `join_path`.
-    // Let's look at `move_node` again carefully.
-    // `new_path = ... join_path(new_parent_path, node.name)`.
-    // If `node.is_directory` it is fine.
-    // If file, we probably lost extension?
-    // Let's fix it here:
     const name_with_ext = node.is_directory ? node.name : node.name + '.md';
     new_path = new_parent_path
       ? join_path(new_parent_path, name_with_ext)
       : name_with_ext;
-    
+
     await rename(node.path, new_path);
   }
 
@@ -117,40 +98,25 @@ export async function move_node(
       );
     } else {
       n.children.forEach((c) => update(c, join_path(p, c.name))); // This assumes c.name doesn't have extension, but join_path might need to know?
-      // Wait, `join_path` just joins.
-      // If `c` is file, `c.name` is "foo". path should be ".../foo.md".
-      // But `update` sets `n.path`.
-      // If `c` is file, we need to append .md for the path.
-      // But `c.name` is from the tree model.
-      // Let's fix `update` for desktop too.
     }
   };
-  // Wait, I shouldn't break existing logic if I am not sure.
-  // The existing `move_node` had:
-  // `n.children.forEach((c) => update(c, join_path(p, c.name)));`
-  // And `FileNode` struct on rust side has `name` without extension.
-  // So `path` on desktop definitely needs `.md`.
-  // I will assume existing `move_node` was slightly broken or `join_path` does magic (unlikely).
-  // I'll fix it in `rename_node` and `move_node`.
-  
-  // Re-defining update for this scope to be correct
   const update_recursive = (n: Node, p: string) => {
-      n.path = p;
-      if (current_platform === 'android') {
-        n.children.forEach((c) =>
-            update_recursive(
-            c,
-            p +
-                '%2F' +
-                encodeURIComponent(c.is_directory ? c.name : c.name + '.md')
-            )
-        );
-      } else {
-          n.children.forEach((c) => {
-              const c_name = c.is_directory ? c.name : c.name + '.md';
-              update_recursive(c, join_path(p, c_name));
-          });
-      }
+    n.path = p;
+    if (current_platform === 'android') {
+      n.children.forEach((c) =>
+        update_recursive(
+          c,
+          p +
+            '%2F' +
+            encodeURIComponent(c.is_directory ? c.name : c.name + '.md')
+        )
+      );
+    } else {
+      n.children.forEach((c) => {
+        const c_name = c.is_directory ? c.name : c.name + '.md';
+        update_recursive(c, join_path(p, c_name));
+      });
+    }
   };
 
   update_recursive(node, new_path);
@@ -246,36 +212,35 @@ export async function rename_node(
     try {
       let new_path = '';
       if (node.is_directory) {
-         new_path = await invoke<string>('rename_directory_android', {
-            uri: node.path,
-            newName: new_name, // Directory name doesn't need extension
-            documentTopTreeUri: document_top_tree_uri,
-         });
+        new_path = await invoke<string>('rename_directory_android', {
+          uri: node.path,
+          newName: new_name, // Directory name doesn't need extension
+          documentTopTreeUri: document_top_tree_uri,
+        });
       } else {
-         new_path = await invoke<string>('rename_file_android', {
-            uri: node.path,
-            newName: final_name,
-            documentTopTreeUri: document_top_tree_uri,
-         });
+        new_path = await invoke<string>('rename_file_android', {
+          uri: node.path,
+          newName: final_name,
+          documentTopTreeUri: document_top_tree_uri,
+        });
       }
-      
+
       // Update node
       node.name = new_name;
-      
+
       // Update paths recursively using the same logic as move_node
       const update_recursive = (n: Node, p: string) => {
         n.path = p;
         n.children.forEach((c) =>
-            update_recursive(
+          update_recursive(
             c,
             p +
-                '%2F' +
-                encodeURIComponent(c.is_directory ? c.name : c.name + '.md')
-            )
+              '%2F' +
+              encodeURIComponent(c.is_directory ? c.name : c.name + '.md')
+          )
         );
       };
       update_recursive(node, new_path);
-
     } catch (e) {
       console.error(e);
       toast.error('Error Renaming Node', { description: String(e) });
@@ -285,23 +250,22 @@ export async function rename_node(
     const parent = get_parent_path(node.path);
     const new_path = join_path(parent, final_name);
     try {
-        await rename(node.path, new_path);
-        
-        node.name = new_name;
-        
-        const update_recursive = (n: Node, p: string) => {
-          n.path = p;
-          n.children.forEach((c) => {
-              const c_name = c.is_directory ? c.name : c.name + '.md';
-              update_recursive(c, join_path(p, c_name));
-          });
-        };
-        update_recursive(node, new_path);
+      await rename(node.path, new_path);
 
+      node.name = new_name;
+
+      const update_recursive = (n: Node, p: string) => {
+        n.path = p;
+        n.children.forEach((c) => {
+          const c_name = c.is_directory ? c.name : c.name + '.md';
+          update_recursive(c, join_path(p, c_name));
+        });
+      };
+      update_recursive(node, new_path);
     } catch (e) {
-         console.error(e);
-         toast.error('Error Renaming Node', { description: String(e) });
-         return;
+      console.error(e);
+      toast.error('Error Renaming Node', { description: String(e) });
+      return;
     }
   }
   sort_nodes(parent_tree);
