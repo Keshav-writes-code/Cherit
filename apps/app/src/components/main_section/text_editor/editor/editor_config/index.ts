@@ -18,7 +18,7 @@ import { obsidian_theme } from './theme';
 export function create_editor(
   text_content: string,
   html_element: HTMLElement,
-  is_contents_changed_state?: boolean
+  is_contents_changed_state?: { data: boolean }
 ): EditorView {
   return new EditorView({
     doc: text_content,
@@ -32,8 +32,8 @@ export function create_editor(
       softIndentExtension,
       obsidian_theme,
       EditorView.updateListener.of((update) => {
-        if (update.docChanged && !is_contents_changed_state) {
-          is_contents_changed_state = true;
+        if (update.docChanged && is_contents_changed_state) {
+          is_contents_changed_state.data = true;
         }
       }),
       markdown({

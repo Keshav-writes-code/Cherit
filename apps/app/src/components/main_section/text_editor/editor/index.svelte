@@ -19,7 +19,7 @@
     write_to_file: (markdown_content_state: string) => void;
   } = $props();
   let element: HTMLDivElement | undefined = $state();
-  let is_contents_changed = $state(false);
+  let is_contents_changed: { data: boolean } = $state({ data: false });
   $effect(() => {
     let newEditor: EditorView | undefined;
     if (text_content && element) {
@@ -48,7 +48,7 @@
     if (on_focus_out) on_focus_out();
     if (!editor_view.data || !is_contents_changed) return;
     write_to_file(editor_view.data.state.doc.toString());
-    is_contents_changed = false;
+    is_contents_changed.data = false;
   }}
   oncontextmenu={(e) => handle_node_right_click(e)}
   class="pb-50vh"
