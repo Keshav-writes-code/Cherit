@@ -46,7 +46,7 @@
   bind:this={element}
   onfocusout={() => {
     if (on_focus_out) on_focus_out();
-    if (!editor_view.data || !is_contents_changed) return;
+    if (!editor_view.data || !is_contents_changed.data) return;
     write_to_file(editor_view.data.state.doc.toString());
     is_contents_changed.data = false;
   }}
