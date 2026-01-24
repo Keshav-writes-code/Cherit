@@ -80,7 +80,7 @@ let platforms: Platform[] = [
       client:load
       class="btn btn-primary btn-md  lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 [transition-property:_scale,_background] duration-300"
     />
-    <div class="divider my-10">OR</div>
+    <div class="divider my-30">OR</div>
     <div class="tabs tabs-box gap-x-3 w-full justify-center  bg-transparent">
       { platforms.map(({label, icon, binaries}, i)=>(
       <label class="tab flex gap-2 py-3 px-5 h-max items-center capitalize  ">
@@ -88,10 +88,10 @@ let platforms: Platform[] = [
         <div class=`${icon} size-5`></div>
         <span class=" text:lg lg:text-xl" >{label}</span>
       </label>
-      <div class=" tab-content bento-card max-w-3xl p-6 mt-12">
+      <div class=" tab-content bento-card max-w-4xl p-10 mt-20">
 
         <p class="flex gap-2 font-semibold items-center text-xl w-max color-primary">
-          <span class="i-tabler:download size-4 text-[var(--color-primary)]" ></span>
+          <span class="i-tabler:download size-5 text-[var(--color-primary)]" ></span>
           Binaries
         </p>
 
