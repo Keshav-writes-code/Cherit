@@ -1,6 +1,6 @@
 <script lang="ts">
   import { EditorView } from '@codemirror/view';
-  import { editor_view } from '../editor_state.svelte';
+  import { editor_view, is_contents_changed } from '../editor_state.svelte';
   import type { MenuItem } from '@/types';
   import { current_platform_type } from '@/lib/file_system';
   import { get_desktop_context_menu } from './context_menu';
@@ -19,7 +19,6 @@
     write_to_file: (markdown_content_state: string) => void;
   } = $props();
   let element: HTMLDivElement | undefined = $state();
-  let is_contents_changed: { data: boolean } = $state({ data: false });
   $effect(() => {
     let newEditor: EditorView | undefined;
     if (text_content && element) {
