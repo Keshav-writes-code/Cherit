@@ -3,18 +3,29 @@ import { delete_node } from '@/lib/file_system';
 import type { MenuItem } from '@/types';
 import type { GenericPath, Node } from '@/types';
 import { revealItemInDir } from '@tauri-apps/plugin-opener';
-export function get_desktop_context_menu(
-  node: Node,
-  parent_tree: Node[],
-  root_path: { data: GenericPath | undefined },
-  rename_node: { data: Node | undefined }
-): MenuItem[] {
+type Args = {
+  node: Node;
+  parent_subtree: Node[];
+  root_path: { data: GenericPath | undefined };
+  rename_node: { data: Node | undefined };
+  input_rename_elem?: { data: HTMLInputElement | undefined };
+};
+export function get_desktop_context_menu({
+  node,
+  parent_subtree,
+  root_path,
+  rename_node,
+  input_rename_elem,
+}: Args): MenuItem[] {
   return [
     {
       label: 'Rename',
       icon_class: 'i-tabler:pencil size-4',
       action: () => {
         rename_node.data = node;
+        setTimeout(() => {
+          if (input_rename_elem?.data) input_rename_elem.data.focus();
+        }, 0);
       },
     },
     {
@@ -23,7 +34,7 @@ export function get_desktop_context_menu(
       icon_class: 'i-tabler:trash size-4',
       action: async () => {
         if (!root_path.data) return;
-        await delete_node(node, root_path.data, parent_tree);
+        await delete_node(node, root_path.data, parent_subtree);
       },
     },
     { label: '', divider: true },
@@ -36,12 +47,13 @@ export function get_desktop_context_menu(
     },
   ];
 }
-export function get_mobile_context_menu(
-  node: Node,
-  parent_tree: Node[],
-  root_path: { data: GenericPath | undefined },
-  rename_node: { data: Node | undefined }
-): MenuItem[] {
+export function get_mobile_context_menu({
+  node,
+  parent_subtree,
+  root_path,
+  rename_node,
+  input_rename_elem,
+}: Args): MenuItem[] {
   return [
     {
       label: 'Rename',
@@ -51,6 +63,9 @@ export function get_mobile_context_menu(
       tooltip: 'Rename on andorid is unstable',
       action: () => {
         rename_node.data = node;
+        setTimeout(() => {
+          if (input_rename_elem?.data) input_rename_elem.data.focus();
+        }, 0);
       },
     },
 
@@ -60,8 +75,9 @@ export function get_mobile_context_menu(
       icon_class: 'i-tabler:trash size-4',
       action: async () => {
         if (!root_path.data) return;
-        await delete_node(node, root_path.data, parent_tree);
+        await delete_node(node, root_path.data, parent_subtree);
       },
     },
   ];
 }
+

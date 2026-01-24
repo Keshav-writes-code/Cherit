@@ -42,11 +42,14 @@
   let rename_sel_node: { data: Node | undefined } = $state({
     data: undefined,
   });
-  const focus = (el: HTMLInputElement) => el.focus();
+  let input_rename_elem: { data: HTMLInputElement | undefined } = $state({
+    data: undefined,
+  });
   $effect(() => {
     if (collapsed_state) return;
     expanded_nodes_ever = {};
   });
+
   function handle_node_right_click(
     e: MouseEvent,
     node: Node,
@@ -54,20 +57,16 @@
   ) {
     focused_node = node;
     let context_menu_items: MenuItem[];
+    let args = {
+      node,
+      parent_subtree,
+      root_path,
+      rename_node: rename_sel_node,
+      input_rename_elem,
+    };
     if (current_platform_type == 'desktop')
-      context_menu_items = get_desktop_context_menu(
-        node,
-        parent_subtree,
-        root_path,
-        rename_sel_node
-      );
-    else
-      context_menu_items = get_mobile_context_menu(
-        node,
-        parent_subtree,
-        root_path,
-        rename_sel_node
-      );
+      context_menu_items = get_desktop_context_menu(args);
+    else context_menu_items = get_mobile_context_menu(args);
 
     context_menu.open(e, context_menu_items);
     context_menu.run_on_close(() => {
@@ -311,8 +310,8 @@
     <input
       type="text"
       bind:value={node.name}
+      bind:this={input_rename_elem.data}
       class=" [all:_unset]"
-      use:focus
       onblur={(e) => {
         if (!rename_sel_node.data || !root_path.data) return;
         rename_node(
