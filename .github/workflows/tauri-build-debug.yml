@@ -27,10 +27,14 @@ jobs:
             args: '--target x86_64-apple-darwin --debug'
           - platform: 'ubuntu-22.04'
             args: '--debug'
-          - platform: 'windows-latest'
+          - platform: 'ubuntu-22.04-arm'
             args: '--debug'
-          - platform: 'ubuntu-latest'
-            args: '--apk true --split-per-abi --debug'
+          - platform: 'windows-2022'
+            args: '--debug'
+          - platform: 'windows-11-arm'
+            args: '--debug'
+          - platform: 'ubuntu-22.04'
+            args: '--apk true --split-per-abi --target aarch64 --target armv7 --debug'
             mobile: 'android'
     runs-on: ${{ matrix.platform }}
     steps:
