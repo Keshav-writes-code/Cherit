@@ -67,8 +67,11 @@ jobs:
       - name: setup bun
         uses: oven-sh/setup-bun@v2
       - name: install frontend dependencies
-        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: bun i # change this to npm or pnpm depending on which one you use.
+        if: matrix.platform != 'windows-11-arm'
+        run: bun i
+      - name: install frontend dependencies (Windows ARM)
+        if: matrix.platform == 'windows-11-arm'
+        run: npm install
 
       # ------------- Rust -------------
       - name: install Rust stable (desktop)
