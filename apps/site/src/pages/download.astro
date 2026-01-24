@@ -34,8 +34,10 @@ let platforms: Platform[] = [
     label: "windows",
     icon: "i-tabler:brand-windows-filled", 
     binaries:[
-      {label:"EXE (Installer)", link:file("windows-x64.exe")},
-      {label:"MSI (Installer)", link:file("windows-x64.msi")}
+      {label:"EXE x64 (Installer)", link:file("windows-x64.exe")},
+      {label:"EXE arm64 (Installer)", link:file("windows-arm64.exe")},
+      {label:"MSI x64 (Installer)", link:file("windows-x64.msi")},
+      {label:"MSI arm64 (Installer)", link:file("windows-arm64.msi")}
     ] 
   },
   { 
@@ -49,9 +51,12 @@ let platforms: Platform[] = [
   { 
     label: "linux", icon: "i-mdi:linux",
     binaries:[
-      {label:"Deb", link:file("linux-amd64.deb")},
-      {label:"Rpm", link:file("linux-x86_64.rpm")},
-      {label:"AppImage", link:file("linux-amd64.AppImage")}
+      {label:"Deb x86_64", link:file("linux-amd64.deb")},
+      {label:"Deb arm64", link:file("linux-arm64.deb")},
+      {label:"Rpm x86_64", link:file("linux-x86_64.rpm")},
+      {label:"Rpm arm64", link:file("linux-aarch64.rpm")},
+      {label:"AppImage x86_64", link:file("linux-amd64.AppImage")},
+      {label:"AppImage arm64", link:file("linux-aarch64.AppImage")}
     ] 
   },
   { 
@@ -59,7 +64,7 @@ let platforms: Platform[] = [
     icon: "i-mdi:android",
     binaries:[
       {label:"APK (aarch64)", link:file("android-arm64.apk")},
-      {label:"APK (armv7)", link:file("android-universal.apk")}
+      {label:"APK (armv7)", link:file("android-arm.apk")}
     ] 
   },
   { label: "IOS", icon: "i-mdi:apple-ios", binaries:[] },
