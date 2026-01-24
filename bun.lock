@@ -52,6 +52,7 @@
         "@iconify-json/famicons": "^1.2.2",
         "@iconify-json/line-md": "^1.2.14",
         "@sveltejs/vite-plugin-svelte": "^6.2.4",
+        "@iconify-json/healthicons": "^1.2.12",
         "@tauri-apps/cli": "^2.9.6",
         "@testing-library/svelte": "^5.3.1",
         "@tsconfig/svelte": "^5.0.6",
@@ -234,6 +235,7 @@
     "@iconify-json/famicons": ["@iconify-json/famicons@1.2.2", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-mFgrUk2CYKeFe9EHh6XWdtVDkX344OTb3E6X7RaOp6iwW9saJH/kknNFZRZ2UFQCcFl3RNSTN6IRpCRsRppFxw=="],
 
     "@iconify-json/line-md": ["@iconify-json/line-md@1.2.14", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-ZlgQyMcptcni3wEua+ij9hXEuYmlHKlf38/fZT4Qhds07naE9NeEmE0tqWMHAtkir+r9VRTTz3jXzwXWkLZiCg=="],
+    "@iconify-json/healthicons": ["@iconify-json/healthicons@1.2.12", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-0ohosj8zla9Bf+OT0wPYASVp1OvLzkdBof/B03lzGWmC5FzkvtFeAa4TtzLMCOVaeToIpT6JPs9kSfp7dJifdA=="],
 
     "@iconify-json/tabler": ["@iconify-json/tabler@1.2.28", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-HKF7K9Ba67GdB2b2tYWF1DS2Ydpxmo1Fsda7bQRwKUPYOiYM99F7rgJp6BN7TFQiRmCaxilfro6FQeCMSjuV1g=="],
 
