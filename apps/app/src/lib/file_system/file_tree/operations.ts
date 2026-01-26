@@ -197,16 +197,28 @@ export async function add_new_folder(
     children: [],
   });
   sort_nodes(subtree);
+  const node = subtree.find((n) => n.path == new_file_path);
+  if (!node) throw new Error('Node not found');
+  return node;
 }
 
-export async function rename_node(
-  node: Node,
-  new_name: string,
-  parent_tree: Node[],
-  document_top_tree_uri: string | null
-) {
+export async function rename_node({
+  node,
+  new_name,
+  parent_subtree,
+  document_top_tree_uri,
+}: {
+  node: Node;
+  new_name: string;
+  parent_subtree: Node[];
+  document_top_tree_uri: string | null;
+}) {
   // Append .md if it's a file
   const final_name = node.is_directory ? new_name : new_name + '.md';
+  if (parent_subtree.some((n) => n.name == new_name))
+    throw new Error(
+      `the ${node.is_directory ? 'Folder' : 'Note'} : "${new_name}" already exists in focused folder`
+    );
 
   if (current_platform === 'android') {
     try {
@@ -268,7 +280,7 @@ export async function rename_node(
       return;
     }
   }
-  sort_nodes(parent_tree);
+  sort_nodes(parent_subtree);
 }
 
 export async function delete_node(

@@ -55,12 +55,13 @@
         if (!is_file_named_changed) return;
         if (!current_file_name || !filenode || !focused_subtree.data) return;
         try {
-          await rename_node(
-            filenode,
-            current_file_name,
-            focused_subtree.data,
-            workspace_root_path.data?.document_top_tree_uri ?? null
-          );
+          await rename_node({
+            node: filenode,
+            new_name: current_file_name,
+            parent_subtree: focused_subtree.data,
+            document_top_tree_uri:
+              workspace_root_path.data?.document_top_tree_uri ?? null,
+          });
           is_file_named_changed = false;
         } catch (e) {
           if (e instanceof Error) toast.error(e.message);

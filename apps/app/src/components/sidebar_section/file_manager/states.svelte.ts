@@ -1,3 +1,5 @@
+import { workspace_root_path } from '@/lib/global_states/index.svelte';
+import { SvelteSet } from 'svelte/reactivity';
 import type { Node } from '@/types';
 
 // Main File tree
@@ -32,3 +34,10 @@ export let input_rename_elem: { data: HTMLInputElement | undefined } = $state({
 export let outlined_node: { data: Node | undefined } = $state({
   data: undefined,
 });
+
+export const expand_override_global: { data: boolean } = $state({
+  data: false,
+});
+export const expand_override_fine_grain = new SvelteSet<string>();
+
+export const hover_newnode_button: { data: boolean } = $state({ data: false });

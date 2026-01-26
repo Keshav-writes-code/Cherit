@@ -8,4 +8,6 @@ export const workspace_root_path: { data: GenericPath | undefined } = $state({
 export const opened_filenode: { data: Node | undefined } = $state({
   data: undefined,
 });
+
+export const drawer_open: { data: boolean } = $state({ data: false });
 export * from './domain_specific/';

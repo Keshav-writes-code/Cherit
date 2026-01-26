@@ -5,21 +5,15 @@
   import { toast } from 'svelte-sonner';
   import { workspace_root_path } from '@/lib/global_states/index.svelte';
   import { file_tree } from './states.svelte';
-
-  let focused_directory: string | undefined = $derived(
+  let focused_directory_path: string | undefined = $derived(
     workspace_root_path.data?.path
   );
-
-  let collapsed_state: boolean = $state(true);
-  let hover_newnode_button: boolean = $state(false);
 </script>
 
 <div class=" flex min-h-0 flex-1 flex-col w-full bg-base-200">
-  <Toolbar bind:collapsed_state bind:hover_newnode_button {focused_directory} />
+  <Toolbar {focused_directory_path} />
   <ItemsRender
-    bind:focused_directory
-    {hover_newnode_button}
-    {collapsed_state}
+    bind:focused_directory_path
     on_move={async (node, path) => {
       if (file_tree.data === undefined) return;
       try {
