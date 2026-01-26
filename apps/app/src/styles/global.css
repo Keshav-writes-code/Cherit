@@ -1,4 +1,5 @@
-:root {
+:root,
+body {
   --radius-selector: 2rem;
   --radius-field: 0.6rem;
   --radius-box: 1rem;
