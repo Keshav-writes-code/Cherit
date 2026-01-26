@@ -5,15 +5,17 @@ import {
 import { current_platform } from '@/lib/file_system';
 import {
   opened_filenode,
-  file_tree,
-  root_path,
-  root_folder_picker_dialog_state,
-  is_filetree_loading,
-} from '@/lib/states';
+  workspace_root_path,
+} from '@/lib/global_states/index.svelte';
+import { root_folder_picker_dialog_state } from '@/components/general/root_folder_selector/states.svelte';
 import { type Workspace, type GenericPath } from '@/types';
 import { LazyStore } from '@tauri-apps/plugin-store';
 import { toast } from 'svelte-sonner';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
+import {
+  file_tree,
+  is_filetree_loading,
+} from '@/components/sidebar_section/file_manager/states.svelte';
 
 export const user_activity = new LazyStore('user_activity.json');
 export let recent_workspaces: { data: Workspace[] } = $state({ data: [] });
@@ -32,7 +34,7 @@ export async function update_workspace(
 
     // Actual Workspace Updation
     const generic_path: GenericPath = { path, document_top_tree_uri };
-    root_path.data = generic_path;
+    workspace_root_path.data = generic_path;
     is_filetree_loading.data = true;
     file_tree.data = await build_file_tree_from_fs(generic_path);
     is_filetree_loading.data = false;
@@ -86,5 +88,5 @@ export async function touch_recent_workspaces(
 function reset_ui_states() {
   file_tree.data = undefined;
   opened_filenode.data = undefined;
-  root_path.data = undefined;
+  workspace_root_path.data = undefined;
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { getCurrentWindow } from '@tauri-apps/api/window';
   import { current_platform_type } from '@/lib/file_system';
-  import { opened_filenode } from '@/lib/states';
+  import { opened_filenode } from '@/lib/global_states/index.svelte';
   import PaneMenu from '@/components/main_section/pane_menu/index.svelte';
 
   const appWindow = getCurrentWindow();

@@ -5,7 +5,7 @@
   import { toast } from 'svelte-sonner';
   import type { SubmitStates } from '@/types';
   import SubmitButton from '@/components/general/submit_button/index.svelte';
-  import { pdf_export_status } from '@/lib/states';
+  import { pdf_export_status } from '@/components/main_section/pdf_export_dialog/states.svelte';
   let { open = $bindable(), filenode }: { open: boolean; filenode: Node } =
     $props();
   let page_sizes = ['a4', 'a3', 'a5', 'letter', 'legal', 'tabloid'];

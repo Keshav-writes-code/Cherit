@@ -1,12 +1,13 @@
 <script lang="ts">
   import { current_platform_type, rename_node } from '@/lib/file_system';
-  import { focused_subtree, root_path } from '@/lib/states';
+  import { workspace_root_path } from '@/lib/global_states/index.svelte';
   import type { Node } from '@/types';
   import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
   import { toast } from 'svelte-sonner';
   import Editor from './editor/index.svelte';
   import MobileToolbar from './editor_toolbar_mobile/index.svelte';
   import { editor_view } from './editor_state.svelte';
+  import { focused_subtree } from '@/components/sidebar_section/file_manager/states.svelte';
 
   let {
     filenode = $bindable(),
@@ -58,7 +59,7 @@
             filenode,
             current_file_name,
             focused_subtree.data,
-            root_path.data?.document_top_tree_uri ?? null
+            workspace_root_path.data?.document_top_tree_uri ?? null
           );
           is_file_named_changed = false;
         } catch (e) {

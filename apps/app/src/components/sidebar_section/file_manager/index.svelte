@@ -3,9 +3,12 @@
   import ItemsRender from './items_renderer.svelte';
   import Toolbar from './toolbar.svelte';
   import { toast } from 'svelte-sonner';
-  import { file_tree, root_path } from '@/lib/states';
+  import { workspace_root_path } from '@/lib/global_states/index.svelte';
+  import { file_tree } from './states.svelte';
 
-  let focused_directory: string | undefined = $derived(root_path.data?.path);
+  let focused_directory: string | undefined = $derived(
+    workspace_root_path.data?.path
+  );
 
   let collapsed_state: boolean = $state(true);
   let hover_newnode_button: boolean = $state(false);
@@ -24,7 +27,7 @@
           node,
           path,
           file_tree.data,
-          root_path.data?.document_top_tree_uri ?? null
+          workspace_root_path.data?.document_top_tree_uri ?? null
         );
       } catch (e) {
         toast.error('Error Moving File: \n' + e);

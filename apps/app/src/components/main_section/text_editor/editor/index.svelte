@@ -4,7 +4,7 @@
   import type { MenuItem } from '@/types';
   import { current_platform_type } from '@/lib/file_system';
   import { get_desktop_context_menu } from './context_menu';
-  import { context_menu } from '@/lib/states';
+  import { context_menu } from '@/lib/global_states/index.svelte';
   import { create_editor } from './editor_config';
   import './editor_config/theme.css';
   let {

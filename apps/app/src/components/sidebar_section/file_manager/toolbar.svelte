@@ -5,11 +5,13 @@
     current_platform_type,
   } from '@/lib/file_system';
   import {
+    opened_filenode,
+    workspace_root_path,
+  } from '@/lib/global_states/index.svelte';
+  import {
     file_tree,
     focused_subtree,
-    opened_filenode,
-    root_path,
-  } from '@/lib/states';
+  } from './states.svelte';
   let {
     collapsed_state = $bindable(),
     hover_newnode_button = $bindable(),
@@ -41,7 +43,7 @@
         !focused_directory ||
         !file_tree.data ||
         !focused_subtree.data ||
-        !root_path.data ||
+        !workspace_root_path.data ||
         is_processing
       )
         return;
@@ -49,7 +51,7 @@
       opened_filenode.data = await add_new_note(
         focused_subtree.data,
         focused_directory,
-        root_path.data
+        workspace_root_path.data
       );
       is_processing = false;
 
@@ -75,7 +77,7 @@
         !focused_directory ||
         !file_tree.data ||
         !focused_subtree.data ||
-        !root_path.data ||
+        !workspace_root_path.data ||
         is_processing
       )
         return;
@@ -83,7 +85,7 @@
       await add_new_folder(
         focused_subtree.data,
         focused_directory,
-        root_path.data
+        workspace_root_path.data
       );
       is_processing = false;
     }}

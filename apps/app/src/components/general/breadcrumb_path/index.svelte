@@ -1,6 +1,6 @@
 <script lang="ts">
   import { get_relative_path_parts } from '@/lib/file_system';
-  import { root_path } from '@/lib/states';
+  import { workspace_root_path } from '@/lib/global_states/index.svelte';
   import type { Node } from '@/types';
   let {
     filenode,
@@ -11,8 +11,11 @@
   } = $props();
 
   let segments = $derived.by(() => {
-    if (!filenode || !root_path.data) return [];
-    const res = get_relative_path_parts(filenode.path, root_path.data.path);
+    if (!filenode || !workspace_root_path.data) return [];
+    const res = get_relative_path_parts(
+      filenode.path,
+      workspace_root_path.data.path
+    );
     return res;
   });
 </script>

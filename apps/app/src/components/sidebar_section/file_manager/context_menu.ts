@@ -6,14 +6,14 @@ import { revealItemInDir } from '@tauri-apps/plugin-opener';
 type Args = {
   node: Node;
   parent_subtree: Node[];
-  root_path: { data: GenericPath | undefined };
+  workspace_root_path: { data: GenericPath | undefined };
   rename_node: { data: Node | undefined };
   input_rename_elem?: { data: HTMLInputElement | undefined };
 };
 export function get_desktop_context_menu({
   node,
   parent_subtree,
-  root_path,
+  workspace_root_path,
   rename_node,
   input_rename_elem,
 }: Args): MenuItem[] {
@@ -33,8 +33,8 @@ export function get_desktop_context_menu({
       type: 'danger',
       icon_class: 'i-tabler:trash size-4',
       action: async () => {
-        if (!root_path.data) return;
-        await delete_node(node, root_path.data, parent_subtree);
+        if (!workspace_root_path.data) return;
+        await delete_node(node, workspace_root_path.data, parent_subtree);
       },
     },
     { label: '', divider: true },
@@ -50,7 +50,7 @@ export function get_desktop_context_menu({
 export function get_mobile_context_menu({
   node,
   parent_subtree,
-  root_path,
+  workspace_root_path,
   rename_node,
   input_rename_elem,
 }: Args): MenuItem[] {
@@ -74,10 +74,9 @@ export function get_mobile_context_menu({
       type: 'danger',
       icon_class: 'i-tabler:trash size-4',
       action: async () => {
-        if (!root_path.data) return;
-        await delete_node(node, root_path.data, parent_subtree);
+        if (!workspace_root_path.data) return;
+        await delete_node(node, workspace_root_path.data, parent_subtree);
       },
     },
   ];
 }
-

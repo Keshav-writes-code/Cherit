@@ -7,18 +7,23 @@
     rename_node,
   } from '@/lib/file_system';
   import {
-    file_tree,
-    focused_subtree,
     opened_filenode,
-    root_path,
+    workspace_root_path,
     context_menu,
-    is_filetree_loading,
-  } from '@/lib/states';
+  } from '@/lib/global_states/index.svelte';
   import {
     get_desktop_context_menu,
     get_mobile_context_menu,
   } from './context_menu';
   import { flip } from 'svelte/animate';
+  import {
+    file_tree,
+    focused_subtree,
+    is_filetree_loading,
+    input_rename_elem,
+    rename_sel_node,
+    outlined_node,
+  } from './states.svelte';
 
   let {
     focused_directory = $bindable(),
@@ -34,17 +39,10 @@
 
   let expanded_nodes_ever: { [key: string]: boolean } = $state({});
   let expanded_state: { [key: string]: boolean } = $state({});
-  let focused_node: Node | undefined = $state();
 
   let dragged_node: Node | null = $state(null);
   let drop_target: string | null = $state(null);
 
-  let rename_sel_node: { data: Node | undefined } = $state({
-    data: undefined,
-  });
-  let input_rename_elem: { data: HTMLInputElement | undefined } = $state({
-    data: undefined,
-  });
   $effect(() => {
     if (collapsed_state) return;
     expanded_nodes_ever = {};
@@ -55,12 +53,12 @@
     node: Node,
     parent_subtree: Node[]
   ) {
-    focused_node = node;
+    outlined_node.data = node;
     let context_menu_items: MenuItem[];
     let args = {
       node,
       parent_subtree,
-      root_path,
+      workspace_root_path,
       rename_node: rename_sel_node,
       input_rename_elem,
     };
@@ -70,7 +68,7 @@
 
     context_menu.open(e, context_menu_items);
     context_menu.run_on_close(() => {
-      focused_node = undefined;
+      outlined_node.data = undefined;
     });
   }
   function handle_drag_start(e: DragEvent, node: Node) {
@@ -110,23 +108,27 @@
   }
 </script>
 
-{#if root_path.data && file_tree.data}
+{#if workspace_root_path.data && file_tree.data}
   <ul
     ondragover={(e) => {
-      if (typeof root_path.data === 'string' && e.currentTarget === e.target) {
-        handle_drag_over(e, root_path.data);
+      if (
+        typeof workspace_root_path.data === 'string' &&
+        e.currentTarget === e.target
+      ) {
+        handle_drag_over(e, workspace_root_path.data);
       }
     }}
     ondrop={(e) => {
-      if (typeof root_path.data === 'string') handle_drop(e, root_path.data);
+      if (typeof workspace_root_path.data === 'string')
+        handle_drop(e, workspace_root_path.data);
     }}
     onscroll={() => {
       context_menu.close();
     }}
     class="
-      {focused_directory == root_path.data.path &&
+      {focused_directory == workspace_root_path.data.path &&
       'shadow-[inset_0_0_0_1px_var(--color-accent)]'}
-      {drop_target === root_path.data?.path &&
+      {drop_target === workspace_root_path.data?.path &&
       'bg-accent/10 outline-dashed outline-2 outline-accent'} 
       {current_platform_type == 'mobile' ? ' menu-lg pt-3' : ' pt-2 menu-sm'}
       menu h-full rounded-box relative w-full select-none overflow-y-auto flex-nowrap text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] text-ellipsis leading-relaxed tracking-wide flex before:content-none flex-col gap-0.5 pt-0.5"
@@ -134,7 +136,7 @@
     {#each file_tree.data as node (node.path)}
       <li
         animate:flip={{ duration: 300 }}
-        class="{focused_node == node &&
+        class="{outlined_node.data == node &&
           'outline-[color-mix(in_srgb,var(--color-base-content)_30%,black)] outline-2 outline-solid '} rounded-field"
       >
         {#if node.is_directory}
@@ -156,7 +158,7 @@
       aria-label="Set Focus to root"
       class="min-h-30% grow"
       onclick={() => {
-        focused_directory = root_path.data?.path;
+        focused_directory = workspace_root_path.data?.path;
         focused_subtree.set(file_tree.data);
       }}
     >
@@ -230,7 +232,7 @@
       {#each nodes as node (node.path)}
         <li
           animate:flip={{ duration: 300 }}
-          class="{focused_node == node &&
+          class="{outlined_node.data == node &&
             'outline-[color-mix(in_srgb,var(--color-base-content)_30%,black)] outline-2 outline-solid '} rounded-field"
         >
           {#if node.is_directory}

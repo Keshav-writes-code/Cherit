@@ -1,8 +1,9 @@
 <script lang="ts">
   import { current_platform_type } from '@/lib/file_system';
-  import { context_menu, pdf_export_status } from '@/lib/states';
+  import { context_menu } from '@/lib/global_states/index.svelte';
   import type { Node } from '@/types';
   import { type MenuItem } from '@/types';
+  import { pdf_export_status } from '@/components/main_section/pdf_export_dialog/states.svelte';
 
   let { filenode }: { filenode: Node | undefined } = $props();
   const menu_items: MenuItem[] = [
