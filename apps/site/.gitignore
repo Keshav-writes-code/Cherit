@@ -1,6 +1,5 @@
 # build output
 dist/
-public/assets/fonts/
 
 # generated types
 .astro/
