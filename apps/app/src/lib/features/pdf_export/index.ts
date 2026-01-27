@@ -1,9 +1,9 @@
 import html2canvas from 'html2canvas-pro';
 import { jsPDF } from 'jspdf';
 import { writeFile } from '@tauri-apps/plugin-fs';
-import { current_platform, join_path } from '../file_tree';
+import { current_platform, join_path } from '@/lib/file_system';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
-import { root_path } from '../states';
+import { workspace_root_path } from '@/lib/global_states/index.svelte';
 
 export async function pdf_rendered(file_name: string, location: string) {
   const el = document.getElementById('text_editor');
@@ -42,11 +42,11 @@ export async function pdf_rendered(file_name: string, location: string) {
 
     let path: string | URL = `${join_path(location, file_name)}.pdf`;
 
-    if (current_platform === 'android' && root_path.data) {
+    if (current_platform === 'android' && workspace_root_path.data) {
       const uri = await AndroidFs.createNewFile(
         {
-          uri: root_path.data.path,
-          documentTopTreeUri: root_path.data.document_top_tree_uri,
+          uri: workspace_root_path.data.path,
+          documentTopTreeUri: workspace_root_path.data.document_top_tree_uri,
         },
         path,
         'application/pdf'

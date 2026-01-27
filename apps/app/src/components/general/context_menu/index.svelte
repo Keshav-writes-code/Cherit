@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { context_menu } from '@/lib/states';
-  import { current_platform_type } from '@/lib/file_tree';
+  import { context_menu } from '@/lib/global_states/index.svelte';
+  import { current_platform_type } from '@/lib/file_system';
   import { fly } from 'svelte/transition';
 
   let dialog = $state<HTMLDialogElement>();
@@ -84,6 +84,26 @@
               >
                 <div class={item.icon_class}></div>
                 {item.label}
+                {#if item.experimental}
+                  {#if item.tooltip}
+                    <button
+                      onclick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      aria-label="Tooltip button"
+                      class="tooltip tooltip-left h-full aspect-square grid place-items-center"
+                      data-tip={item.tooltip}
+                    >
+                      <div
+                        class="i-tabler:alert-triangle-filled size-4 size-4"
+                      ></div>
+                    </button>
+                  {:else}
+                    <div
+                      class="i-tabler:alert-triangle-filled size-4 size-4"
+                    ></div>
+                  {/if}
+                {/if}
               </button>
             </li>
           {/if}

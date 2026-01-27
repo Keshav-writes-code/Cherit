@@ -26,9 +26,13 @@ jobs:
             args: '--target x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
             args: ''
-          - platform: 'windows-latest'
+          - platform: 'ubuntu-22.04-arm'
             args: ''
-          - platform: 'ubuntu-latest'
+          - platform: 'windows-2022'
+            args: ''
+          - platform: 'windows-11-arm'
+            args: ''
+          - platform: 'ubuntu-22.04'
             args: '--apk true --split-per-abi --target aarch64 --target armv7'
             mobile: 'android'
     runs-on: ${{ matrix.platform }}
@@ -53,8 +57,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-
 
+      # Case 1: Run bun for everything EXCEPT Windows ARM
       - name: install frontend dependencies
+        if: matrix.platform != 'windows-11-arm'
         run: bun i
+
+      # Case 2: Run npm ONLY for Windows ARM
+      - name: install frontend dependencies (Windows ARM)
+        if: matrix.platform == 'windows-11-arm'
+        run: npm install
 
       # ------------- Rust & Cargo Cache -------------
       - name: install Rust stable (desktop)
@@ -120,14 +131,14 @@ jobs:
 
       # ------------ Desktop OS ----------------
       - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-22.04' || matrix.platform == 'ubuntu-24.04-arm'
+        if: startsWith(matrix.platform, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev xdg-utils
 
       # ---------------- Tauri -----------------
       - name: Build Tauri Project
-        uses: tauri-apps/tauri-action@ca517bcbe58fd7012408d7ddfaeff950428bdeb1
+        uses: tauri-apps/tauri-action@e3ec38d49ea445df6d61ebaf015a85b1846b63f3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}

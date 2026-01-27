@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { root_folder_picker_dialog_state, root_path } from '@/lib/states';
+  import { workspace_root_path } from '@/lib/global_states/index.svelte';
+  import { root_folder_picker_dialog_state } from '@/components/general/root_folder_selector/states.svelte';
 </script>
 
 <div
@@ -13,7 +14,7 @@
         }}
       >
         <div class=" i-famicons:chevron-expand size-4"></div>
-        {decodeURIComponent(root_path.data?.path ?? '')
+        {decodeURIComponent(workspace_root_path.data?.path ?? '')
           .split('/')
           .filter(Boolean)
           .pop()}

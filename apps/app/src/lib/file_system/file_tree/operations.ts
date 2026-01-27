@@ -48,20 +48,33 @@ export async function move_node(
 
   if (current_platform === 'android') {
     try {
-      new_path = await invoke('move_file_android', {
-        uri: node.path,
-        newParentUri: new_parent_path,
-        documentTopTreeUri: document_top_tree_uri,
-      });
+      if (node.is_directory) {
+        new_path = await invoke('move_directory_android', {
+          uri: node.path,
+          newParentUri: new_parent_path,
+          documentTopTreeUri: document_top_tree_uri,
+        });
+      } else {
+        new_path = await invoke('move_file_android', {
+          uri: node.path,
+          newParentUri: new_parent_path,
+          documentTopTreeUri: document_top_tree_uri,
+        });
+      }
     } catch (e) {
       console.error(e);
-      toast.error('Error Moving File', { description: String(e) });
+      toast.error('Error Moving Node', { description: String(e) });
       return;
     }
   } else {
     new_path = new_parent_path
-      ? join_path(new_parent_path, node.name)
+      ? join_path(new_parent_path, node.name + (node.is_directory ? '' : '.md'))
       : node.name;
+    const name_with_ext = node.is_directory ? node.name : node.name + '.md';
+    new_path = new_parent_path
+      ? join_path(new_parent_path, name_with_ext)
+      : name_with_ext;
+
     await rename(node.path, new_path);
   }
 
@@ -74,23 +87,39 @@ export async function move_node(
 
   const update = (n: Node, p: string) => {
     n.path = p;
-    // For Android, children paths might need full reconstruction if they were path-based strings.
-    // However, build_tree_recursive_android constructs them as parent + encoded_name.
-    // If we have the new parent path, we can update children recursively.
-    // The rust backend only returns the new path for the moved node itself.
-    // We can assume the same pattern:
     if (current_platform === 'android') {
       n.children.forEach((c) =>
         update(
           c,
-          p + '%2F' + encodeURIComponent(c.is_directory ? c.name : c.name + '.md')
+          p +
+            '%2F' +
+            encodeURIComponent(c.is_directory ? c.name : c.name + '.md')
         )
       );
     } else {
-      n.children.forEach((c) => update(c, join_path(p, c.name)));
+      n.children.forEach((c) => update(c, join_path(p, c.name))); // This assumes c.name doesn't have extension, but join_path might need to know?
     }
   };
-  update(node, new_path);
+  const update_recursive = (n: Node, p: string) => {
+    n.path = p;
+    if (current_platform === 'android') {
+      n.children.forEach((c) =>
+        update_recursive(
+          c,
+          p +
+            '%2F' +
+            encodeURIComponent(c.is_directory ? c.name : c.name + '.md')
+        )
+      );
+    } else {
+      n.children.forEach((c) => {
+        const c_name = c.is_directory ? c.name : c.name + '.md';
+        update_recursive(c, join_path(p, c_name));
+      });
+    }
+  };
+
+  update_recursive(node, new_path);
 
   if (!new_parent_path) tree.push(node);
   else {
@@ -168,36 +197,90 @@ export async function add_new_folder(
     children: [],
   });
   sort_nodes(subtree);
+  const node = subtree.find((n) => n.path == new_file_path);
+  if (!node) throw new Error('Node not found');
+  return node;
 }
 
-export async function rename_file(
-  file_node: Node,
-  new_name: string,
-  parent_tree: Node[],
-  document_top_tree_uri: string | null
-) {
+export async function rename_node({
+  node,
+  new_name,
+  parent_subtree,
+  document_top_tree_uri,
+}: {
+  node: Node;
+  new_name: string;
+  parent_subtree: Node[];
+  document_top_tree_uri: string | null;
+}) {
+  // Append .md if it's a file
+  const final_name = node.is_directory ? new_name : new_name + '.md';
+  if (parent_subtree.some((n) => n.name == new_name))
+    throw new Error(
+      `the ${node.is_directory ? 'Folder' : 'Note'} : "${new_name}" already exists in focused folder`
+    );
+
   if (current_platform === 'android') {
     try {
-      const new_path = await invoke<string>('rename_file_android', {
-        uri: file_node.path,
-        newName: new_name + '.md',
-        documentTopTreeUri: document_top_tree_uri,
-      });
-      file_node.name = new_name;
-      file_node.path = new_path;
+      let new_path = '';
+      if (node.is_directory) {
+        new_path = await invoke<string>('rename_directory_android', {
+          uri: node.path,
+          newName: new_name, // Directory name doesn't need extension
+          documentTopTreeUri: document_top_tree_uri,
+        });
+      } else {
+        new_path = await invoke<string>('rename_file_android', {
+          uri: node.path,
+          newName: final_name,
+          documentTopTreeUri: document_top_tree_uri,
+        });
+      }
+
+      // Update node
+      node.name = new_name;
+
+      // Update paths recursively using the same logic as move_node
+      const update_recursive = (n: Node, p: string) => {
+        n.path = p;
+        n.children.forEach((c) =>
+          update_recursive(
+            c,
+            p +
+              '%2F' +
+              encodeURIComponent(c.is_directory ? c.name : c.name + '.md')
+          )
+        );
+      };
+      update_recursive(node, new_path);
     } catch (e) {
       console.error(e);
-      toast.error('Error Renaming File', { description: String(e) });
+      toast.error('Error Renaming Node', { description: String(e) });
       return;
     }
   } else {
-    const parent = get_parent_path(file_node.path);
-    const new_path = join_path(parent, new_name + '.md');
-    await rename(file_node.path, new_path);
-    file_node.name = new_name;
-    file_node.path = new_path;
+    const parent = get_parent_path(node.path);
+    const new_path = join_path(parent, final_name);
+    try {
+      await rename(node.path, new_path);
+
+      node.name = new_name;
+
+      const update_recursive = (n: Node, p: string) => {
+        n.path = p;
+        n.children.forEach((c) => {
+          const c_name = c.is_directory ? c.name : c.name + '.md';
+          update_recursive(c, join_path(p, c_name));
+        });
+      };
+      update_recursive(node, new_path);
+    } catch (e) {
+      console.error(e);
+      toast.error('Error Renaming Node', { description: String(e) });
+      return;
+    }
   }
-  sort_nodes(parent_tree);
+  sort_nodes(parent_subtree);
 }
 
 export async function delete_node(

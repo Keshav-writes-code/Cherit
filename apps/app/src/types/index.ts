@@ -10,6 +10,8 @@ export type MenuItem = {
   action?: () => void;
   type?: 'default' | 'danger' | 'warning';
   icon_class?: string;
+  experimental?: boolean;
+  tooltip?: string;
   divider?: boolean; // To render a <hr>
 };
 export type SubmitStates =

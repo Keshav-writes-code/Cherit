@@ -6,7 +6,7 @@ import {
   trigger_redo,
   trigger_undo,
   wrap_selection,
-} from '../../../../lib/text_editor';
+} from '../../../../lib/features/editor';
 import type { EditorView } from '@codemirror/view';
 
 export type toolbar_button = {

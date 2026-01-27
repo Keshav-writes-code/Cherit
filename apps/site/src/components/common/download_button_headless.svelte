@@ -23,10 +23,8 @@
 
     if (ua.includes("android")) {
       return {
-        main: { label: "Android (apk)", url: file("android-universal.apk") },
-        others: [
-          { label: "Android Arm64 (apk)", url: file("android-arm64.apk") },
-        ],
+        main: { label: "Android Arm64 (apk)", url: file("android-arm64.apk") },
+        others: [{ label: "Android (apk)", url: file("android-arm.apk") }],
       };
     }
     if (ua.includes("win")) {
@@ -37,12 +35,12 @@
     }
     if (ua.includes("mac")) {
       return {
-        main: { label: "macOS (dmg)", url: file("darwin-x64.dmg") },
+        main: {
+          label: "macOS Apple Silicon (dmg)",
+          url: file("darwin-aarch64.dmg"),
+        },
         others: [
-          {
-            label: "macOS Apple Silicon (dmg)",
-            url: file("darwin-aarch64.dmg"),
-          },
+          { label: "macOS (dmg)", url: file("darwin-x64.dmg") },
           { label: "macOS (tar.gz)", url: file("darwin-x64.app.tar.gz") },
         ],
       };

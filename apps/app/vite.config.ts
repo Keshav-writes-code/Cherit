@@ -25,6 +25,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    conditions: process.env.VITEST ? ['browser'] : undefined,
   },
   build: {
     cssMinify: 'lightningcss', // Enables advanced CSS minification
@@ -34,6 +35,7 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
   },
   test: {
-    include: ['./test'],
+    include: ['./test/**'],
+    environment: 'jsdom',
   },
 });

@@ -27,10 +27,14 @@ jobs:
             args: '--target x86_64-apple-darwin --debug'
           - platform: 'ubuntu-22.04'
             args: '--debug'
-          - platform: 'windows-latest'
+          - platform: 'ubuntu-22.04-arm'
             args: '--debug'
-          - platform: 'ubuntu-latest'
-            args: '--apk true --split-per-abi --debug'
+          - platform: 'windows-2022'
+            args: '--debug'
+          - platform: 'windows-11-arm'
+            args: '--debug'
+          - platform: 'ubuntu-22.04'
+            args: '--apk true --split-per-abi --target aarch64 --target armv7 --debug'
             mobile: 'android'
     runs-on: ${{ matrix.platform }}
     steps:
@@ -53,7 +57,7 @@ jobs:
         if: startsWith(matrix.platform, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev xdg-utils
 
       # ------------- Node -------------
       - name: setup node
@@ -63,8 +67,11 @@ jobs:
       - name: setup bun
         uses: oven-sh/setup-bun@v2
       - name: install frontend dependencies
-        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: bun i # change this to npm or pnpm depending on which one you use.
+        if: matrix.platform != 'windows-11-arm'
+        run: bun i
+      - name: install frontend dependencies (Windows ARM)
+        if: matrix.platform == 'windows-11-arm'
+        run: npm install
 
       # ------------- Rust -------------
       - name: install Rust stable (desktop)
@@ -110,7 +117,7 @@ jobs:
 
       # ---------------- Tauri -----------------
       - name: Build Tauri Project
-        uses: tauri-apps/tauri-action@9ce1dcc1a78395184050946b71457a6c242beab6
+        uses: tauri-apps/tauri-action@e3ec38d49ea445df6d61ebaf015a85b1846b63f3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}

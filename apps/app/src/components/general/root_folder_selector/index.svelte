@@ -3,19 +3,19 @@
     current_platform,
     current_platform_type,
     get_relative_path_parts,
-  } from '@/lib/file_tree';
+  } from '@/lib/file_system';
   import {
     get_most_recent_workspace,
     RecentWorkspaces,
   } from '@/lib/user_activity';
   import {
     opened_filenode,
-    root_folder_picker_dialog_state,
-    root_path,
-  } from '@/lib/states';
+    workspace_root_path,
+  } from '@/lib/global_states/index.svelte';
+  import { root_folder_picker_dialog_state } from './states.svelte';
   import type { Workspace } from '@/types';
   import { onMount } from 'svelte';
-  import { show_folder_picker } from '@/lib/system_dialogs';
+  import { show_folder_picker } from '@/lib/file_system/picker_dialog';
   import {
     recent_workspaces,
     user_activity,
@@ -88,14 +88,14 @@
             <li class="w-full">
               <button
                 onclick={async () => {
-                  await update_workspace(root_path.data?.path, {
+                  await update_workspace(workspace_root_path.data?.path, {
                     path,
                     document_top_tree_uri,
                     last_filenode_path: opened_filenode.data?.path,
                   });
                 }}
                 class="
-                {root_path.data?.path == path && 'bg-base-100'}
+                {workspace_root_path.data?.path == path && 'bg-base-100'}
                 flex w-full gap-0 flex-col items-baseline"
               >
                 <p class="text-sm text-base-content/80">
@@ -145,7 +145,7 @@
             onclick={async () => {
               const { path, document_top_tree_uri } =
                 await show_folder_picker();
-              await update_workspace(root_path.data?.path, {
+              await update_workspace(workspace_root_path.data?.path, {
                 path,
                 document_top_tree_uri,
                 last_filenode_path: opened_filenode.data?.path,
@@ -160,7 +160,7 @@
                 onclick={async () => {
                   const { path, document_top_tree_uri } =
                     await show_folder_picker();
-                  await update_workspace(root_path.data?.path, {
+                  await update_workspace(workspace_root_path.data?.path, {
                     path,
                     document_top_tree_uri,
                     last_filenode_path: opened_filenode.data?.path,

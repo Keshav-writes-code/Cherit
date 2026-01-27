@@ -1,10 +1,10 @@
 <script lang="ts">
   import { EditorView } from '@codemirror/view';
-  import { editor_view } from '../editor_state.svelte';
+  import { editor_view, is_contents_changed } from '../editor_state.svelte';
   import type { MenuItem } from '@/types';
-  import { current_platform_type } from '@/lib/file_tree';
+  import { current_platform_type } from '@/lib/file_system';
   import { get_desktop_context_menu } from './context_menu';
-  import { context_menu } from '@/lib/states';
+  import { context_menu } from '@/lib/global_states/index.svelte';
   import { create_editor } from './editor_config';
   import './editor_config/theme.css';
   let {
@@ -19,7 +19,6 @@
     write_to_file: (markdown_content_state: string) => void;
   } = $props();
   let element: HTMLDivElement | undefined = $state();
-  let is_contents_changed = $state(false);
   $effect(() => {
     let newEditor: EditorView | undefined;
     if (text_content && element) {
@@ -46,9 +45,9 @@
   bind:this={element}
   onfocusout={() => {
     if (on_focus_out) on_focus_out();
-    if (!editor_view.data || !is_contents_changed) return;
+    if (!editor_view.data || !is_contents_changed.data) return;
     write_to_file(editor_view.data.state.doc.toString());
-    is_contents_changed = false;
+    is_contents_changed.data = false;
   }}
   oncontextmenu={(e) => handle_node_right_click(e)}
   class="pb-50vh"

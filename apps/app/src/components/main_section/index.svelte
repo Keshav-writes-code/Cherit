@@ -2,8 +2,9 @@
   import TitleBar from '@/components/main_section/titlebar/index.svelte';
   import TextEditior from '@/components/main_section/text_editor/index.svelte';
   import PdfRendered from '@/components/main_section/pdf_export_dialog/index.svelte';
-  import { opened_filenode, pdf_export_status } from '@/lib/states';
-  import { current_platform_type } from '@/lib/file_tree';
+  import { opened_filenode } from '@/lib/global_states/index.svelte';
+  import { pdf_export_status } from '@/components/main_section/pdf_export_dialog/states.svelte';
+  import { current_platform_type } from '@/lib/file_system';
   import BreadCrumb from '@/components/general/breadcrumb_path/index.svelte';
   import PaneMenu from '@/components/main_section/pane_menu/index.svelte';
 </script>

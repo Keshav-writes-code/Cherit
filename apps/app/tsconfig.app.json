@@ -21,5 +21,5 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte", "tests/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte", "test/**/*.ts"]
 }
