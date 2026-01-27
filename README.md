@@ -15,6 +15,12 @@ my aim with this project is to Built a cross platform (mobile & desktop), local 
 
 read the full [inspiration](http://keshav.is-a.dev/Cherit/inspiration)
 
+## Motivation
+
+Obsidan is a Great Notes taking app for everyday person but it hides the syncing functionality behind a paywall
+
+my aim with this project is to Built a cross platform (mobile & desktop), local first version of Obsidian with syncing functionality built in and work in a seamless. hassle-free way
+
 ## 💻Built with
 
 Technologies used in the project:
