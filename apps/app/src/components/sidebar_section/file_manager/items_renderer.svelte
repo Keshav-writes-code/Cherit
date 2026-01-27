@@ -250,6 +250,7 @@
           }, animate_duration)
         : expand_override_fine_grain.add(node.path);
     }}
+    {@attach (e) => e.scrollIntoView()}
   >
     {@render node_button_content(node, parent_subtree)}
   </summary>
@@ -301,6 +302,7 @@
         focused_subtree.set(parent_subtree);
       }
     }}
+    {@attach (e) => e.scrollIntoView()}
   >
     {@render node_button_content(node, parent_subtree)}
   </button>
