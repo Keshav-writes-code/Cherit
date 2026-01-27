@@ -1,5 +1,4 @@
 ---
-import { Image } from "astro:assets";
 import desktopShot from "@/assets/images/screenshots/desktop/1.png";
 import mobileShot from "@/assets/images/screenshots/mobile/1.jpg";
 import CrossPlatformGrid from "./cross_platform_grid.astro";
@@ -19,15 +18,13 @@ let { class: classes } = Astro.props;
         Your Workspace, Unbounded
       </h2>
       <p class="text-xl text-base-content/60 max-w-2xl mx-auto">
-        Switch devices without switching contexts. Cherit adapts to your workflow, wherever you are.
+        Switch devices without switching contexts. Cherit adapts to your
+        workflow, wherever you are.
       </p>
     </div>
 
     <div class="animate-on-scroll">
-      <CrossPlatformGrid
-        desktop_img={desktopShot}
-        mobile_img={mobileShot}
-      />
+      <CrossPlatformGrid desktop_img={desktopShot} mobile_img={mobileShot} />
     </div>
 
     <!-- Background decoration -->
