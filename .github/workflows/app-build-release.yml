@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - staging
     paths:
       - 'apps/app/**'
       - '.github/workflows/tauri-build-release.yml'
