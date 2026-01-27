@@ -1,4 +1,4 @@
-name: 'tauri-build-release'
+name: 'app-build-release'
 
 on:
   pull_request:

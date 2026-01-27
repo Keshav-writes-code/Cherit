@@ -1,4 +1,4 @@
-name: 'tauri-build-debug'
+name: 'app-build-debug'
 
 on:
   push:
