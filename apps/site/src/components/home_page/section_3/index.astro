@@ -1,0 +1,46 @@
+---
+import { Image } from "astro:assets";
+import desktopShot from "@/assets/images/screenshots/desktop/1.png";
+import mobileShot from "@/assets/images/screenshots/mobile/1.jpg";
+import CrossPlatformGrid from "./cross_platform_grid.astro";
+
+interface Props {
+  class?: string;
+}
+let { class: classes } = Astro.props;
+---
+
+<section
+  class=`${classes} section-container isolate z-0 pb-40 relative overflow-hidden`
+>
+  <div class="w-full">
+    <div class="text-center mb-16 animate-on-scroll">
+      <h2 class="text-4xl md:text-5xl font-bold mb-4">
+        Your Workspace, Unbounded
+      </h2>
+      <p class="text-xl text-base-content/60 max-w-2xl mx-auto">
+        Switch devices without switching contexts. Cherit adapts to your workflow, wherever you are.
+      </p>
+    </div>
+
+    <div class="animate-on-scroll">
+      <CrossPlatformGrid
+        desktop_img={desktopShot}
+        mobile_img={mobileShot}
+      />
+    </div>
+
+    <!-- Background decoration -->
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-600/10 rounded-full blur-[120px] -z-10 pointer-events-none"
+    >
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initScrollAnimation } from "@/utils/animate_on_scroll";
+  document.addEventListener("DOMContentLoaded", () => {
+    initScrollAnimation();
+  });
+</script>

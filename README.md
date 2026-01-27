@@ -2,17 +2,18 @@
 
 <p align="center"><img src="https://socialify.git.ci/Keshav-writes-code/Cherit/image?description=1&amp;logo=https%3A%2F%2Fraw.githubusercontent.com%2FKeshav-writes-code%2FCherit%2Fmain%2Fpublic%2Flogo_500.png&amp;name=1&amp;pattern=Plus&amp;theme=Auto" alt="project-image"></p>
 
-<div align="center">
+## Project Screenshots
 
- [![tauri-build-release](https://github.com/Keshav-writes-code/Cherit/actions/workflows/tauri-build-release.yml/badge.svg?branch=dev)](https://github.com/Keshav-writes-code/Cherit/actions/workflows/tauri-build-release.yml)
- 
-</div>
-⚠️This is an early experimental build in the research phase. Core functionality is incomplete and not intended for any regular use.
+<img width="1210" height="837" alt="image" src="https://github.com/user-attachments/assets/920c3f9e-f2d0-498e-bcf4-a27b7117f71f" />
+<img width="1210" height="838" alt="image" src="https://github.com/user-attachments/assets/a87a2221-1d46-4348-b382-880c9da05196" />
 
-## Project Screenshots :
+## Motivation
 
-![project screenshot](https://i.vgy.me/3DPkAd.png)
-![project screenshot](https://i.vgy.me/CB0d8M.png)
+Obsidan is a Great Notes taking app for everyday person but it hides the syncing functionality behind a paywall
+
+my aim with this project is to Built a cross platform (mobile & desktop), local first version of Obsidian with syncing functionality built in and work in a seamless. hassle-free way
+
+read the full [inspiration](http://keshav.is-a.dev/Cherit/inspiration)
 
 ## Motivation
 

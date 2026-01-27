@@ -1,0 +1,27 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "fs:default",
+    "store:default",
+    "dialog:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-close",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "fs:allow-write-text-file",
+    "fs:allow-home-read-recursive",
+    "fs:allow-home-write-recursive",
+    "os:default",
+    "android-fs:all",
+    "opener:default",
+    "safe-area-insets-css:default",
+    "clipboard-manager:default",
+    "clipboard-manager:allow-read-text",
+    "clipboard-manager:allow-write-text"
+  ]
+}
+

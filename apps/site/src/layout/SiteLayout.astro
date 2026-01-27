@@ -1,0 +1,32 @@
+---
+import BaseLayout from "@/layout/BaseLayout.astro";
+import Navbar from "@/components/navbar/index.astro";
+import Footer from "@/components/common/footer.astro";
+import { type PageMetadata } from "@/types";
+
+interface Props {
+  class?: string;
+  page_metadata: PageMetadata;
+}
+let { class: classes, page_metadata }: Props = Astro.props;
+---
+
+<BaseLayout
+  theme="dark"
+  class="font-sans isolate bg-black min-h-screen h-full min-h-screen flex flex-col items-center"
+  page_metadata={page_metadata}
+>
+  <div
+    class="w-full grid place-items-center fixed px-5 max-w-screen-xl isolate z-1"
+    transition:persist
+  >
+    <Navbar />
+  </div>
+  <main
+    class=`isolate w-full max-w-screen-xl ${classes} `
+    transition:animate="slide"
+  >
+    <slot />
+  </main>
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,21 @@
+---
+import Editor from "@/components/editor/index.svelte";
+import SiteLayout from "@/layout/SiteLayout.astro";
+import type { PageMetadata } from "@/types";
+
+const metadata: PageMetadata = {
+  title: "Live Demo",
+  description:
+    "Try Cherit directly in your browser. Experience the fast, markdown-based editing environment without installing anything.",
+  open_graph: {
+    title: "Cherit Live Demo - Try it now",
+    description: "Experience the speed of Cherit right in your browser.",
+  },
+};
+---
+
+<SiteLayout class="flex px-10" page_metadata={metadata}>
+  <div class="mt-30 relative flex min-h-0 h-screen w-full overflow-y-auto">
+    <Editor client:load />
+  </div>
+</SiteLayout>

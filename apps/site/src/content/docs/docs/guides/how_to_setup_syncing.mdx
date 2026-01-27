@@ -1,0 +1,125 @@
+---
+title: "Syncing Guide"
+description: "How to sync your Cherit notes privately using Syncthing."
+---
+
+import { Steps, Tabs, TabItem, LinkButton } from "@astrojs/starlight/components";
+
+To sync Markdown notes between devices, you can use any file syncing solution you like (Nextcloud, Dropbox, Google Drive, etc.).
+
+in the future, Cherit will provide a baked in solution and no manual setup will be required like this one
+
+for now, for the best privacy and performance, we recommend **Syncthing**. It's open-source, free, and syncs directly between your devices without storing data in the cloud.
+
+## Steps
+
+<Steps>
+
+1. ### Install Syncthing
+
+    choose your OS below and follow the instructions
+
+    <Tabs syncKey="os">
+      <TabItem label="Windows" >
+        click the button below to download  [ SyncTrayzor ](https://github.com/GermanCoding/SyncTrayzor)\
+        \
+        <LinkButton icon="download" target="_blank"  iconPlacement="start" href="https://github.com/GermanCoding/SyncTrayzor/releases/latest/download/SyncTrayzorSetup-x64.exe" >Download SyncTrayzor latest</LinkButton>\
+        \
+        then, install the SyncTrayzor with the installer 
+
+
+      </TabItem>
+      <TabItem label="Macos" >
+        click the button below to download  [ syncthing-macos ](https://github.com/syncthing/syncthing-macos)\
+        \
+        <LinkButton icon="download" target="_blank"  iconPlacement="start" href="https://github.com/syncthing/syncthing-macos/releases/download/v1.30.0-1/Syncthing-1.30.0-1.dmg" >Download syncthing-macos v1.30 </LinkButton>\
+        \
+        then, install the `.dmg` file by double clicking, opening the a menu, then dragging the syncthing icon to applications folder 
+      </TabItem>
+
+      <TabItem label="Linux">
+
+        <Tabs>
+          <TabItem label="Debian / Ubuntu / Mint" >
+          ```sh
+          sudo apt install syncthing
+          ```
+          </TabItem>
+          <TabItem label="Arch" >
+          ```sh
+          sudo pacman -Syu syncthing
+          ```
+          </TabItem>
+          <TabItem label="Fedora" >
+          ```sh
+          sudo dnf install syncthing
+          ```
+          </TabItem>
+        </Tabs>
+      </TabItem>
+      <TabItem label="Android" >
+        click the button below to download  [ syncthing-fork ](https://github.com/researchxxl/syncthing-android)\
+        \
+        <LinkButton icon="download" target="_blank"  iconPlacement="start" href="https://github.com/researchxxl/syncthing-android/releases/download/v2.0.13.1/com.github.catfriend1.syncthingandroid_release_v2.0.13.1.apk" >Download syncthing-fork v2.0.13 </LinkButton>\
+        \
+        then, install the `.apk` file by double clicking on it in a file manager app, and in the dialog window,clicking install
+      </TabItem>
+      <TabItem label="IOS" >
+        open App Store on your Iphone, search for `Möbius Sync`\
+        install the app with a red icon
+      </TabItem>
+
+    </Tabs>
+
+2. ### Run on Startup
+
+    on Desktop, we need to setup syncthing to auto-start when system boots
+
+    <Tabs syncKey="os">
+      <TabItem label="Windows" >
+        open [ SyncTrayzor ](https://github.com/GermanCoding/SyncTrayzor), and go to\
+        `View > Settings > SyncTrazor > Start on Login`\
+        then, turn on the button
+      </TabItem>
+      <TabItem label="Macos" >
+        open [ syncthing-macos ](https://github.com/syncthing/syncthing-macos), go to:\
+        `prefrences > Start at login`\
+        then, turn on the button
+        
+      </TabItem>
+
+      <TabItem label="Linux">
+        if you're using linux, you probably know how to configure a service to run on startup using your init system
+      </TabItem>
+    </Tabs>
+
+3. ### Configure
+
+    both device need to be one the same local network.\
+    a hotspot connection from mobile device to desktop devices also works
+
+    #### Pairing
+    1. open the syncthing app on your desktop, go to\
+      `Top Right Corner > Actions > Show ID`
+    2. open your mobile Syncthing app
+    3. go to **Devices** tab, click  `top right button > add a device`
+    4. for the **ID** column, click the QR code icon button next to it
+    5. Scan the QR code, shown on desktop screen
+    6. in the `Name` field , Set a name for your desktop device, e.g. `PC`
+    6. Click the Tick button on top right
+    7. now on your desktop, you should see popup on the top asking you to **Add Device**
+    8. CLick `Add Device` button
+    9. in the next Popup, set `Device Name` field to any name, e.g. `Mobile`
+    
+    
+    #### Syncing
+    1. Open the Syncthing app on mobile, go to\
+      `Folder Tab > Top Right Corner > Add folder Button`
+    2. Set `Folder Label` to `Cherit notes`
+    3. set `Directory` field to the same folder that you choose for your Cherit's vault
+    4. just below that, turn on the Switch next to `PC`. making your desktop share this folder with the mobile
+    5. now on your desktop, you should see popup on the top asking you to accept the Invitation sent from the mobile for sharing the folder.
+    6. CLick `Accept` button and in the following popup, in the `Directory` specify the location of your notes on your desktop
+
+
+</Steps>
