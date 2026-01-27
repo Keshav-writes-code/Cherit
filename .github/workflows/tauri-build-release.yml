@@ -147,7 +147,7 @@ jobs:
           tagName: cherit-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'Cherit v__VERSION__'
           releaseAssetNamePattern: '[name]-[platform]-[arch][ext]'
-          releaseBody: 'See the assets to download this version and install.'
+          releaseBody: 'Download from Website : [Download](https://keshav.is-a.dev/Cherit/download/)'
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
