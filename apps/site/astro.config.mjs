@@ -43,7 +43,7 @@ export default defineConfig({
     }),
     mdx(),
   ],
-  site: "https://Keshav-writes-code.github.io",
+  site: "https://keshav.is-a.dev/",
   base: "Cherit",
   devToolbar: {
     enabled: false,
