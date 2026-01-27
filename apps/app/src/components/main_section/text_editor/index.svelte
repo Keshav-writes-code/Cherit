@@ -40,7 +40,7 @@
 {current_platform_type == 'mobile' && 'pt-22'}
   "
 >
-  <div class="max-w-170 w-full font-sans" id="text_editor">
+  <div class="max-w-180 w-full font-sans" id="text_editor">
     <input
       type="text"
       id="note_file_name_input"

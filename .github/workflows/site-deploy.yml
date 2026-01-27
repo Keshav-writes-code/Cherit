@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: 'site-deploy'
 
 on:
   push:
@@ -21,10 +21,7 @@ jobs:
       - name: Checkout your repository using git
         uses: actions/checkout@v5
 
-      - name: setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
+      # Install dependencies at root (Monorepo context)
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
       - name: Install dependencies

@@ -5,18 +5,18 @@ import DownloadBtnHeadless from "@/components/common/download_button_headless.sv
 import type { PageMetadata } from "@/types";
 
 let metadata: PageMetadata = {
-  title: "Home",
+  title: "Downloads",
   description:
-    "Cherit is the 2MB note-taking powerhouse. Native performance on every platform. Markdown native, offline-first, and completely private. Just you and your thoughts.",
+    "Get Cherit for Windows, macOS, Linux, and Android. A 2MB native powerhouse for offline-first, private Markdown note-taking with lightning speed.",
   open_graph: {
-    title: "Cherit - Think Fast. Write Faster.",
+    title: "Download Cherit - Native & Fast Markdown Notes",
     description:
-      "Stop downloading entire web browsers just to write a grocery list. Cherit is a lightweight, local-first markdown editor.",
+      "Stop downloading entire web browsers just to write a note. Get the 2MB, local-first markdown editor for all your devices.",
   },
   twitter: {
-    title: "Cherit - The Lightweight Note-Taking App",
+    title: "Download Cherit - The 2MB Note-Taking Powerhouse",
     description:
-      "Native performance, 2MB size, Markdown support. Available on all platforms.",
+      "Native performance on every platform. Markdown native, offline-first, and completely private.",
   },
 };
 type Platform = {
@@ -81,7 +81,7 @@ let platforms: Platform[] = [
       class="btn btn-primary btn-md  lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 [transition-property:_scale,_background] duration-300"
     />
     <div class="divider my-30">OR</div>
-    <div class="tabs tabs-box gap-x-3 w-full justify-center  bg-transparent">
+    <div class="tabs tabs-box gap-x-3 gap-y-16 w-full justify-center  bg-transparent">
       { platforms.map(({label, icon, binaries}, i)=>(
       <label class="tab flex gap-2 py-3 px-5 h-max items-center capitalize  ">
         <input type="radio" name="os_selector" checked={i==0} />
