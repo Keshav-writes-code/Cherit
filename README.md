@@ -1,6 +1,6 @@
 <h1 align="center" id="title">Cherit</h1>
 
-<p align="center"><img src="https://socialify.git.ci/Keshav-writes-code/Cherit/image?description=1&amp;logo=https%3A%2F%2Fraw.githubusercontent.com%2FKeshav-writes-code%2FCherit%2Fmain%2Fpublic%2Flogo_500.png&amp;name=1&amp;pattern=Plus&amp;theme=Auto" alt="project-image"></p>
+<p align="center"><img src="https://socialify.git.ci/Keshav-writes-code/Cherit/image?description=1&font=Jost&logo=https%3A%2F%2Fraw.githubusercontent.com%2FKeshav-writes-code%2FCherit%2Frefs%2Fheads%2Fmain%2Fapps%2Fapp%2Fpublic%2Flogo_500.png&name=1&pattern=Plus&theme=Auto" alt="Cherit" /></p>
 
 ## Project Screenshots
 
