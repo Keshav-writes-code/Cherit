@@ -1,0 +1,34 @@
+name: 'site-build-check'
+
+on:
+  pull_request:
+    paths:
+      - 'apps/site/**'
+      - '.github/workflows/site-check.yml'
+  push:
+    branches:
+      - staging
+    paths:
+      - 'apps/site/**'
+      - '.github/workflows/site-check.yml'
+  workflow_dispatch:
+
+jobs:
+  check-site:
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      # Install dependencies at root (Monorepo context)
+      - name: Install dependencies
+        run: bun i
+
+      # Attempt to build the Astro site to ensure no errors
+      - name: Install and Build Site
+        working-directory: apps/site
+        run: |
+          bun install
+          bun run build

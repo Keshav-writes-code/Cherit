@@ -1,12 +1,13 @@
-name: 'tauri-build-debug'
+name: 'app-build-debug'
 
 on:
-  pull_request:
   push:
     branches:
-      - main
       - staging
-      - main
+    paths:
+      - 'apps/app/**'
+      - '.github/workflows/tauri-build-debug.yml'
+  pull_request:
     paths:
       - 'apps/app/**'
       - '.github/workflows/tauri-build-debug.yml'

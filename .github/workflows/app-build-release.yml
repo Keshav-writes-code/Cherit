@@ -1,11 +1,10 @@
-name: 'tauri-build-release'
+name: 'app-build-release'
 
 on:
   pull_request:
   push:
     branches:
       - main
-      - staging
     paths:
       - 'apps/app/**'
       - '.github/workflows/tauri-build-release.yml'
@@ -147,7 +146,7 @@ jobs:
           tagName: cherit-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'Cherit v__VERSION__'
           releaseAssetNamePattern: '[name]-[platform]-[arch][ext]'
-          releaseBody: 'See the assets to download this version and install.'
+          releaseBody: 'Download from Website : [Download](https://keshav.is-a.dev/Cherit/download/)'
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
