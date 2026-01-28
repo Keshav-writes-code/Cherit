@@ -31,6 +31,8 @@ jobs:
         uses: withastro/action@v5
         with:
           path: 'apps/site'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     needs: build

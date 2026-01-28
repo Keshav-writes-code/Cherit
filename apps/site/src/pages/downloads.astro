@@ -3,6 +3,7 @@ import SiteLayout from "@/layout/SiteLayout.astro";
 import PagetopBG from "@/components/common/pagetop_background.html";
 import DownloadBtnHeadless from "@/components/common/download_button_headless.svelte";
 import type { PageMetadata } from "@/types";
+import { file, call_gh_api, owner, repo } from "@/lib/gh_api.ts";
 
 let metadata: PageMetadata = {
   title: "Downloads",
@@ -22,93 +23,152 @@ let metadata: PageMetadata = {
 type Platform = {
   label: string;
   icon: string;
-  binaries: { label: string; link: string }[]
-}
-const owner = "keshav-writes-code";
-const repo = "cherit";
-let baseUrl = `https://github.com/${owner}/${repo}/releases/latest/download`;
-const file = (suffix: string) => `${baseUrl}/${repo}-${suffix}`;
+  binaries: { label: string; link: string }[];
+};
 
 let platforms: Platform[] = [
-  { 
+  {
     label: "windows",
-    icon: "i-tabler:brand-windows-filled", 
-    binaries:[
-      {label:"EXE x64 (Installer)", link:file("windows-x64.exe")},
-      {label:"EXE arm64 (Installer)", link:file("windows-arm64.exe")},
-      {label:"MSI x64 (Installer)", link:file("windows-x64.msi")},
-      {label:"MSI arm64 (Installer)", link:file("windows-arm64.msi")}
-    ] 
+    icon: "i-tabler:brand-windows-filled",
+    binaries: [
+      { label: "EXE x64 (Installer)", link: file("windows-x64.exe") },
+      { label: "EXE arm64 (Installer)", link: file("windows-arm64.exe") },
+      { label: "MSI x64 (Installer)", link: file("windows-x64.msi") },
+      { label: "MSI arm64 (Installer)", link: file("windows-arm64.msi") },
+    ],
   },
-  { 
+  {
     label: "macos",
     icon: "i-tabler:brand-apple-filled",
-    binaries:[
-      {label:"DMG (x64)", link:file("darwin-x64.dmg")},
-      {label:"DMG (Apple Silicon)", link:file("darwin-aarch64.dmg")}
-    ] 
+    binaries: [
+      { label: "DMG (x64)", link: file("darwin-x64.dmg") },
+      { label: "DMG (Apple Silicon)", link: file("darwin-aarch64.dmg") },
+    ],
   },
-  { 
-    label: "linux", icon: "i-mdi:linux",
-    binaries:[
-      {label:"Deb x86_64", link:file("linux-amd64.deb")},
-      {label:"Deb arm64", link:file("linux-arm64.deb")},
-      {label:"Rpm x86_64", link:file("linux-x86_64.rpm")},
-      {label:"Rpm arm64", link:file("linux-aarch64.rpm")},
-      {label:"AppImage x86_64", link:file("linux-amd64.AppImage")},
-      {label:"AppImage arm64", link:file("linux-aarch64.AppImage")}
-    ] 
+  {
+    label: "linux",
+    icon: "i-mdi:linux",
+    binaries: [
+      { label: "Deb x86_64", link: file("linux-amd64.deb") },
+      { label: "Deb arm64", link: file("linux-arm64.deb") },
+      { label: "Rpm x86_64", link: file("linux-x86_64.rpm") },
+      { label: "Rpm arm64", link: file("linux-aarch64.rpm") },
+      { label: "AppImage x86_64", link: file("linux-amd64.AppImage") },
+      { label: "AppImage arm64", link: file("linux-aarch64.AppImage") },
+    ],
   },
-  { 
-    label: "android", 
+  {
+    label: "android",
     icon: "i-mdi:android",
-    binaries:[
-      {label:"APK (aarch64)", link:file("android-arm64.apk")},
-      {label:"APK (armv7)", link:file("android-arm.apk")}
-    ] 
+    binaries: [
+      { label: "APK (aarch64)", link: file("android-arm64.apk") },
+      { label: "APK (armv7)", link: file("android-arm.apk") },
+    ],
   },
-  { label: "IOS", icon: "i-mdi:apple-ios", binaries:[] },
+  { label: "IOS", icon: "i-mdi:apple-ios", binaries: [] },
 ];
+
+const get_total_downloads = (data: any): number =>
+  Array.isArray(data)
+    ? data.reduce(
+        (acc, release) =>
+          acc +
+          release.assets.reduce(
+            (sum: number, asset: any) => sum + asset.download_count,
+            0,
+          ),
+        0,
+      )
+    : 0;
+const releases_info = await call_gh_api("/releases");
+const download_count_server = get_total_downloads(releases_info);
 ---
 
 <SiteLayout page_metadata={metadata} class="grid place-items-center">
   <PagetopBG />
   <h1 class="text-4xl sm:text-5xl font-bold text-center mt-50">Downloads</h1>
+  <div class="stats shadow">
+    <div class="stat text-center">
+      <div class="stat-title">Total Downloads</div>
+      <div class="stat-value">
+        <span class="countdown">
+          <span style=`--value:0;` id="downloads_count" aria-live="polite"
+          ></span>
+        </span>
+      </div>
+      <div class="stat-desc">Downloads all time</div>
+    </div>
+  </div>
 
   <section class="section-container mt-20">
     <DownloadBtnHeadless
       client:load
-      class="btn btn-primary btn-md  lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 [transition-property:_scale,_background] duration-300"
+      class="btn btn-primary btn-md lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 [transition-property:_scale,_background] duration-300"
     />
     <div class="divider my-30">OR</div>
-    <div class="tabs tabs-box gap-x-3 gap-y-4 w-full justify-center  bg-transparent">
-      { platforms.map(({label, icon, binaries}, i)=>(
-      <label class="tab flex gap-2 py-3 px-5 h-max items-center capitalize  ">
-        <input type="radio" name="os_selector" checked={i==0} />
-        <div class=`${icon} size-5`></div>
-        <span class=" text:lg lg:text-xl" >{label}</span>
-      </label>
-      <div class=" tab-content bento-card max-w-4xl p-8 mt-36">
+    <div
+      class="tabs tabs-box gap-x-3 gap-y-4 w-full justify-center bg-transparent"
+    >
+      {
+        platforms.map(({ label, icon, binaries }, i) => (
+          <>
+            <label class="tab flex gap-2 py-3 px-5 h-max items-center capitalize  ">
+              <input type="radio" name="os_selector" checked={i == 0} />
+              <div class={`${icon} size-5`} />
+              <span class=" text:lg lg:text-xl">{label}</span>
+            </label>
+            <div class="tab-content bento-card max-w-4xl p-8 mt-36">
+              <p class="flex gap-2 font-semibold items-center text-xl w-max color-primary">
+                <span class="i-tabler:download size-5 text-[var(--color-primary)]" />
+                Binaries
+              </p>
 
-        <p class="flex gap-2 font-semibold items-center text-xl w-max color-primary">
-          <span class="i-tabler:download size-5 text-[var(--color-primary)]" ></span>
-          Binaries
-        </p>
-
-        <div class="grid grid-cols-2 gap-2 mt-4" >
-
-          {!binaries || !binaries.length && (
-          <p>No Build for {label} Available for now</p>
-          )}
-          { binaries.map(({label: text, link})=>(
-          <a href={link} class="btn max-h-none h-full p-y-2 sm:btn-md lg:btn-lg" > 
-            {text} 
-            <div class="i-tabler:download size-4 color-gray" ></div>
-          </a>
-          )) }
-        </div>
-      </div>
-      )) }
+              <div class="grid grid-cols-2 gap-2 mt-4">
+                {!binaries ||
+                  (!binaries.length && (
+                    <p>No Build for {label} Available for now</p>
+                  ))}
+                {binaries.map(({ label: text, link }) => (
+                  <a
+                    href={link}
+                    class="btn max-h-none h-full p-y-2 sm:btn-md lg:btn-lg"
+                  >
+                    {text}
+                    <div class="i-tabler:download size-4 color-gray" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          </>
+        ))
+      }
     </div>
   </section>
 </SiteLayout>
+
+<script define:vars={{ owner, repo, download_count_server }} is:inline>
+  const download_count_elem = document.getElementById("downloads_count");
+  if (!download_count_elem) return;
+  const get_total_downloads = (data) =>
+    Array.isArray(data)
+      ? data.reduce(
+          (acc, release) =>
+            acc +
+            release.assets.reduce(
+              (sum, asset) => sum + asset.download_count,
+              0,
+            ),
+          0,
+        )
+      : 0;
+
+  fetch(`https://api.github.com/repos/${owner}/${repo}/releases`)
+    .then((v) => v.json())
+    .then((releases_info) => {
+      const download_count = get_total_downloads(releases_info);
+      if (download_count)
+        download_count_elem.style.setProperty("--value", download_count);
+      else
+        download_count_elem.style.setProperty("--value", download_count_server);
+    });
+</script>
