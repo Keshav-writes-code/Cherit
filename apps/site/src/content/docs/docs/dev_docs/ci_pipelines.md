@@ -22,6 +22,11 @@ This is our "Test Flight" zone.
 
 - **App:** Builds **Debug** artifacts (unsigned) for all platforms. These are available in the GitHub Actions "Summary" tab for testers to download and try.
 - **Site:** Runs `bun run build` to ensure the Astro site builds without errors (same as PR check).
+  - to test site builds
+    - go to `Action Tab` > latest `site-build-check` run > `Summary` > download workflow artifact `site-build-output`
+    - then extract the zip, move all content to a new dir called `Cherit`
+    - then in the parent dir, run `bunx serve .`
+    - open `http://localhost:3000/Cherit/` in browser to test
 
 ## 3. Main Branch (Production)
 
