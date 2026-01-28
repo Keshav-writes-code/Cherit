@@ -15,6 +15,14 @@
 
   let y = $state(0);
   let expand_navbar_mobile = $state(false);
+  let git_star_count_client_side = $state();
+  (async () => {
+    git_star_count_client_side = (
+      await (
+        await fetch("https://api.github.com/repos/Keshav-writes-code/Cherit")
+      ).json()
+    ).stargazers_count;
+  })();
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -51,7 +59,12 @@
         target="_blank"
       >
         <div class="i-mdi:github size-5.5"></div>
-        {git_star_count}
+
+        {#if git_star_count_client_side}
+          {git_star_count_client_side}
+        {:else}
+          {git_star_count}
+        {/if}
       </a>
     </div>
     <div class="h-full md:hidden justify-self-end">
