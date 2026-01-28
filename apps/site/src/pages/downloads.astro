@@ -88,7 +88,7 @@ let platforms: Platform[] = [
         <div class=`${icon} size-5`></div>
         <span class=" text:lg lg:text-xl" >{label}</span>
       </label>
-      <div class=" tab-content bento-card max-w-4xl p-10 mt-20">
+      <div class=" tab-content bento-card max-w-4xl p-8 mt-20">
 
         <p class="flex gap-2 font-semibold items-center text-xl w-max color-primary">
           <span class="i-tabler:download size-5 text-[var(--color-primary)]" ></span>
@@ -101,7 +101,7 @@ let platforms: Platform[] = [
           <p>No Build for {label} Available for now</p>
           )}
           { binaries.map(({label: text, link})=>(
-          <a href={link} class="btn sm:btn-md lg:btn-lg" > 
+          <a href={link} class="btn max-h-none h-full p-y-2 sm:btn-md lg:btn-lg" > 
             {text} 
             <div class="i-tabler:download size-4 color-gray" ></div>
           </a>
