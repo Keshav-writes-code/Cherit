@@ -81,17 +81,36 @@
     </div>
   </div>
   {#if expand_navbar_mobile}
+    {@const links_arr = Object.entries(nav_links)}
     <div class="w-full h-full" transition:slide>
       <nav class="flex flex-col gap-1 font-semibold">
         <ul class="menu menu-lg rounded-box w-full">
-          {#each Object.entries(nav_links) as [key, value], i}
+          {#each links_arr as [key, value], i}
             <li
-              class="animate-in slide-in-b-2 fade-in-0 animate-duration-500 animate-fill-both {i}"
+              class="animate-in slide-in-b-2 fade-in-0 animate-duration-500 animate-fill-both"
               style="animation-delay: {200 + 50 * i}ms;"
             >
               <a class="capitalize" href={value}>{key}</a>
             </li>
           {/each}
+          <li
+            class="mt-4 animate-in slide-in-b-2 fade-in-0 animate-duration-500 animate-fill-both"
+            style="animation-delay: {200 + 50 * (links_arr.length + 2)}ms;"
+          >
+            <a
+              href="https://github.com/Keshav-writes-code/Cherit"
+              class="btn flex items-center"
+              target="_blank"
+            >
+              <div class="i-mdi:github size-5.5"></div>
+
+              {#if git_star_count_client_side}
+                {git_star_count_client_side}
+              {:else}
+                {git_star_count}
+              {/if}
+            </a>
+          </li>
         </ul>
       </nav>
     </div>
