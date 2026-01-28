@@ -34,3 +34,10 @@ jobs:
           bun run build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-build-output
+          path: apps/site/dist
+          retention-days: 5
