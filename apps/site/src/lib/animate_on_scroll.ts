@@ -1,11 +1,6 @@
 export function initScrollAnimation(
   selector: string = ".animate-on-scroll",
-  animationClasses: string[] = [
-    "animate-in",
-    "fade-in",
-    "slide-in-from-bottom-8",
-    "duration-700",
-  ],
+  animationClasses: string[] = ["visible"],
 ) {
   const observer = new IntersectionObserver(
     (entries) => {
