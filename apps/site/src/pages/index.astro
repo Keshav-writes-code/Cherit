@@ -31,3 +31,10 @@ let metadata: PageMetadata = {
   <Section3 class="mt-20" />
   <Section4 />
 </SiteLayout>
+<script>
+  import { initScrollAnimation } from "@/lib/animate_on_scroll";
+
+  document.addEventListener("astro:page-load", () => {
+    initScrollAnimation();
+  });
+</script>

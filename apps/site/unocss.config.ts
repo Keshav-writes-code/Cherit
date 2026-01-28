@@ -27,6 +27,14 @@ export default defineConfig({
     ["capitalize", { "text-transform": "capitalize" }],
     ["isolate", { isolation: "isolate" }],
   ],
+  content: {
+    pipeline: {
+      include: [
+        /\.(vue|svelte|[jt]sx|vine.ts|mdx?|astro|elm|php|phtml|marko|html)($|\?)/,
+        "src/**/*.{js,ts}",
+      ],
+    },
+  },
   presets: [
     presetWind4({
       preflights: {
