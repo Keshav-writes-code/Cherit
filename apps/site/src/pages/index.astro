@@ -32,9 +32,9 @@ let metadata: PageMetadata = {
   <Section4 />
 </SiteLayout>
 <script>
-  import { initScrollAnimation } from "@/lib/animate_on_scroll";
+  import { init_scroll_animation } from "@/lib/animate_on_scroll";
 
   document.addEventListener("astro:page-load", () => {
-    initScrollAnimation();
+    init_scroll_animation({ animation_classes: ["visible"] });
   });
 </script>
