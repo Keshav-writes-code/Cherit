@@ -1,12 +1,16 @@
-export function initScrollAnimation(
-  selector: string = ".animate-on-scroll",
-  animationClasses: string[] = ["visible"],
-) {
+// @unocss-include
+export function init_scroll_animation({
+  selector = ".animate-on-scroll",
+  animation_classes = ["visible"],
+}: {
+  selector?: string;
+  animation_classes?: string[];
+}) {
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add(...animationClasses);
+          entry.target.classList.add(...animation_classes);
           observer.unobserve(entry.target);
         }
       });
