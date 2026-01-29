@@ -23,6 +23,7 @@ export default defineConfig({
       "bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent",
     blob: "absolute bg-primary/20 rounded-full blur-3xl -z-10",
   },
+  safelist: ["visible"],
   rules: [
     ["capitalize", { "text-transform": "capitalize" }],
     ["isolate", { isolation: "isolate" }],
