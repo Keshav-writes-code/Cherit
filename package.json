@@ -1,5 +1,6 @@
 {
   "name": "cherit",
+  "license": "GPL-2.0",
   "private": true,
   "workspaces": [
     "apps/*"

@@ -14,8 +14,8 @@
     "windows": [
       {
         "title": "cherit",
-        "width": 800,
-        "height": 600,
+        "width": 1200,
+        "height": 900,
         "resizable": true,
         "fullscreen": false,
         "decorations": false
@@ -34,6 +34,13 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "linux": {
+      "deb": {
+        "files": {
+          "/usr/share/metainfo/io.github.keshav-writes-code.cherit.metainfo.xml": "../distribute/linux/flatpak/metainfo.xml"
+        }
+      }
+    }
   }
 }
