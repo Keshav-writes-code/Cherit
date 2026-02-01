@@ -1,0 +1,49 @@
+id: io.github.keshav-writes-code.cherit
+
+runtime: org.gnome.Platform
+runtime-version: '47'
+sdk: org.gnome.Sdk
+
+command: cherit
+finish-args:
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --share=ipc
+  - --share=network
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node20
+  - org.freedesktop.Sdk.Extension.rust-stable
+build-options:
+  append-path: /usr/lib/sdk/node20/bin:/usr/lib/sdk/rust-stable/bin
+
+modules:
+  - name: cherit
+    buildsystem: simple
+    env:
+      HOME: /run/build/cherit
+      CARGO_HOME: /run/build/cherit/src-tauri
+      XDG_CACHE_HOME: /run/build/cherit/flatpak-node/cache
+      yarn_config_offline: 'true'
+      yarn_config_cache: /run/build/cherit/flatpak-node/yarn-cache
+    sources:
+      - type: git
+        url: https://github.com/Keshav-writes-code/Cherit.git
+        branch: main
+      - cargo-sources.json
+      - node-sources.json
+    build-commands:
+      - echo -e 'yarn-offline-mirror "/run/build/cherit/flatpak-node/yarn-mirror"\nyarn-offline-mirror-pruning true' > /run/build/cherit/.yarnrc
+      - mkdir -p src-tauri/.cargo && echo -e '[source.crates-io]\nreplace-with = "vendored-sources"\n\n[source.vendored-sources]\ndirectory = "/run/build/cherit/cargo/vendor"' > ../../../src-tauri/.cargo/config.toml
+      - yarn install  --offline --immutable --immutable-cache --inline-builds
+      - yarn run tauri build -- -b deb
+      - ar -x ../../../src-tauri/target/release/bundle/deb/*.deb
+      - tar -xf ../../../src-tauri/target/release/bundle/deb/cherit/data.tar.gz
+      - install -Dm755 ../../../src-tauri/target/release/bundle/deb/cherit/data/usr/bin/your-command /app/bin/your-command
+      - install -Dm644 ../../../src-tauri/target/release/bundle/deb/cherit/data/usr/share/applications/cherit.desktop /app/share/applications/org.your.id.desktop
+      - install -Dm644 ../../../src-tauri/target/release/bundle/deb/cherit/data/usr/share/icons/hicolor/128x128/apps/cherit.png /app/share/icons/hicolor/128x128/apps/cherit.png
+      - install -Dm644 ../../../src-tauri/target/release/bundle/deb/cherit/data/usr/share/icons/hicolor/32x32/apps/cherit.png /app/share/icons/hicolor/32x32/apps/cherit.png
+      - install -Dm644 ../../../src-tauri/target/release/bundle/deb/cherit/data/usr/share/icons/hicolor/256x256@2/apps/cherit.png /app/share/icons/hicolor/512x512/apps/cherit.png
+      - install -Dm644 ../../../src-tauri/target/release/bundle/deb/cherit/data/usr/share/icons/hicolor/scalable/apps/cherit.svg /app/share/icons/hicolor/scalable/apps/cherit.svg
+
+      - install -Dm644 ../../../src-tauri/target/release/bundle/deb/cherit/data/usr/share/metainfo/org.your.id /app/share/metainfo/org.your.id
