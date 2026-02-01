@@ -38,7 +38,7 @@
     "linux": {
       "deb": {
         "files": {
-          "/usr/share/metainfo/org.your.id.metainfo.xml": "../distribute/linux/flatpak/metainfo.xml"
+          "/usr/share/metainfo/io.github.keshav-writes-code.cherit.metainfo.xml": "../distribute/linux/flatpak/metainfo.xml"
         }
       }
     }
