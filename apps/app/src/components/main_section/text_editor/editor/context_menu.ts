@@ -53,5 +53,10 @@ export function get_desktop_context_menu(view: EditorView): MenuItem[] {
         view.dispatch(view.state.replaceSelection(text));
       },
     },
+    {
+      label: 'Generate',
+      icon_class: 'i-tabler:sparkles size-4.5',
+      action: async () => {},
+    },
   ];
 }
