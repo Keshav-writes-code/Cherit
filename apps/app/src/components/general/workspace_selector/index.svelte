@@ -44,22 +44,10 @@
 <dialog open={workspace_picker_dialog_open_state.data} class="modal z-11">
   <div
     class="
-    {current_platform_type == 'desktop' && 'size-80% lt-sm:flex-col'}
+    {current_platform_type == 'desktop' && ' h-85% w-80% lt-sm:flex-col'}
     {current_platform_type == 'mobile' && 'size-100% lt-sm:flex-col-reverse '}
-    modal-box p-0 max-w-none flex max-w-250"
+    modal-box p-0 flex max-w-350 b-1 b-[color-mix(in_srgb,var(--color-base-content)_32%,black)]"
   >
-    <form method="dialog">
-      <button
-        class="btn btn-sm btn-circle btn-ghost absolute
-        {current_platform_type == 'mobile'
-          ? 'top-12 right-4'
-          : 'top-2 right-2'} "
-        onclick={() => (workspace_picker_dialog_open_state.data = false)}
-      >
-        ✕
-      </button>
-    </form>
-
     <div class="min-w-70 bg-base-content/10">
       {#if recent_workspaces.data.length}
         <ul
@@ -175,5 +163,16 @@
         {/if}
       </div>
     </div>
+    <form method="dialog">
+      <button
+        class="btn btn-sm btn-circle btn-ghost absolute
+        {current_platform_type == 'mobile'
+          ? 'top-12 right-4'
+          : 'top-2 right-2'} "
+        onclick={() => (workspace_picker_dialog_open_state.data = false)}
+      >
+        ✕
+      </button>
+    </form>
   </div>
 </dialog>
