@@ -7,7 +7,7 @@ import {
   opened_filenode,
   workspace_root_path,
 } from '@/lib/global_states/index.svelte';
-import { root_folder_picker_dialog_state } from '@/components/general/root_folder_selector/states.svelte';
+import { workspace_picker_dialog_open_state } from '@/components/general//workspace_selector/states.svelte';
 import { type Workspace, type GenericPath } from '@/types';
 import { LazyStore } from '@tauri-apps/plugin-store';
 import { toast } from 'svelte-sonner';
@@ -27,7 +27,7 @@ export async function update_workspace(
 ) {
   try {
     // Prerequisites
-    root_folder_picker_dialog_state.open = false;
+    workspace_picker_dialog_open_state.data = false;
     const { path, document_top_tree_uri, last_filenode_path } = new_workspace;
     if (old_workspace_root_path === path) return;
     reset_ui_states();
@@ -50,7 +50,7 @@ export async function update_workspace(
   } catch (e) {
     reset_ui_states();
     toast.error('Error Opening Folder: \n' + e);
-    root_folder_picker_dialog_state.open = true;
+    workspace_picker_dialog_open_state.data = true;
   }
 }
 

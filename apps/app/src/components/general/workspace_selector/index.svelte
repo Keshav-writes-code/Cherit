@@ -12,7 +12,7 @@
     opened_filenode,
     workspace_root_path,
   } from '@/lib/global_states/index.svelte';
-  import { root_folder_picker_dialog_state } from './states.svelte';
+  import { workspace_picker_dialog_open_state } from './states.svelte';
   import type { Workspace } from '@/types';
   import { onMount } from 'svelte';
   import { show_folder_picker } from '@/lib/file_system/picker_dialog';
@@ -24,27 +24,24 @@
 
   onMount(async () => {
     const raw = (await user_activity.get<Workspace[]>('recent_paths')) ?? [];
-    if (!raw.length) return (root_folder_picker_dialog_state.open = true);
+    if (!raw.length) return (workspace_picker_dialog_open_state.data = true);
 
     const { data, success } = RecentWorkspaces.safeParse(raw);
     if (!success) {
       await user_activity.clear();
-      root_folder_picker_dialog_state.open = true;
+      workspace_picker_dialog_open_state.data = true;
       return;
     }
     const recent_workspace = get_most_recent_workspace(data);
-    if (!recent_workspace) return (root_folder_picker_dialog_state.open = true);
+    if (!recent_workspace)
+      return (workspace_picker_dialog_open_state.data = true);
 
     recent_workspaces.data = data;
     update_workspace(undefined, { ...recent_workspace });
   });
 </script>
 
-<dialog
-  id="my_modal_1"
-  open={root_folder_picker_dialog_state.open}
-  class="modal z-11"
->
+<dialog open={workspace_picker_dialog_open_state.data} class="modal z-11">
   <div
     class="
     {current_platform_type == 'desktop' && 'size-80% lt-sm:flex-col'}
@@ -57,7 +54,7 @@
         {current_platform_type == 'mobile'
           ? 'top-12 right-4'
           : 'top-2 right-2'} "
-        onclick={() => (root_folder_picker_dialog_state.open = false)}
+        onclick={() => (workspace_picker_dialog_open_state.data = false)}
       >
         ✕
       </button>

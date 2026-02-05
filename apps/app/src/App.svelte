@@ -1,5 +1,5 @@
 <script lang="ts">
-  import RootFolderSelector from '@/components/general/root_folder_selector/index.svelte';
+  import RootFolderSelector from '@/components/general/workspace_selector/index.svelte';
   import Sidebar from '@/components/sidebar_section/index.svelte';
   import GlobalContextMenu from '@/components/general/context_menu/index.svelte';
   import { Toaster } from 'svelte-sonner';

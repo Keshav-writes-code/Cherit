@@ -1,6 +1,6 @@
 <script lang="ts">
   import { workspace_root_path } from '@/lib/global_states/index.svelte';
-  import { root_folder_picker_dialog_state } from '@/components/general/root_folder_selector/states.svelte';
+  import { workspace_picker_dialog_open_state } from '@/components/general/workspace_selector/states.svelte';
 </script>
 
 <div
