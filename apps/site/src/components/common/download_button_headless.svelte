@@ -74,7 +74,7 @@
 </script>
 
 <div class="join">
-  <a href={config.main.url} class="{classes} join-item" target="_blank">
+  <a href={config.main.url} class="{classes} join-item">
     {#if children}{@render children()}{/if}
     <span class="ml-2"
       >{config.main.label
@@ -93,7 +93,7 @@
         class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-100"
       >
         {#each config.others as item}
-          <li><a href={item.url} target="_blank">{item.label}</a></li>
+          <li><a href={item.url}>{item.label}</a></li>
         {/each}
       </ul>
     </div>
