@@ -49,7 +49,7 @@ const download_count_server = get_total_downloads(gh_releases_metadata);
   <section class="section-container mt-20">
     <DownloadBtnHeadless
       client:load
-      class="btn btn-primary btn-md lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 [transition-property:_scale,_background] duration-300"
+      class="btn btn-primary btn-md lg:btn-lg xl:btn-xl group flex justify-center hover:scale-103 [transition-property:_scale,_background] duration-300 download-btn"
     />
     <div class="divider my-30">OR</div>
     <div
@@ -103,8 +103,6 @@ const download_count_server = get_total_downloads(gh_releases_metadata);
 </SiteLayout>
 
 <script define:vars={{ owner, repo, download_count_server }} is:inline>
-  const download_count_elem = document.getElementById("downloads_count");
-  if (!download_count_elem) return;
   const get_total_downloads = (data) =>
     Array.isArray(data)
       ? data.reduce(
@@ -118,13 +116,30 @@ const download_count_server = get_total_downloads(gh_releases_metadata);
         )
       : 0;
 
+  const download_count_elem = document.getElementById("downloads_count");
+  if (!download_count_elem) return;
+  let download_count = 0;
+
   fetch(`https://api.github.com/repos/${owner}/${repo}/releases`)
     .then((v) => v.json())
     .then((releases_info) => {
-      const download_count = get_total_downloads(releases_info);
-      if (download_count)
+      download_count += get_total_downloads(releases_info);
+      if (download_count) {
         download_count_elem.style.setProperty("--value", download_count);
-      else
+      } else {
+        download_count = download_count_server;
         download_count_elem.style.setProperty("--value", download_count_server);
+      }
+    })
+    .catch(() => {
+      download_count = download_count_server;
+      download_count_elem.style.setProperty("--value", download_count_server);
     });
+  const buttons = document.querySelectorAll(".download-btn");
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      download_count++;
+      download_count_elem.style.setProperty("--value", download_count);
+    });
+  });
 </script>
