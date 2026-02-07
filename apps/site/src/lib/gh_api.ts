@@ -18,3 +18,17 @@ export async function call_gh_api(path?: string) {
   );
   return await res.json();
 }
+
+export function get_total_downloads(data: any): number {
+  return Array.isArray(data)
+    ? data.reduce(
+        (acc, release) =>
+          acc +
+          release.assets.reduce(
+            (sum: number, asset: any) => sum + asset.download_count,
+            0,
+          ),
+        0,
+      )
+    : 0;
+}
