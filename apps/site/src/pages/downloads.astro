@@ -3,7 +3,9 @@ import SiteLayout from "@/layout/SiteLayout.astro";
 import PagetopBG from "@/components/common/pagetop_background.html";
 import DownloadBtnHeadless from "@/components/common/download_button_headless.svelte";
 import type { PageMetadata } from "@/types";
-import { file, call_gh_api, owner, repo } from "@/lib/gh_api.ts";
+import { call_gh_api, get_total_downloads, owner, repo } from "@/lib/gh_api.ts";
+import { platforms } from "@/lib/download_links.ts";
+import prettyBytes from "pretty-bytes";
 
 let metadata: PageMetadata = {
   title: "Downloads",
@@ -20,68 +22,9 @@ let metadata: PageMetadata = {
       "Native performance on every platform. Markdown native, offline-first, and completely private.",
   },
 };
-type Platform = {
-  label: string;
-  icon: string;
-  binaries: { label: string; link: string }[];
-};
 
-let platforms: Platform[] = [
-  {
-    label: "windows",
-    icon: "i-tabler:brand-windows-filled",
-    binaries: [
-      { label: "EXE x64 (Installer)", link: file("windows-x64.exe") },
-      { label: "EXE arm64 (Installer)", link: file("windows-arm64.exe") },
-      { label: "MSI x64 (Installer)", link: file("windows-x64.msi") },
-      { label: "MSI arm64 (Installer)", link: file("windows-arm64.msi") },
-    ],
-  },
-  {
-    label: "macos",
-    icon: "i-tabler:brand-apple-filled",
-    binaries: [
-      { label: "DMG (x64)", link: file("darwin-x64.dmg") },
-      { label: "DMG (Apple Silicon)", link: file("darwin-aarch64.dmg") },
-    ],
-  },
-  {
-    label: "linux",
-    icon: "i-mdi:linux",
-    binaries: [
-      { label: "Deb x86_64", link: file("linux-amd64.deb") },
-      { label: "Deb arm64", link: file("linux-arm64.deb") },
-      { label: "Rpm x86_64", link: file("linux-x86_64.rpm") },
-      { label: "Rpm arm64", link: file("linux-aarch64.rpm") },
-      { label: "AppImage x86_64", link: file("linux-amd64.AppImage") },
-      { label: "AppImage arm64", link: file("linux-aarch64.AppImage") },
-    ],
-  },
-  {
-    label: "android",
-    icon: "i-mdi:android",
-    binaries: [
-      { label: "APK (aarch64)", link: file("android-arm64.apk") },
-      { label: "APK (armv7)", link: file("android-arm.apk") },
-    ],
-  },
-  { label: "IOS", icon: "i-mdi:apple-ios", binaries: [] },
-];
-
-const get_total_downloads = (data: any): number =>
-  Array.isArray(data)
-    ? data.reduce(
-        (acc, release) =>
-          acc +
-          release.assets.reduce(
-            (sum: number, asset: any) => sum + asset.download_count,
-            0,
-          ),
-        0,
-      )
-    : 0;
-const releases_info = await call_gh_api("/releases");
-const download_count_server = get_total_downloads(releases_info);
+const gh_releases_metadata = await call_gh_api("/releases");
+const download_count_server = get_total_downloads(gh_releases_metadata);
 ---
 
 <SiteLayout page_metadata={metadata} class="grid place-items-center">
@@ -131,13 +74,23 @@ const download_count_server = get_total_downloads(releases_info);
                   (!binaries.length && (
                     <p>No Build for {label} Available for now</p>
                   ))}
-                {binaries.map(({ label: text, link }) => (
+                {binaries.map(({ ext, arch, size, link }) => (
                   <a
                     href={link}
-                    class="btn max-h-none h-full p-y-2 sm:btn-md lg:btn-lg"
+                    class="btn flex flex-wrap justify-start max-h-none h-full py-2 sm:btn-md lg:btn-lg download-btn "
                   >
-                    {text}
-                    <div class="i-tabler:download size-4 color-gray" />
+                    <p class="capitalize font-bold">{ext}</p>
+                    <p class="text-md color-[color-mix(in_srgb,var(--color-base-content)_80%,black)] ">
+                      {arch}
+                    </p>
+                    {size && (
+                      <p class=" ml-auto lt-sm:hidden color-[color-mix(in_srgb,var(--color-base-content)_80%,black)]">
+                        {prettyBytes(size)}
+                      </p>
+                    )}
+                    <span class="lt-sm:ml-auto mask mask-squircle bg-[color-mix(in_srgb,var(--color-base-content)_30%,black)] lt-sm:p-1 p-1.5">
+                      <div class="i-tabler:download justify-self-end lt-sm:size-4 size-5 color-gray" />
+                    </span>
                   </a>
                 ))}
               </div>
