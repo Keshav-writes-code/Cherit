@@ -11,7 +11,9 @@ type Platform = {
     link: string;
   }[];
 };
-const gh_relases_latest_metadata = (await call_gh_api("/releases/latest")) as {
+export const gh_relases_latest_metadata = (await call_gh_api(
+  "/releases/latest",
+)) as {
   assets: { name: string; size: number }[];
 };
 
