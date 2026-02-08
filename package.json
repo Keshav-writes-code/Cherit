@@ -27,6 +27,7 @@
     "@codemirror/view": "^6.39.11",
     "@lezer/markdown": "^1.6.3",
     "@prosemark/core": "^0.0.4",
-    "@prosemark/render-html": "^0.0.5"
+    "@prosemark/render-html": "^0.0.5",
+    "@tauri-apps/api": "^2.10.1"
   }
 }
