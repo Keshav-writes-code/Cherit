@@ -49,7 +49,10 @@ export default defineConfig({
       processors: createLocalFontProcessor({
         cacheDir: "node_modules/.cache/unocss/fonts",
         fontAssetsDir: "public/assets/fonts",
-        fontServeBaseUrl: "/assets/fonts",
+        fontServeBaseUrl:
+          import.meta.env.NODE_ENV == "development"
+            ? "assets/fonts"
+            : "/assets/fonts",
       }),
     }),
   ],
