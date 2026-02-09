@@ -45,6 +45,16 @@ export default defineConfig({
         sans: "Satoshi",
         recoleta: "Recoleta-Regular",
         nightingale: "DTNightingale",
+        mono: {
+          name: "Anonymous Pro",
+          weights: ["400"],
+          provider: "fontsource",
+        },
+        mono2: {
+          name: "Xanh Mono",
+          weights: ["400"],
+          provider: "fontsource",
+        },
       },
       processors: createLocalFontProcessor({
         cacheDir: "node_modules/.cache/unocss/fonts",
