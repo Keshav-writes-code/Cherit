@@ -39,8 +39,10 @@ const download_count_server = get_total_downloads(gh_releases_metadata);
       >
         <p class="text-xs text-[var(--color-base-content)]/60">Version</p>
 
-        <div
-          class="flex items-center h-max py-1 px-4 badge badge-outline bg-primary/30 badge-primary badge-xl gap-3 mt-0"
+        <a
+          href="https://github.com/keshav-writes-code/cherit/releases/latest/"
+          target="_blank"
+          class="flex items-center h-max py-1 px-4 badge badge-outline bg-primary/30 badge-primary badge-xl gap-3 mt-0 hover:scale-102 duration-300"
         >
           <Image
             width={25}
@@ -58,7 +60,7 @@ const download_count_server = get_total_downloads(gh_releases_metadata);
               )
             }</span
           >
-        </div>
+        </a>
       </div>
       <div class="p-5 gap-4 flex flex-col">
         <p class="text-xs text-[var(--color-base-content)]/60">
