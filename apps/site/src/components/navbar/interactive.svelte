@@ -55,7 +55,7 @@
     <div class=" flex items-center gap-2 justify-self-end lt-md:hidden">
       <a
         href="https://github.com/Keshav-writes-code/Cherit"
-        class="btn btn-ghost flex items-center"
+        class="btn btn-ghost flex items-center font-mono"
         target="_blank"
       >
         <div class="i-mdi:github size-5.5"></div>

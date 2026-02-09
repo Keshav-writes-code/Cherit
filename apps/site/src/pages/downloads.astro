@@ -51,7 +51,7 @@ const download_count_server = get_total_downloads(gh_releases_metadata);
             slot="logo"
             loading="eager"
           />
-          <span>
+          <span class="font-mono font-bold lt-sm:text-sm -tracking-0.09em">
             {
               gh_relases_latest_metadata.tag_name.substring(
                 gh_relases_latest_metadata.tag_name.search(/\d/),
@@ -66,10 +66,10 @@ const download_count_server = get_total_downloads(gh_releases_metadata);
         </p>
 
         <div class="flex justify-between">
-          <span class="countdown font-bold text-2.5rem">
+          <span class="countdown font-bold lt-sm:text-2rem text-2.5rem">
             <span
               style=`--value:0;`
-              class="font-mono"
+              class="font-mono2"
               id="downloads_count"
               aria-live="polite"></span>
           </span>
@@ -119,8 +119,8 @@ const download_count_server = get_total_downloads(gh_releases_metadata);
                       {arch}
                     </p>
                     {size && (
-                      <p class=" ml-auto lt-sm:hidden color-[color-mix(in_srgb,var(--color-base-content)_80%,black)]">
                         {prettyBytes(size)}
+                      <p class=" ml-auto lt-sm:hidden color-[color-mix(in_srgb,var(--color-base-content)_80%,black)]  font-light font-mono ">
                       </p>
                     )}
                     <span class="lt-sm:ml-auto mask mask-squircle bg-[color-mix(in_srgb,var(--color-base-content)_30%,black)] lt-sm:p-1 p-1.5">
