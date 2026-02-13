@@ -15,11 +15,11 @@ let { class: classes } = Astro.props;
       </p>
     </div>
 
-    <div
-      class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center animate-on-scroll"
-    >
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
       <!-- Standard App -->
-      <div class="card bg-base-200/20 p-8 border border-white/5">
+      <div
+        class="card bg-base-200/20 p-8 border border-white/5 animate-on-scroll delay-100"
+      >
         <h3 class="text-2xl font-bold mb-4 flex items-center gap-2 opacity-50">
           <iconify-icon icon="tabler:turtle" class="text-error"></iconify-icon>
           Standard "Modern" App
@@ -40,7 +40,7 @@ let { class: classes } = Astro.props;
 
       <!-- Cherit -->
       <div
-        class="card bg-base-200 border border-primary p-8 shadow-2xl shadow-primary/10 relative overflow-visible"
+        class="card bg-base-200 border border-primary p-8 shadow-2xl shadow-primary/10 relative overflow-visible animate-on-scroll delay-200"
       >
         <div
           class="absolute -top-4 -right-4 badge badge-primary badge-lg rotate-12"
