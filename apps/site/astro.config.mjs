@@ -11,6 +11,7 @@ import starlightSidebarTopics from "starlight-sidebar-topics";
 import mdx from "@astrojs/mdx";
 
 export default defineConfig({
+  prefetch: true,
   integrations: [
     UnoCSS(),
     svelte(),
