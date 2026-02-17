@@ -2,6 +2,8 @@ name: 'app-build-release'
 
 on:
   pull_request:
+    branches:
+      - main
     paths:
       - 'apps/app/**'
       - '.github/workflows/tauri-build-release.yml'
