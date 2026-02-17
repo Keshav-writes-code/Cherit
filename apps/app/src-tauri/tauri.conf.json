@@ -7,7 +7,7 @@
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
     "beforeDevCommand": "bun dev --host",
-    "beforeBuildCommand": "bun run build",
+    "beforeBuildCommand": "vite build",
     "removeUnusedCommands": true
   },
   "app": {
@@ -37,8 +37,9 @@
     ],
     "linux": {
       "deb": {
+        "desktopTemplate": "../distribute/linux/cherit.desktop",
         "files": {
-          "/usr/share/metainfo/io.github.keshav-writes-code.cherit.metainfo.xml": "../distribute/linux/flatpak/metainfo.xml"
+          "/usr/share/metainfo/io.github.keshav_writes_code.cherit.metainfo.xml": "../distribute/linux/flatpak/metainfo.xml"
         }
       }
     }

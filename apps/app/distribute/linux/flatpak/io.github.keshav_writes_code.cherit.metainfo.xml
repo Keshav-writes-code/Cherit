@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-    <id>io.github.keshav-writes-code.cherit</id>
-    <launchable type="desktop-id">io.github.keshav-writes-code.cherit.desktop</launchable>
+    <id>io.github.keshav_writes_code.cherit</id>
+    <launchable type="desktop-id">io.github.keshav_writes_code.cherit.desktop</launchable>
+    <icon type="stock">io.github.keshav_writes_code.cherit</icon>
+    <categories>
+        <category>Office</category>
+        <category>TextEditor</category>
+    </categories>
     <name>Cherit</name>
-    <developer id="io.github.keshav-writes-code">
+    <developer id="io.github.keshav_writes_code">
         <name>Keshav-writes-code</name>
     </developer>
     <content_rating type="oars-1.1">
@@ -22,10 +27,10 @@
     <recommends>
         <display_length compare="ge">360</display_length>
     </recommends>
-    <summary>A WSYIWYG Markdown Editor Inspired by Obsidian</summary>
+    <summary>A WYSIWYG Markdown Editor Inspired by Obsidian</summary>
 
     <metadata_license>MIT</metadata_license>
-    <project_license>GPL-2.0</project_license>
+    <project_license>GPL-2.0-only</project_license>
     <url type="homepage">https://github.com/Keshav-writes-code/Cherit</url>
 
     <supports>
@@ -50,7 +55,7 @@
         </screenshot>
     </screenshots>
     <releases>
-        <release version="0.0.1" date="2026-02-01" >
+        <release version="0.0.1" date="2026-02-01">
             <description>
             <ul>
                 <li>Initial release</li>
