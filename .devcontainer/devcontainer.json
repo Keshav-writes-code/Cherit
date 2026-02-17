@@ -1,0 +1,16 @@
+{
+  "build": { "dockerfile": "Dockerfile" },
+  "runArgs": ["--privileged"],
+  "features": {
+    "ghcr.io/shyim/devcontainers-features/bun:0": {},
+    "ghcr.io/stu-bell/devcontainer-features/node:0": {
+      "version": "22.12"
+    },
+    "ghcr.io/devcontainers/features/rust:1": {},
+    "ghcr.io/meaningful-ooo/devcontainer-features/fish:2": {},
+    "ghcr.io/prulloac/devcontainer-features/chezmoi:1": {},
+      "ghcr.io/devcontainers/features/sshd:1": {
+        "version": "latest"
+    }
+  }
+}
