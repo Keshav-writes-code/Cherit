@@ -1,0 +1,7 @@
+[Desktop Entry]
+Categories=Office;TextEditor;
+Name=cherit
+Exec=cherit
+Icon=io.github.keshav_writes_code.cherit
+Terminal=false
+Type=Application
