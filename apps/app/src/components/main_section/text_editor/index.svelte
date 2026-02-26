@@ -36,7 +36,7 @@
 </script>
 
 <div
-  class="w-full isolate px-8 flex justify-center flex-1 overflow-auto
+  class="w-full isolate px-8 flex justify-center flex-1 overflow-auto scrollbar-setup
 {current_platform_type == 'mobile' && 'pt-22'}
   "
 >

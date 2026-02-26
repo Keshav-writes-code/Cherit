@@ -127,7 +127,7 @@
     onscroll={() => {
       context_menu.close();
     }}
-    class="
+    class=" scrollbar-setup
       {focused_directory_path == workspace_root_path.data.path &&
       'shadow-[inset_0_0_0_1px_var(--color-accent)]'}
       {drop_target === workspace_root_path.data?.path &&

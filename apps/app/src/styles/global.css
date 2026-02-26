@@ -6,3 +6,11 @@ body {
   --color-primary: oklch(0.5727 0.1808 294.1);
   --noise: 1;
 }
+.scrollbar-setup::-webkit-scrollbar-thumb {
+  border: 4px solid transparent;
+  background-clip: padding-box;
+}
+.scrollbar-setup::-webkit-scrollbar-thumb:hover {
+  --scrollbar-thumb: color-mix(in srgb, var(--color-base-content) 47%, black);
+  border: 3.5px solid transparent;
+}
