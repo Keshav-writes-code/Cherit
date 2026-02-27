@@ -1,5 +1,6 @@
 <script lang="ts">
   import { openUrl } from '@tauri-apps/plugin-opener';
+  import { fade } from 'svelte/transition';
   import { z } from 'zod';
 
   let {
@@ -40,7 +41,7 @@
 </script>
 
 <dialog class="modal" open={models_list_dialog_open}>
-  <div class="modal-box max-h-140 flex flex-col">
+  <div class="modal-box max-h-140 h-full flex flex-col">
     <h3 class="font-bold text-lg mb-4">Select Model</h3>
 
     {#if model_provider}
@@ -48,7 +49,7 @@
       <ul class="menu flex-nowrap w-full min-h-0 h-full overflow-y-auto">
         {#each models as model (model.id)}
           {@const model_id_stripped = model.id.split('/')[1]}
-          <li>
+          <li transition:fade={{ duration: 100 }}>
             <button
               onclick={() => {
                 models_list_dialog_open = false;
@@ -63,7 +64,12 @@
           {:else if models && !models.length}
             No models found for {model_provider}
           {:else}
-            Fetching from internet
+            <div class="size-full grid place-items-center">
+              <span class="flex gap-3"
+                >Fetching from internet
+                <span class="loading loading-spinner loading-xs"></span></span
+              >
+            </div>
           {/if}
         {/each}
       </ul>
