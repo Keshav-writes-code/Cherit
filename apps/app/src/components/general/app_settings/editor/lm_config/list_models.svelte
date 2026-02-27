@@ -38,6 +38,7 @@
       }
     })
     .catch((e) => (fetch_failed = true));
+  $inspect(models);
 </script>
 
 <dialog class="modal" open={models_list_dialog_open}>
@@ -46,7 +47,9 @@
 
     {#if model_provider}
       <!-- content here -->
-      <ul class="menu flex-nowrap w-full min-h-0 h-full overflow-y-auto">
+      <ul
+        class="menu flex-nowrap w-full min-h-0 h-full overflow-y-auto scrollbar-setup"
+      >
         {#each models as model (model.id)}
           {@const model_id_stripped = model.id.split('/')[1]}
           <li transition:fade={{ duration: 100 }}>
