@@ -18,7 +18,7 @@
   <label
     class="tab duration-200 ease-[cubic-bezier(0.25,1,0.5,1)] hover:color-white transition-all flex gap-1 py-3 px-5 h-max items-center capitalize"
   >
-    <input type="radio" name="infrence_selector" checked={true} />
+    <input type="radio" name="infrence_selector" />
     <div class="i-tabler:cloud size-5"></div>
     <span class=" ">Cloud Infrence</span>
   </label>

@@ -14,8 +14,10 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_android_fs::init())
         .plugin(tauri_plugin_safe_area_insets_css::init())
+        .plugin(tauri_plugin_llm::init())
         .invoke_handler(tauri::generate_handler![
             tasks::file_system_stuff::build_file_tree,
+            tasks::lm_management::download_and_load_model,
             #[cfg(target_os = "android")]
             tasks::file_system_stuff::android::rename_file_android,
             #[cfg(target_os = "android")]
