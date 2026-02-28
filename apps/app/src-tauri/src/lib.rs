@@ -1,4 +1,4 @@
-mod tauri_commands;
+mod tasks;
 
 #[cfg(all(test, not(target_os = "android")))]
 mod desktop_test;
@@ -15,15 +15,15 @@ pub fn run() {
         .plugin(tauri_plugin_android_fs::init())
         .plugin(tauri_plugin_safe_area_insets_css::init())
         .invoke_handler(tauri::generate_handler![
-            tauri_commands::file_system_stuff::build_file_tree,
+            tasks::file_system_stuff::build_file_tree,
             #[cfg(target_os = "android")]
-            tauri_commands::file_system_stuff::android::rename_file_android,
+            tasks::file_system_stuff::android::rename_file_android,
             #[cfg(target_os = "android")]
-            tauri_commands::file_system_stuff::android::move_file_android,
+            tasks::file_system_stuff::android::move_file_android,
             #[cfg(target_os = "android")]
-            tauri_commands::file_system_stuff::android::rename_directory_android,
+            tasks::file_system_stuff::android::rename_directory_android,
             #[cfg(target_os = "android")]
-            tauri_commands::file_system_stuff::android::move_directory_android
+            tasks::file_system_stuff::android::move_directory_android
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {
