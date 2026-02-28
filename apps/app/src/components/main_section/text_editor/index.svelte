@@ -92,10 +92,10 @@
       }}
     />
   </div>
+  {#if current_platform_type == 'mobile'}
+    <FloatingActionButton />
+  {/if}
 </div>
-{#if current_platform_type == 'mobile'}
-  <FloatingActionButton />
-{/if}
 
 {#if current_platform_type == 'mobile' && mobile_toolbar_visible && editor_view.data}
   <MobileToolbar editor_view={editor_view.data} />
