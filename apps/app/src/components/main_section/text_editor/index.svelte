@@ -6,6 +6,7 @@
   import { toast } from 'svelte-sonner';
   import Editor from './editor/index.svelte';
   import MobileToolbar from './editor_toolbar_mobile/index.svelte';
+  import FloatingActionButton from './fab/index.svelte';
   import { editor_view } from './editor_state.svelte';
   import { focused_subtree } from '@/components/sidebar_section/file_manager/states.svelte';
 
@@ -91,6 +92,9 @@
       }}
     />
   </div>
+  {#if current_platform_type == 'mobile'}
+    <FloatingActionButton />
+  {/if}
 </div>
 
 {#if current_platform_type == 'mobile' && mobile_toolbar_visible && editor_view.data}

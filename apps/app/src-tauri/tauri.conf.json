@@ -35,5 +35,14 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "llm": {
+      "llmconfig": {
+        "name": "",
+        "tokenizer_file": "",
+        "model_file": ""
+      }
+    }
   }
 }

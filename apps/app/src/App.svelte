@@ -1,9 +1,10 @@
 <script lang="ts">
-  import RootFolderSelector from '@/components/general/root_folder_selector/index.svelte';
+  import RootFolderSelector from '@/components/general/workspace_selector/index.svelte';
   import Sidebar from '@/components/sidebar_section/index.svelte';
   import GlobalContextMenu from '@/components/general/context_menu/index.svelte';
   import { Toaster } from 'svelte-sonner';
   import Main from '@/components/main_section/index.svelte';
+  import AppSettings from '@/components/general/app_settings/index.svelte';
   import { attach_window_listeners } from '@/lib/window_listeners';
   import { drawer_open } from '@/lib/global_states/index.svelte';
   $effect(() => {
@@ -16,6 +17,7 @@
   class="drawer select-none h-full lg:drawer-open selection:bg-[rgb(from_var(--color-accent)_r_g_b_/_0.2)] isolate"
 >
   <RootFolderSelector />
+  <AppSettings />
   <input
     id="my-drawer-3"
     type="checkbox"

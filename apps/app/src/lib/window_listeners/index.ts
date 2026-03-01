@@ -1,4 +1,4 @@
-import { touch_recent_workspaces } from '@/components/general/root_folder_selector/operations.svelte';
+import { touch_recent_workspaces } from '@/components/general/workspace_selector/operations.svelte';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
 import {
