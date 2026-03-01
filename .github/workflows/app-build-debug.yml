@@ -38,7 +38,7 @@ jobs:
           - platform: 'windows-11-arm'
             args: '--debug'
           - platform: 'ubuntu-22.04'
-            args: '--apk true --split-per-abi --target aarch64 --target armv7 --debug'
+            args: '--apk --split-per-abi --target aarch64 --target armv7 --debug'
             mobile: 'android'
     runs-on: ${{ matrix.platform }}
     steps:
@@ -121,7 +121,7 @@ jobs:
 
       # ---------------- Tauri -----------------
       - name: Build Tauri Project
-        uses: tauri-apps/tauri-action@e3ec38d49ea445df6d61ebaf015a85b1846b63f3
+        uses: tauri-apps/tauri-action@8236c82510173ef930d644f38790c4cf3fd43cf2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
