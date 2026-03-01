@@ -27,6 +27,7 @@
 
     console.log(JSON.parse(configJson));
     await listener.addConfiguration(configJson);
+    await listener.switchModel('Qwen/Qwen3-4B-Instruct-2507');
   }}
   class="btn">Download and Load</button
 >
