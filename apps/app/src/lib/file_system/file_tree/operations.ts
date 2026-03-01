@@ -224,17 +224,15 @@ export async function rename_node({
     try {
       let new_path = '';
       if (node.is_directory) {
-        new_path = await invoke<string>('rename_directory_android', {
-          uri: node.path,
-          newName: new_name, // Directory name doesn't need extension
-          documentTopTreeUri: document_top_tree_uri,
-        });
+        ({ uri: new_path } = await AndroidFs.renameDir(
+          { uri: node.path, documentTopTreeUri: document_top_tree_uri },
+          final_name
+        ));
       } else {
-        new_path = await invoke<string>('rename_file_android', {
-          uri: node.path,
-          newName: final_name,
-          documentTopTreeUri: document_top_tree_uri,
-        });
+        ({ uri: new_path } = await AndroidFs.renameFile(
+          { uri: node.path, documentTopTreeUri: document_top_tree_uri },
+          final_name
+        ));
       }
 
       // Update node

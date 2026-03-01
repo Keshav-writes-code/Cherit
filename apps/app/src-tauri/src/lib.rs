@@ -38,8 +38,7 @@ fn build_tree_recursive_desktop(path_str: &str) -> std::io::Result<Vec<FileNode>
     use std::fs;
 
     // Collect entries first to handle errors and prepare for parallel iteration
-    let entries = fs::read_dir(path_str)?
-        .collect::<Result<Vec<_>, std::io::Error>>()?;
+    let entries = fs::read_dir(path_str)?.collect::<Result<Vec<_>, std::io::Error>>()?;
 
     let nodes = entries
         .into_par_iter()
@@ -208,46 +207,6 @@ async fn build_file_tree(
 }
 
 #[cfg(target_os = "android")]
-async fn rename_file_android_impl(
-    app: tauri::AppHandle,
-    uri: String,
-    new_name: String,
-    document_top_tree_uri: Option<String>,
-) -> Result<String, String> {
-    use tauri_plugin_android_fs::AndroidFsExt;
-    use tauri_plugin_android_fs::FileUri;
-
-    let app_clone = app.clone();
-    
-    // 1. Derive parent URI for return value
-    let parent_uri = match uri.rsplit_once("%2F") {
-        Some((parent, _)) => parent.to_string(),
-        None => {
-            return Err("Could not determine parent URI from path".to_string());
-        }
-    };
-
-    let new_name_clone = new_name.clone();
-    tauri::async_runtime::spawn_blocking(move || {
-        let api = app_clone.android_fs();
-        let source_json = serde_json::json!({
-            "uri": uri,
-            "documentTopTreeUri": document_top_tree_uri
-        });
-        let source_file_uri = FileUri::from_json_str(&source_json.to_string())
-            .map_err(|e| format!("Failed to create Source FileUri: {}", e))?;
-
-        api.rename(&source_file_uri, &new_name_clone)
-            .map_err(|e| format!("Failed to rename file: {}", e))?;
-            
-        Ok::<(), String>(())
-    }).await.map_err(|e| e.to_string())??;
-
-    let new_constructed_path = format!("{}%2F{}", parent_uri, urlencoding::encode(&new_name));
-    Ok(new_constructed_path)
-}
-
-#[cfg(target_os = "android")]
 async fn move_file_android_impl(
     app: tauri::AppHandle,
     uri: String,
@@ -330,7 +289,8 @@ fn move_recursive_sync<R: tauri::Runtime>(
         let source_file_uri = FileUri::from_json_str(&source_json.to_string())
             .map_err(|e| format!("Failed to create Source FileUri: {}", e))?;
 
-        let content = api.read(&source_file_uri)
+        let content = api
+            .read(&source_file_uri)
             .map_err(|e| format!("Failed to read source file: {}", e))?;
 
         let parent_json = serde_json::json!({
@@ -356,7 +316,11 @@ fn move_recursive_sync<R: tauri::Runtime>(
         api.remove_file(&source_file_uri)
             .map_err(|e| format!("Failed to delete source file: {}", e))?;
 
-        let new_constructed_path = format!("{}%2F{}", target_parent_uri, urlencoding::encode(&target_name));
+        let new_constructed_path = format!(
+            "{}%2F{}",
+            target_parent_uri,
+            urlencoding::encode(&target_name)
+        );
         Ok(new_constructed_path)
     } else {
         let parent_json = serde_json::json!({
@@ -367,10 +331,15 @@ fn move_recursive_sync<R: tauri::Runtime>(
             .map_err(|e| format!("Failed to create Parent FileUri: {}", e))?;
 
         // create_dir_all is the available method for creating directories
-        let _ = api.create_dir_all(&parent_file_uri, &target_name)
-             .map_err(|e| format!("Failed to create new directory: {}", e))?;
-        
-        let new_dir_path_str = format!("{}%2F{}", target_parent_uri, urlencoding::encode(&target_name));
+        let _ = api
+            .create_dir_all(&parent_file_uri, &target_name)
+            .map_err(|e| format!("Failed to create new directory: {}", e))?;
+
+        let new_dir_path_str = format!(
+            "{}%2F{}",
+            target_parent_uri,
+            urlencoding::encode(&target_name)
+        );
 
         let source_json = serde_json::json!({
             "uri": source_uri,
@@ -378,22 +347,23 @@ fn move_recursive_sync<R: tauri::Runtime>(
         });
         let source_file_uri = FileUri::from_json_str(&source_json.to_string())
             .map_err(|e| format!("Failed to create Source FileUri: {}", e))?;
-        
-        let entries = api.read_dir(&source_file_uri)
+
+        let entries = api
+            .read_dir(&source_file_uri)
             .map_err(|e| format!("Failed to read source directory: {}", e))?;
 
         for entry in entries {
             let child_name = entry.name().to_string();
             let child_is_dir = entry.is_dir();
             let child_source_uri = format!("{}%2F{}", source_uri, urlencoding::encode(&child_name));
-            
+
             move_recursive_sync(
                 api,
                 child_source_uri,
                 new_dir_path_str.clone(),
                 child_name,
                 document_top_tree_uri.clone(),
-                child_is_dir
+                child_is_dir,
             )?;
         }
 
@@ -401,59 +371,6 @@ fn move_recursive_sync<R: tauri::Runtime>(
             .map_err(|e| format!("Failed to remove source directory: {}", e))?;
 
         Ok(new_dir_path_str)
-    }
-}
-
-#[tauri::command]
-async fn rename_directory_android(
-    app: tauri::AppHandle,
-    uri: String,
-    new_name: String,
-    document_top_tree_uri: Option<String>,
-) -> Result<String, String> {
-    #[cfg(target_os = "android")]
-    {
-        use tauri_plugin_android_fs::AndroidFsExt;
-        use tauri_plugin_android_fs::FileUri;
-        
-        let app_clone = app.clone();
-        // We need parent URI to construct the new path string at the end?
-        // Actually, if we rename, the ID usually stays the same in SAF, but the path string we use in the app (uri based)
-        // might depend on the name if we constructed it using name.
-        // In `build_tree_recursive_android`, we construct path as `parent_uri + encoded_name`.
-        // So yes, we need to return the new constructed path.
-        
-        let parent_uri = match uri.rsplit_once("%2F") {
-            Some((parent, _)) => parent.to_string(),
-            None => return Err("Could not determine parent URI".to_string()),
-        };
-
-        let new_name_clone = new_name.clone();
-        tauri::async_runtime::spawn_blocking(move || {
-            let api = app_clone.android_fs();
-            
-            let source_json = serde_json::json!({
-                "uri": uri,
-                "documentTopTreeUri": document_top_tree_uri
-            });
-            let source_file_uri = FileUri::from_json_str(&source_json.to_string())
-                .map_err(|e| format!("Failed to create Source FileUri: {}", e))?;
-            
-            // Try native rename
-            // Note: The signature might be `rename(&self, file: &FileUri, new_name: &str)`
-            api.rename(&source_file_uri, &new_name_clone)
-                .map_err(|e| format!("Failed to rename directory: {}", e))?;
-            
-            Ok::<(), String>(())
-        }).await.map_err(|e| e.to_string())??;
-        
-        // Construct new path
-        let new_constructed_path = format!("{}%2F{}", parent_uri, urlencoding::encode(&new_name));
-        Ok(new_constructed_path)
-    }
-    #[cfg(not(target_os = "android"))]
-    {
-        Err("Not supported on this platform".to_string())
     }
 }
 
@@ -468,7 +385,7 @@ async fn move_directory_android(
     {
         use tauri_plugin_android_fs::AndroidFsExt;
         let app_clone = app.clone();
-        
+
         // Extract name from uri
         let name_encoded = match uri.rsplit_once("%2F") {
             Some((_, name)) => name,
@@ -486,32 +403,11 @@ async fn move_directory_android(
                 new_parent_uri,
                 name,
                 document_top_tree_uri,
-                true // is_directory
+                true, // is_directory
             )
-        }).await.map_err(|e| e.to_string())?
-    }
-    #[cfg(not(target_os = "android"))]
-    {
-        Err("Not supported on this platform".to_string())
-    }
-}
-
-// Updating rename_file_android to just use the new sync helper if we wanted, but existing impl is fine for files.
-// However, the user asked to "fix move_node for directories".
-// So I will update `move_file_android` (or just leave it and use `move_directory_android` in frontend).
-// The user said "implement a rename_directory_android Rust command".
-// I will stick to adding the new commands.
-
-#[tauri::command]
-async fn rename_file_android(
-    app: tauri::AppHandle,
-    uri: String,
-    new_name: String,
-    document_top_tree_uri: Option<String>,
-) -> Result<String, String> {
-    #[cfg(target_os = "android")]
-    {
-        rename_file_android_impl(app, uri, new_name, document_top_tree_uri).await
+        })
+        .await
+        .map_err(|e| e.to_string())?
     }
     #[cfg(not(target_os = "android"))]
     {
@@ -549,9 +445,7 @@ pub fn run() {
         .plugin(tauri_plugin_safe_area_insets_css::init())
         .invoke_handler(tauri::generate_handler![
             build_file_tree,
-            rename_file_android,
             move_file_android,
-            rename_directory_android,
             move_directory_android
         ])
         .setup(|app| {

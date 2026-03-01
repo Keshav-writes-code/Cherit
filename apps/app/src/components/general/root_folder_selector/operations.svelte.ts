@@ -40,7 +40,7 @@ export async function update_workspace(
     is_filetree_loading.data = false;
     update_opened_filenode(last_filenode_path, generic_path.path);
     if (current_platform == 'android') {
-      await AndroidFs.persistUriPermission({
+      await AndroidFs.persistPickerUriPermission({
         uri: path,
         documentTopTreeUri: document_top_tree_uri,
       });
