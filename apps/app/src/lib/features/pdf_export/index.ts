@@ -3,9 +3,9 @@ import { jsPDF } from 'jspdf';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { current_platform, join_path } from '@/lib/file_system';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
-import { workspace_root_path } from '@/lib/global_states/index.svelte';
+import type { GenericPath } from '@/types';
 
-export async function pdf_rendered(file_name: string, location: string) {
+export async function pdf_rendered(file_name: string, location: GenericPath) {
   const el = document.getElementById('text_editor');
   if (!el) return;
 
@@ -27,7 +27,12 @@ export async function pdf_rendered(file_name: string, location: string) {
   document.body.appendChild(clone);
 
   try {
-    const canvas = await html2canvas(clone, { scale: 2, backgroundColor: bg });
+    const canvas = await html2canvas(clone, {
+      scale: 2,
+      backgroundColor: bg,
+      useCORS: true,
+      logging: true,
+    });
     const doc = new jsPDF();
     const w = doc.internal.pageSize.getWidth();
 
@@ -40,20 +45,23 @@ export async function pdf_rendered(file_name: string, location: string) {
       (canvas.height * w) / canvas.width
     );
 
-    let path: string | URL = `${join_path(location, file_name)}.pdf`;
+    let path: string | URL;
 
-    if (current_platform === 'android' && workspace_root_path.data) {
+    if (current_platform === 'android') {
       const uri = await AndroidFs.createNewFile(
         {
-          uri: workspace_root_path.data.path,
-          documentTopTreeUri: workspace_root_path.data.document_top_tree_uri,
+          uri: location.path,
+          documentTopTreeUri: location.document_top_tree_uri,
         },
-        path,
+        file_name + '.pdf',
         'application/pdf'
       );
       path = await AndroidFs.getFsPath(uri);
+    } else {
+      path = `${join_path(location.path, file_name)}.pdf`;
     }
 
+    console.log('Saving PDF to:', path);
     await writeFile(path, new Uint8Array(doc.output('arraybuffer')));
   } finally {
     document.body.removeChild(clone);

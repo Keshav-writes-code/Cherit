@@ -1,7 +1,7 @@
 <script lang="ts">
   import { pdf_rendered } from '@/lib/features/pdf_export';
   import { show_folder_picker } from '@/lib/file_system/picker_dialog';
-  import type { Node } from '@/types';
+  import type { Node, GenericPath } from '@/types';
   import { toast } from 'svelte-sonner';
   import type { SubmitStates } from '@/types';
   import SubmitButton from '@/components/general/submit_button/index.svelte';
@@ -9,7 +9,7 @@
   let { open = $bindable(), filenode }: { open: boolean; filenode: Node } =
     $props();
   let page_sizes = ['a4', 'a3', 'a5', 'letter', 'legal', 'tabloid'];
-  let location_to_save: string | undefined = $state();
+  let location_to_save: GenericPath | undefined = $state();
   let render_state: SubmitStates = $state('idle');
 </script>
 
@@ -47,10 +47,10 @@
           class="btn h-8 max-w-60 flex justify-end"
           onclick={async () => {
             const path = await show_folder_picker();
-            location_to_save = path.path;
+            location_to_save = path;
           }}
         >
-          {decodeURIComponent(location_to_save ?? '')
+          {decodeURIComponent(location_to_save?.path ?? '')
             .split('/')
             .filter(Boolean)
             .pop() || '...'}
