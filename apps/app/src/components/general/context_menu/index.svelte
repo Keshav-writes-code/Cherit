@@ -81,23 +81,31 @@
                 onclick={() => handle_click(item.action)}
                 class:text-error={item.type === 'danger'}
                 class:text-warning={item.type === 'warning'}
+                class="rounded-box"
               >
                 <div class={item.icon_class}></div>
                 {item.label}
                 {#if item.experimental}
                   {#if item.tooltip}
-                    <button
+                    <span
+                      role="button"
+                      tabindex="0"
+                      onkeydown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.stopPropagation();
+                        }
+                      }}
                       onclick={(e) => {
                         e.stopPropagation();
                       }}
-                      aria-label="Tooltip button"
+                      aria-label="Tooltip"
                       class="tooltip tooltip-left h-full aspect-square grid place-items-center"
                       data-tip={item.tooltip}
                     >
                       <div
                         class="i-tabler:alert-triangle-filled size-4 size-4"
                       ></div>
-                    </button>
+                    </span>
                   {:else}
                     <div
                       class="i-tabler:alert-triangle-filled size-4 size-4"
