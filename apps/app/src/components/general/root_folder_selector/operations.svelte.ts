@@ -16,6 +16,7 @@ import {
   file_tree,
   is_filetree_loading,
 } from '@/components/sidebar_section/file_manager/states.svelte';
+import { watch } from '@tauri-apps/plugin-fs';
 
 export const user_activity = new LazyStore('user_activity.json');
 export let recent_workspaces: { data: Workspace[] } = $state({ data: [] });
@@ -37,6 +38,27 @@ export async function update_workspace(
     workspace_root_path.data = generic_path;
     is_filetree_loading.data = true;
     file_tree.data = await build_file_tree_from_fs(generic_path);
+    watch(
+      generic_path.path,
+      async (e) => {
+        // do nothing if all that happened is:
+        // - a file was accessed
+        // - a file's content was modified
+        const event_type = e.type;
+        if (
+          typeof event_type == 'object' &&
+          ('access' in event_type ||
+            ('modify' in event_type && event_type.modify.kind !== 'rename'))
+        )
+          return;
+        console.log('Stuff CHanged', e);
+        file_tree.data = await build_file_tree_from_fs(generic_path);
+      },
+      {
+        recursive: true,
+        delayMs: 300,
+      }
+    );
     is_filetree_loading.data = false;
     update_opened_filenode(last_filenode_path, generic_path.path);
     if (current_platform == 'android') {

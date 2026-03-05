@@ -26,7 +26,7 @@ serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 tauri = { version = "2.10.2", features = [] }
 tauri-plugin-log = "2"
-tauri-plugin-fs = "2"
+tauri-plugin-fs = { version = "2", features = ['watch'] }
 tauri-plugin-store = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-os = "2"
@@ -43,7 +43,7 @@ incremental = true # Compile your binary in smaller steps.
 
 [profile.release]
 codegen-units = 1 # Allows LLVM to perform better optimization.
-lto = true # Enables link-time-optimizations.
-opt-level = "s" # Prioritizes small binary size. Use `3` if you prefer speed.
-panic = "abort" # Higher performance by disabling panic handlers.
-strip = true # Ensures debug symbols are removed.
+lto = true        # Enables link-time-optimizations.
+opt-level = "s"   # Prioritizes small binary size. Use `3` if you prefer speed.
+panic = "abort"   # Higher performance by disabling panic handlers.
+strip = true      # Ensures debug symbols are removed.
