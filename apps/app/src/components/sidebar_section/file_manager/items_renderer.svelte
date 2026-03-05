@@ -26,6 +26,7 @@
   import { SvelteSet } from 'svelte/reactivity';
   import { toast } from 'svelte-sonner';
   import { current_platform_type } from '@/lib/states/';
+  import { trigger } from '@/lib/haptics';
 
   let {
     focused_directory_path = $bindable(),
@@ -221,6 +222,7 @@
       py-0.75 hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] rounded-field transition-colors truncate overflow-clip"
     onmousedown={() => {
       child_render_paths_ever.add(node.path);
+      trigger();
     }}
     onclick={(e) => {
       child_render_paths.delete(node.path);
@@ -292,6 +294,7 @@
     {opened_filenode.data?.path === node.path && 'bg-base-content/10'} 
       {dragged_node?.path === node.path ? 'opacity-50' : ''}
       py-0.75 w-full hover:text-[color-mix(in_srgb,var(--color-base-content)_85%,black)] truncate block"
+    onmousedown={() => trigger()}
     onclick={(e) => {
       opened_filenode.data = node;
       if (e.target === e.currentTarget) {

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { workspace_root_path } from '@/lib/states';
   import { root_folder_picker_dialog_state } from '@/components/general/root_folder_selector/states.svelte';
+  import { trigger } from '@/lib/haptics';
 </script>
 
 <div
@@ -9,6 +10,9 @@
   <ul class="menu menu-lg sm:menu-xs bg-base-200 rounded-box w-full">
     <li>
       <button
+        onmousedown={() => {
+          trigger();
+        }}
         onclick={() => {
           root_folder_picker_dialog_state.open = true;
         }}

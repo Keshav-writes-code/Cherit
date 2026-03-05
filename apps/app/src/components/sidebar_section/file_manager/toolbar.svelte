@@ -16,6 +16,7 @@
     expand_override_fine_grain,
   } from './states.svelte';
   import { current_platform_type } from '@/lib/states/';
+  import { trigger } from '@/lib/haptics';
   let {
     focused_directory_path,
   }: { focused_directory_path: string | undefined } = $props();
@@ -37,6 +38,7 @@
     disabled={!focused_directory_path}
     onmouseenter={() => (hover_newnode_button.data = true)}
     onmouseleave={() => (hover_newnode_button.data = false)}
+    onmousedown={() => trigger()}
     onclick={async () => {
       if (
         !focused_directory_path ||
@@ -73,6 +75,9 @@
     disabled={!focused_directory_path}
     onmouseenter={() => (hover_newnode_button.data = true)}
     onmouseleave={() => (hover_newnode_button.data = false)}
+    onmousedown={() => {
+      trigger();
+    }}
     onclick={async () => {
       if (
         !focused_directory_path ||
@@ -107,6 +112,9 @@
   <!-- </button> -->
   <button
     aria-label="Collapse Button"
+    onmousedown={() => {
+      trigger();
+    }}
     onclick={() => {
       if (expand_override_fine_grain.size) {
         expand_override_fine_grain.clear();

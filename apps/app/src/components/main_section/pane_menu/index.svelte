@@ -3,6 +3,7 @@
   import { pdf_export_status } from '@/components/main_section/pdf_export_dialog/states.svelte';
   import { context_menu } from '@/lib/states';
   import { current_platform_type } from '@/lib/states/';
+  import { trigger } from '@/lib/haptics';
 
   let { filenode }: { filenode: Node | undefined } = $props();
   const menu_items: MenuItem[] = [
@@ -22,6 +23,7 @@
   class=" btn btn-ghost text-[color-mix(in_srgb,var(--color-base-content)_80%,black)] min-h-none max-h-none h-full aspect-square p-none
   {current_platform_type == 'mobile' && 'btn-soft btn-circle btn-lg'}
   "
+  onmousedown={() => trigger()}
   onclick={(e) => {
     const { right: x, bottom: y } = (
       e.currentTarget as HTMLButtonElement
