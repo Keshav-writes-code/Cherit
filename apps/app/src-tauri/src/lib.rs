@@ -455,7 +455,8 @@ pub fn run() {
             sync::commands::stop_sync_service,
             sync::commands::generate_pairing_pin,
             sync::commands::get_discovered_peers,
-            sync::commands::pair_with_peer
+            sync::commands::pair_with_peer,
+            sync::commands::sync_file
         ])
         .setup(|app| {
             app.manage(sync::commands::AppSyncState {

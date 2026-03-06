@@ -6,6 +6,7 @@ import {
   is_contents_changed,
 } from '@/components/main_section/text_editor/editor_state.svelte';
 import { touch_recent_workspaces } from '../workspace';
+import { invoke } from '@tauri-apps/api/core';
 
 export async function attach_window_listeners() {
   const unlistenFocus = await getCurrentWindow().onFocusChanged(
@@ -31,5 +32,12 @@ async function on_window_blur() {
       opened_filenode.data.path,
       editor_view.data.state.doc.toString()
     );
+
+    // Trigger sync if enabled
+    try {
+      await invoke('sync_file', { filePath: opened_filenode.data.path });
+    } catch (e) {
+      console.warn('Failed to trigger sync: ', e);
+    }
   }
 }

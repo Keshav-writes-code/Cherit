@@ -81,6 +81,38 @@ pub async fn get_discovered_peers(state: State<'_, AppSyncState>) -> Result<Vec<
 }
 
 #[tauri::command]
+pub async fn sync_file(state: State<'_, AppSyncState>, file_path: String) -> Result<(), String> {
+    let sync_state_lock = state.inner.read().await;
+    if let Some(sync_state) = sync_state_lock.as_ref() {
+        let peers = sync_state.peers.read().await;
+
+        let client = reqwest::Client::new();
+
+        // In a real implementation we would:
+        // 1. Get the CrdtManager
+        // 2. update_doc_from_file(&file_path)
+        // 3. let content = crdt_manager.documents.get(&file_path).unwrap().automerge_doc.save();
+        let mock_content = vec![1, 2, 3, 4]; // Dummy payload for now
+
+        for peer in peers.values() {
+            if peer.is_paired {
+                let url = format!("http://{}:{}/sync", peer.ip, peer.port);
+                let request = crate::sync::server::SyncRequest {
+                    peer_id: sync_state.my_id.clone(),
+                    file_path: file_path.clone(),
+                    content: mock_content.clone(),
+                };
+
+                // Fire and forget sync request
+                let _ = client.post(&url).json(&request).send().await;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn pair_with_peer(state: State<'_, AppSyncState>, peer_id: String, pin: String) -> Result<PairResponse, String> {
     let sync_state_lock = state.inner.read().await;
     if let Some(sync_state) = sync_state_lock.as_ref() {
