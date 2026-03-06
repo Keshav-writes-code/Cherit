@@ -1,19 +1,22 @@
 use automerge::{Automerge, ReadDoc, transaction::Transactable, ROOT};
 use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use tokio::fs;
 
+#[allow(dead_code)]
 pub struct DocumentState {
     pub automerge_doc: Automerge,
     pub path: PathBuf,
 }
 
+#[allow(dead_code)]
 pub struct CrdtManager {
     pub base_dir: PathBuf,
     pub sync_dir: PathBuf,
     pub documents: HashMap<PathBuf, DocumentState>,
 }
 
+#[allow(dead_code)]
 impl CrdtManager {
     pub async fn new(base_dir: PathBuf) -> Result<Self, String> {
         let sync_dir = base_dir.join(".sync");
