@@ -13,9 +13,9 @@ pub async fn start_sync_service(state: State<'_, AppSyncState>) -> Result<(), St
     let mut sync_state_lock = state.inner.write().await;
 
     if sync_state_lock.is_none() {
-        // Use a persistent random ID or generate one
-        let my_id = "test-device-id-123".to_string(); // MVP: Needs persistent store
-        let my_name = "User's Device".to_string();
+        // Generate a random ID for the session to prevent collisions in MVP
+        let my_id = crate::sync::pairing::generate_pin().await;
+        let my_name = format!("Device-{}", my_id);
         let port = 8080; // Should find an available port dynamically
 
         let sync_state = Arc::new(SyncState::new(my_id, my_name, port)?);

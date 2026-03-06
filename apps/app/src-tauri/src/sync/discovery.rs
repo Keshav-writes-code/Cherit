@@ -40,7 +40,15 @@ impl SyncState {
 
     pub fn start_broadcasting(&self) -> Result<(), String> {
         let instance_name = format!("{}-{}", self.my_name, self.my_id);
-        let my_ip = "0.0.0.0"; // For now broadcast on all interfaces
+
+        // Find the actual local IP address on the network instead of 0.0.0.0
+        let my_ip = match std::net::UdpSocket::bind("0.0.0.0:0") {
+            Ok(s) => match s.connect("8.8.8.8:80") {
+                Ok(_) => s.local_addr().map(|a| a.ip().to_string()).unwrap_or_else(|_| "0.0.0.0".to_string()),
+                Err(_) => "0.0.0.0".to_string(),
+            },
+            Err(_) => "0.0.0.0".to_string(),
+        };
 
         let mut properties = HashMap::new();
         properties.insert("id".to_string(), self.my_id.clone());
@@ -49,7 +57,7 @@ impl SyncState {
             SERVICE_TYPE,
             &instance_name,
             &format!("{}.local.", instance_name),
-            my_ip,
+            &my_ip,
             self.port,
             Some(properties),
         )
@@ -83,17 +91,27 @@ impl SyncState {
                             }
 
                             if let Some(ip) = info.get_addresses().iter().next() {
+                                // Extract the clean name by removing the "-<id>._cherit._tcp.local." suffix
+                                let raw_fullname = info.get_fullname().to_string();
+                                let mut clean_name = raw_fullname.clone();
+                                if let Some(idx) = raw_fullname.find("._cherit") {
+                                    clean_name = raw_fullname[..idx].to_string();
+                                }
+
                                 let peer_info = PeerInfo {
                                     id: peer_id.to_string(),
-                                    name: info.get_fullname().to_string(), // Need to parse name better later
+                                    name: clean_name,
                                     ip: ip.to_string(),
                                     port: info.get_port(),
-                                    is_paired: false, // Default to false until handshake
+                                    is_paired: false,
                                 };
                                 let mut peers = state.peers.write().await;
                                 peers.insert(peer_id.to_string(), peer_info);
                             }
                         }
+                    }
+                    ServiceEvent::ServiceFound(_service_type, _fullname) => {
+                         // mdns-sd automatically resolves found services on the next broadcast packet
                     }
                     ServiceEvent::ServiceRemoved(_, fullname) => {
                         // For now we need to iterate to find the peer to remove,
