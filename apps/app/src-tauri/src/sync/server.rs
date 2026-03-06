@@ -131,6 +131,11 @@ async fn sync_handler(
 
             let mut crdt_manager = state.sync.crdt_manager.write().await;
 
+            // First ensure we have tracking for this file initialized on this end too
+            if !crdt_manager.documents.contains_key(&relative_path) {
+                let _ = crdt_manager.load_or_create_doc(&relative_path).await;
+            }
+
             match crdt_manager.apply_sync_data(&relative_path, &payload.content).await {
                 Ok(_) => {
                     println!("Successfully merged sync data from {} for {:?}", peer.name, relative_path);

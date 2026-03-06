@@ -59,11 +59,17 @@ impl CrdtManager {
                 .map_err(|e| format!("Failed to create text object: {}", e))?;
 
             if abs_file_path.exists() {
-                let content = fs::read_to_string(&abs_file_path)
-                    .await
-                    .map_err(|e| format!("Failed to read markdown file: {}", e))?;
-                tx.splice_text(&new_id, 0, 0, &content)
-                    .map_err(|e| format!("Failed to splice initial content: {}", e))?;
+                if let Ok(content) = fs::read_to_string(&abs_file_path).await {
+                    tx.splice_text(&new_id, 0, 0, &content)
+                        .map_err(|e| format!("Failed to splice initial content: {}", e))?;
+                }
+            } else {
+                // Ensure the base directory exists if this is a newly synced file
+                if let Some(parent) = abs_file_path.parent() {
+                    let _ = fs::create_dir_all(parent).await;
+                }
+                // Pre-create the empty markdown file
+                let _ = fs::write(&abs_file_path, "").await;
             }
             tx.commit();
             text_obj_id = Some(new_id);
@@ -99,19 +105,30 @@ impl CrdtManager {
         }
 
         if let Some(doc_state) = self.documents.get_mut(relative_path) {
-            let new_content = fs::read_to_string(&abs_file_path)
-                .await
-                .map_err(|e| format!("Failed to read markdown file: {}", e))?;
+            let new_content = match fs::read_to_string(&abs_file_path).await {
+                Ok(c) => c,
+                Err(_) => {
+                    // If the file cannot be read, assume it was deleted or missing.
+                    // For now, we'll treat it as empty.
+                    String::new()
+                }
+            };
 
-            // Replace text by splicing out the old and splicing in the new.
-            // Ideally we'd use a real diffing algorithm here like `similar` crate
-            // to generate precise splices for better CRDT merges, but a full delete+insert
-            // is still valid Automerge text operation and better than scalar overwrite.
-            let mut tx = doc_state.automerge_doc.transaction();
-            let current_len = tx.length(&doc_state.text_obj_id);
-            tx.splice_text(&doc_state.text_obj_id, 0, current_len as isize, &new_content)
-                .map_err(|e| format!("Failed to update content via splice: {}", e))?;
-            tx.commit();
+            // Calculate basic text change to minimize history bloat
+            let current_text = doc_state.automerge_doc.text(&doc_state.text_obj_id)
+                .unwrap_or_default();
+
+            // Only mutate if there's actually a change
+            if current_text != new_content {
+                // If it is completely different we splice the whole text out and in.
+                // However, if new_content is empty (e.g. file just created or wiped),
+                // we still need to record the deletion.
+                let mut tx = doc_state.automerge_doc.transaction();
+                let current_len = tx.length(&doc_state.text_obj_id);
+                tx.splice_text(&doc_state.text_obj_id, 0, current_len as isize, &new_content)
+                    .map_err(|e| format!("Failed to update content via splice: {}", e))?;
+                tx.commit();
+            }
 
             fs::write(&sync_file_path, doc_state.automerge_doc.save())
                 .await
