@@ -6,14 +6,14 @@ on:
       - staging
     paths:
       - 'apps/app/**'
-      - '.github/workflows/app-build-release-artifacts.yml'
+      - '.github/workflows/tauri-build-debug.yml'
   pull_request:
     branches:
       - dev
       - staging
     paths:
       - 'apps/app/**'
-      - '.github/workflows/app-build-release-artifacts.yml'
+      - '.github/workflows/tauri-build-debug.yml'
   workflow_dispatch:
 
 jobs:
