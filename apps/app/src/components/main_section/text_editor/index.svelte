@@ -3,6 +3,7 @@
   import { workspace_root_path } from '@/lib/states';
   import type { Node } from '@/lib/types';
   import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
+  import { invoke } from '@tauri-apps/api/core';
   import { toast } from 'svelte-sonner';
   import Editor from './editor/index.svelte';
   import MobileToolbar from './editor_toolbar_mobile/index.svelte';
@@ -83,6 +84,11 @@
       write_to_file={(content) => {
         if (!filenode) return;
         writeTextFile(filenode?.path, content);
+
+        // Trigger sync if enabled
+        invoke('sync_file', { filePath: filenode?.path }).catch(e => {
+            console.warn("Failed to trigger sync: ", e);
+        });
       }}
       on_focus_in={() => {
         mobile_toolbar_visible = true;
