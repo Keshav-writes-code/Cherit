@@ -3,45 +3,94 @@ title: CI/CD Pipelines
 description: How we test, build, and release Cherit automatically.
 ---
 
-We use GitHub Actions to automate testing and releasing. Here is how our pipeline strategies work depending on the branch.
+```mermaid
+graph LR
+    subgraph Triggers ["⚡ Triggers"]
+        DevPR["PR ➔ 'dev'"]
+        StgPushPR["Push / PR ➔ 'staging'"]
+        MainPushPR["Push / PR ➔ 'main'"]
+        Mannual["Mannual Trigger"]
+    end
 
-## 1. Pull Requests (Sanity Checks)
+    subgraph AppWorkflows ["📦 App (Tauri)"]
+        Debug["`**app-build-debug**
+        - Mode: debug
+        - Output: Workflow artifacts`"]
 
-**Trigger:** Opening a PR to `main` or `staging`.
+        Artifacts["`**app-build-release-artifacts**
+        - Mode: Release
+        - Output: Workflow artifacts`"]
 
-Before merging code, we ensure it compiles to prevent breaking the build.
+        Release["`**app-build-release-publish**
+        - Mode: Release
+        - Output: GH Release Draft`"]
+    end
 
-- **App:** Runs a debug build on Linux/macOS/Windows/Android (both x86_64, arm) to verify Rust and Svelte compilation.
-- **Site:** Runs `bun run build` to ensure the Astro site builds without errors.
+    subgraph SiteWorkflows ["🌐 Website (Astro)"]
+        SiteCheck["`**site-build-check**
+        - Purpose: Verify build
+        - Output: Temp artifacts`"]
 
-## 2. Staging Branch (Beta Testing)
+        SiteDeploy["`**site-deploy**
+        - Purpose: Push to prod
+        - Output: GH Pages`"]
+    end
 
-**Trigger:** Pushing to `staging`.
+    %% Automated Workflow Triggers
 
-This is our "Test Flight" zone.
+    MainPushPR --> Release
+    MainPushPR --> SiteDeploy
 
-- **App:** Builds **Debug** artifacts (unsigned) for all platforms. These are available in the GitHub Actions "Summary" tab for testers to download and try.
-- **Site:** Runs `bun run build` to ensure the Astro site builds without errors (same as PR check).
-  - to test site builds
-    - go to `Action Tab` > latest `site-build-check` run > `Summary` > download workflow artifact `site-build-output`
-    - then extract the zip, move all content to a new dir called `Cherit`
-    - then in the parent dir, run `bunx serve .`
-    - open `http://localhost:3000/Cherit/` in browser to test
+    StgPushPR --> Artifacts
+    StgPushPR --> SiteCheck
 
-## 3. Main Branch (Production)
+    DevPR --> Artifacts
 
-**Trigger:** Pushing to `main`.
+    Mannual -.-> Debug
+    Mannual -.-> Artifacts
+    Mannual -.-> Release
+    Mannual -.-> SiteCheck
+    Mannual -.-> SiteDeploy
 
-This is the "Live" zone.
+    %% Styling Classes
+    classDef trigger fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#000
+    classDef appNode fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000,text-align:left
+    classDef siteNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000,text-align:left
 
-- **App Release:** Builds optimized **Release** binaries, signs them (Android/macOS), and creates a Draft Release on GitHub.
-- **Site Deploy:** Builds the documentation site and deploys it to GitHub Pages.
+    %% Apply Styles
+    class DevPR,StgPushPR,MainPushPR,Mannual trigger
+    class Debug,Artifacts,Release appNode
+    class SiteCheck,SiteDeploy siteNode
+```
 
-## Quick Reference
+## `app-build-debug`
 
-| Goal                | Workflow File           | Triggers     |
-| :------------------ | :---------------------- | :----------- |
-| **Test App Logic**  | `app-build-debug.yml`   | PRs, Staging |
-| **Test Site Build** | `site-check.yml`        | PRs, Staging |
-| **Release App**     | `app-build-release.yml` | Main         |
-| **Deploy Site**     | `site-deploy.yml`       | Main         |
+- when we need debug builds while bugfixing
+
+## `app-build-release-publish`
+
+- when we want to publish a new version of the app
+
+## `app-build-release-artifacts`
+
+- when we just want the build bundles of the app without publishing it
+
+## `site-build-check`
+
+- when we just to build the site for final local testing
+- we download the `site-build-output.zip` from the workflow artifacts and extract with:
+
+  ```sh
+  unzip site-build-output.zip
+  cd site-build-output
+  mkdir Cherit
+  mv * Cherit
+  ```
+
+  then, actually run the server
+
+  ```sh
+  bunx serve .
+  ```
+
+  then navigate to `http://localhost:3000/Cherit` in browser to run the built site.

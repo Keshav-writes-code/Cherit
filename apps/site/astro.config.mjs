@@ -1,6 +1,7 @@
 import svelte from "@astrojs/svelte";
 import { defineConfig } from "astro/config";
 import UnoCSS from "unocss/astro";
+import mermaid from "astro-mermaid";
 
 import sitemap from "@astrojs/sitemap";
 
@@ -17,6 +18,7 @@ export default defineConfig({
     svelte(),
     sitemap(),
     robotsTxt(),
+    mermaid(),
     starlight({
       title: "Cherit",
       plugins: [
