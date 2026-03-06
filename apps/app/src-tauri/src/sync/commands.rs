@@ -3,6 +3,8 @@ use crate::sync::pairing::{PairRequest, PairResponse};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tauri::{Manager, State};
+// use notify_debouncer_full::{new_debouncer, notify::*};
+// use std::time::Duration;
 
 pub struct AppSyncState {
     pub inner: RwLock<Option<Arc<SyncState>>>,
@@ -15,7 +17,9 @@ pub async fn start_sync_service(app_handle: tauri::AppHandle, state: State<'_, A
     if sync_state_lock.is_none() {
         // Generate a random ID for the session to prevent collisions in MVP
         let my_id = crate::sync::pairing::generate_pin().await;
-        let my_name = format!("Device-{}", my_id);
+        let hostname = gethostname::gethostname().to_string_lossy().into_owned();
+        let my_name = if hostname.is_empty() { format!("Device-{}", my_id) } else { hostname };
+
         let port = 8080; // Should find an available port dynamically
 
         let config_dir = app_handle.path().app_config_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
@@ -47,6 +51,7 @@ pub async fn start_sync_service(app_handle: tauri::AppHandle, state: State<'_, A
                 eprintln!("Failed to start Android background service: {:?}", e);
             }
         }
+
     }
 
     Ok(())
@@ -149,6 +154,36 @@ pub async fn sync_file(state: State<'_, AppSyncState>, file_path: String) -> Res
     }
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn remove_peer(state: State<'_, AppSyncState>, peer_id: String) -> Result<(), String> {
+    let sync_state_lock = state.inner.read().await;
+    if let Some(sync_state) = sync_state_lock.as_ref() {
+        let mut peers = sync_state.peers.write().await;
+        peers.remove(&peer_id);
+        drop(peers);
+        sync_state.save_peers().await;
+        Ok(())
+    } else {
+        Err("Sync service is not running".into())
+    }
+}
+
+#[tauri::command]
+pub async fn rename_peer(state: State<'_, AppSyncState>, peer_id: String, new_name: String) -> Result<(), String> {
+    let sync_state_lock = state.inner.read().await;
+    if let Some(sync_state) = sync_state_lock.as_ref() {
+        let mut peers = sync_state.peers.write().await;
+        if let Some(peer) = peers.get_mut(&peer_id) {
+            peer.name = new_name;
+        }
+        drop(peers);
+        sync_state.save_peers().await;
+        Ok(())
+    } else {
+        Err("Sync service is not running".into())
+    }
 }
 
 #[tauri::command]

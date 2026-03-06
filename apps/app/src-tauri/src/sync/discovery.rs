@@ -26,6 +26,7 @@ pub struct SyncState {
     pub crdt_manager: RwLock<CrdtManager>,
     pub server_shutdown_tx: Option<tokio::sync::broadcast::Sender<()>>,
     pub config_dir: std::path::PathBuf,
+    // pub fs_watcher: RwLock<Option<notify_debouncer_full::Debouncer<notify::RecommendedWatcher, notify_debouncer_full::FileIdMap>>>,
 }
 
 impl SyncState {
@@ -114,6 +115,20 @@ impl SyncState {
     }
 
     pub async fn start_discovery(state: Arc<SyncState>) -> Result<(), String> {
+        // Also proactively probe known peers to make connection fast instead of waiting for mDNS
+        let peers_clone = state.peers.read().await.clone();
+        tokio::spawn(async move {
+            let client = reqwest::Client::builder().timeout(std::time::Duration::from_secs(2)).build().unwrap();
+            for (_, peer) in peers_clone {
+                if peer.is_paired {
+                    let url = format!("http://{}:{}/status", peer.ip, peer.port);
+                    if client.get(&url).send().await.is_ok() {
+                        // Found them!
+                    }
+                }
+            }
+        });
+
         let receiver = state.mdns.browse(SERVICE_TYPE).map_err(|e| e.to_string())?;
 
         tokio::spawn(async move {

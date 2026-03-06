@@ -456,7 +456,9 @@ pub fn run() {
             sync::commands::generate_pairing_pin,
             sync::commands::get_discovered_peers,
             sync::commands::pair_with_peer,
-            sync::commands::sync_file
+            sync::commands::sync_file,
+            sync::commands::remove_peer,
+            sync::commands::rename_peer
         ])
         .setup(|app| {
             app.manage(sync::commands::AppSyncState {

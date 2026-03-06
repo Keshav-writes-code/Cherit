@@ -168,6 +168,12 @@ export async function add_new_note(
     sort_nodes(subtree);
     const node = subtree.find((n) => n.path === new_file_path);
     if (!node) throw new Error('Failed to find the newly created note node.');
+
+    // Attempt to trigger initial sync for the newly created file so peers get it immediately.
+    invoke('sync_file', { filePath: node.path }).catch(e => {
+        console.warn("Failed to trigger sync for new file: ", e);
+    });
+
     return node;
   } catch (e) {
     console.error(e);

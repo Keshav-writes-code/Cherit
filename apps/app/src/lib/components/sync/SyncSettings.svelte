@@ -41,6 +41,8 @@
 		}
 	}
 
+	let poll_timer: any = null;
+
 	async function refresh_peers() {
 		if (!is_sync_enabled) return;
 		try {
@@ -48,7 +50,8 @@
 		} catch (e) {
 			console.error('Failed to get peers:', e);
 		}
-		setTimeout(refresh_peers, 5000); // Poll every 5s
+		if (poll_timer) clearTimeout(poll_timer);
+		poll_timer = setTimeout(refresh_peers, 1000); // Poll every 1s for snappy UI
 	}
 
 	async function pair_with_peer(peer_id: string) {
@@ -105,24 +108,46 @@
 			{:else}
 				<ul class="flex flex-col gap-2">
 					{#each discovered_peers as peer}
-						<li class="flex items-center justify-between bg-base-200 p-3 rounded-lg">
-							<span>{peer.name}</span>
-							{#if peer.is_paired}
-								<span class="badge badge-success">Paired</span>
-							{:else}
-								<div class="flex gap-2">
-									<input
-										type="text"
-										placeholder="PIN"
-										class="input input-bordered input-sm w-24"
-										bind:value={input_pin}
-										maxlength="6"
-									/>
-									<button class="btn btn-sm btn-primary" onclick={() => pair_with_peer(peer.id)}>
-										Connect
-									</button>
-								</div>
-							{/if}
+						<li class="flex flex-col gap-2 bg-base-200 p-3 rounded-lg">
+							<div class="flex items-center justify-between w-full">
+								<span class="font-medium">{peer.name}</span>
+								{#if peer.is_paired}
+									<div class="flex items-center gap-2">
+										<span class="badge badge-success">Paired</span>
+										<button class="btn btn-xs btn-ghost text-error" onclick={async () => {
+											await invoke('remove_peer', { peerId: peer.id });
+											refresh_peers();
+										}}>Delete</button>
+									</div>
+								{:else}
+									<div class="flex gap-2">
+										<input
+											type="text"
+											placeholder="PIN"
+											class="input input-bordered input-sm w-24"
+											bind:value={input_pin}
+											maxlength="6"
+										/>
+										<button class="btn btn-sm btn-primary" onclick={() => pair_with_peer(peer.id)}>
+											Connect
+										</button>
+									</div>
+								{/if}
+							</div>
+							<div class="flex items-center gap-2 mt-1">
+								<input
+									type="text"
+									placeholder="Rename device..."
+									class="input input-bordered input-xs flex-1 max-w-40 opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity"
+									onchange={async (e) => {
+										const newName = e.currentTarget.value;
+										if (newName) {
+											await invoke('rename_peer', { peerId: peer.id, newName });
+											refresh_peers();
+										}
+									}}
+								/>
+							</div>
 						</li>
 					{/each}
 				</ul>
