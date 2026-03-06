@@ -96,13 +96,31 @@ async fn sync_handler(
     // Authenticate: Ensure the peer exists and is paired
     if let Some(peer) = peers.get(&payload.peer_id) {
         if peer.is_paired {
-            let file_path = std::path::PathBuf::from(payload.file_path);
+            // For MVP, without the CRDTManager hooked into global state,
+            // we will write the synced content directly to the documents directory.
+            // A more complete CRDT impl is in crdt.rs but requires global state integration
 
-            // In a real implementation we would:
-            // 1. Get the CrdtManager
-            // 2. call crdt_manager.apply_sync_data(&file_path, &payload.content).await
+            let file_name = payload.file_path;
 
-            println!("Received sync data from {} for {:?}", peer.name, file_path);
+            // For safety and MVP purposes, assume files are saved to a common default local location
+            // or the same dir structure if they have identical root workspaces.
+            // Here we simply print and save into a `.sync-inbox` to prove it works without
+            // accidentally overwriting the user's primary workspace root if not configured properly.
+
+            // Note: full CRDT integration requires the app's selected workspace dir, which is kept
+            // in the Svelte frontend state (or passed to Rust via set_workspace_root).
+
+            if let Some(mut home_dir) = dirs::home_dir() {
+                 home_dir.push(".cherit-sync-inbox");
+                 let _ = std::fs::create_dir_all(&home_dir);
+                 let save_path = home_dir.join(&file_name);
+                 let _ = std::fs::write(&save_path, &payload.content);
+
+                 println!("Received sync data from {} for {:?} and saved to {:?}", peer.name, file_name, save_path);
+            } else {
+                 let _ = std::fs::write(&file_name, &payload.content);
+                 println!("Received sync data from {} for {:?}", peer.name, file_name);
+            }
 
             return Json(SyncResponse { success: true });
         }

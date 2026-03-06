@@ -88,19 +88,31 @@ pub async fn sync_file(state: State<'_, AppSyncState>, file_path: String) -> Res
 
         let client = reqwest::Client::new();
 
-        // In a real implementation we would:
-        // 1. Get the CrdtManager
-        // 2. update_doc_from_file(&file_path)
-        // 3. let content = crdt_manager.documents.get(&file_path).unwrap().automerge_doc.save();
-        let mock_content = vec![1, 2, 3, 4]; // Dummy payload for now
+        // For MVP, if we don't have CRDT fully hooked up to a global manager,
+        // we can just send the raw file content, but let's actually read it from disk first
+        // so it actually does something.
+
+        let path_obj = std::path::PathBuf::from(&file_path);
+        let content = match tokio::fs::read(&path_obj).await {
+            Ok(c) => c,
+            Err(e) => return Err(format!("Failed to read file for sync: {}", e)),
+        };
 
         for peer in peers.values() {
             if peer.is_paired {
                 let url = format!("http://{}:{}/sync", peer.ip, peer.port);
+
+                // Keep the path relative to the sync root.
+                // For MVP, just taking the file name is safer if paths differ across platforms.
+                let relative_path = path_obj.file_name()
+                    .unwrap_or_default()
+                    .to_string_lossy()
+                    .into_owned();
+
                 let request = crate::sync::server::SyncRequest {
                     peer_id: sync_state.my_id.clone(),
-                    file_path: file_path.clone(),
-                    content: mock_content.clone(),
+                    file_path: relative_path,
+                    content: content.clone(),
                 };
 
                 // Fire and forget sync request
