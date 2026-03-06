@@ -2,14 +2,14 @@ use crate::sync::discovery::SyncState;
 use crate::sync::pairing::{PairRequest, PairResponse};
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use tauri::State;
+use tauri::{Manager, State};
 
 pub struct AppSyncState {
     pub inner: RwLock<Option<Arc<SyncState>>>,
 }
 
 #[tauri::command]
-pub async fn start_sync_service(state: State<'_, AppSyncState>) -> Result<(), String> {
+pub async fn start_sync_service(app_handle: tauri::AppHandle, state: State<'_, AppSyncState>, workspace_root: String) -> Result<(), String> {
     let mut sync_state_lock = state.inner.write().await;
 
     if sync_state_lock.is_none() {
@@ -18,7 +18,10 @@ pub async fn start_sync_service(state: State<'_, AppSyncState>) -> Result<(), St
         let my_name = format!("Device-{}", my_id);
         let port = 8080; // Should find an available port dynamically
 
-        let sync_state = Arc::new(SyncState::new(my_id, my_name, port)?);
+        let config_dir = app_handle.path().app_config_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
+        let _ = std::fs::create_dir_all(&config_dir);
+
+        let sync_state = Arc::new(SyncState::new(my_id, my_name, port, workspace_root, config_dir).await?);
 
         // Start broadcasting our presence
         sync_state.start_broadcasting()?;
@@ -28,8 +31,9 @@ pub async fn start_sync_service(state: State<'_, AppSyncState>) -> Result<(), St
 
         // Start the server
         let state_clone = sync_state.clone();
+        let app_handle_clone = app_handle.clone();
         tokio::spawn(async move {
-            if let Err(e) = crate::sync::server::start_server(state_clone, port).await {
+            if let Err(e) = crate::sync::server::start_server(state_clone, port, app_handle_clone).await {
                 eprintln!("Failed to start server: {}", e);
             }
         });
@@ -38,8 +42,10 @@ pub async fn start_sync_service(state: State<'_, AppSyncState>) -> Result<(), St
 
         #[cfg(target_os = "android")]
         {
-            // Tauri Android plugin way to start service would go here.
-            // For now, this is mocked as we just created the Kotlin class.
+            use tauri::Manager;
+            if let Err(e) = app_handle.run_mobile_plugin("start_sync_service", ()) {
+                eprintln!("Failed to start Android background service: {:?}", e);
+            }
         }
     }
 
@@ -51,6 +57,9 @@ pub async fn stop_sync_service(state: State<'_, AppSyncState>) -> Result<(), Str
     let mut sync_state_lock = state.inner.write().await;
     if let Some(sync_state) = sync_state_lock.as_ref() {
         sync_state.stop_broadcasting()?;
+        if let Some(tx) = &sync_state.server_shutdown_tx {
+            let _ = tx.send(());
+        }
         *sync_state_lock = None;
     }
     Ok(())
@@ -88,31 +97,39 @@ pub async fn sync_file(state: State<'_, AppSyncState>, file_path: String) -> Res
 
         let client = reqwest::Client::new();
 
-        // For MVP, if we don't have CRDT fully hooked up to a global manager,
-        // we can just send the raw file content, but let's actually read it from disk first
-        // so it actually does something.
-
         let path_obj = std::path::PathBuf::from(&file_path);
-        let content = match tokio::fs::read(&path_obj).await {
-            Ok(c) => c,
-            Err(e) => return Err(format!("Failed to read file for sync: {}", e)),
+
+        // Use CRDT Manager to update our local state and get the automerge doc payload
+        let mut crdt_manager = sync_state.crdt_manager.write().await;
+
+        // Strip the base_dir from the file path to get a relative path
+        let relative_path = match path_obj.strip_prefix(&crdt_manager.base_dir) {
+            Ok(p) => p.to_path_buf(),
+            Err(_) => {
+                // If it's not in the base dir, we just use the filename as a fallback MVP
+                std::path::PathBuf::from(path_obj.file_name().unwrap_or_default())
+            }
         };
+
+        crdt_manager.update_doc_from_file(&relative_path).await?;
+
+        // Fetch the raw bytes of the automerge CRDT state to send
+        let payload_content = match crdt_manager.documents.get(&relative_path) {
+            Some(doc) => doc.automerge_doc.save(),
+            None => return Err("Failed to generate CRDT payload".to_string()),
+        };
+
+        // Convert the local relative path to a cross-platform friendly Unix format for the network
+        let relative_path_str = relative_path.to_string_lossy().replace('\\', "/");
 
         for peer in peers.values() {
             if peer.is_paired {
                 let url = format!("http://{}:{}/sync", peer.ip, peer.port);
 
-                // Keep the path relative to the sync root.
-                // For MVP, just taking the file name is safer if paths differ across platforms.
-                let relative_path = path_obj.file_name()
-                    .unwrap_or_default()
-                    .to_string_lossy()
-                    .into_owned();
-
                 let request = crate::sync::server::SyncRequest {
                     peer_id: sync_state.my_id.clone(),
-                    file_path: relative_path,
-                    content: content.clone(),
+                    file_path: relative_path_str.clone(),
+                    content: payload_content.clone(),
                 };
 
                 // Fire and forget sync request
@@ -153,6 +170,8 @@ pub async fn pair_with_peer(state: State<'_, AppSyncState>, peer_id: String, pin
                 if let Some(p) = peers_write.get_mut(&peer_id) {
                     p.is_paired = true;
                 }
+                drop(peers_write);
+                sync_state.save_peers().await;
             }
 
             Ok(pair_response)

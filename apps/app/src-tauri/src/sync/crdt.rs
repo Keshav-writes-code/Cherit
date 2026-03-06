@@ -1,4 +1,4 @@
-use automerge::{Automerge, ReadDoc, transaction::Transactable, ROOT};
+use automerge::{Automerge, ObjType, ReadDoc, transaction::Transactable, ROOT};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use tokio::fs;
@@ -6,6 +6,7 @@ use tokio::fs;
 #[allow(dead_code)]
 pub struct DocumentState {
     pub automerge_doc: Automerge,
+    pub text_obj_id: automerge::ObjId,
     pub path: PathBuf,
 }
 
@@ -38,26 +39,35 @@ impl CrdtManager {
         let sync_file_path = self.sync_dir.join(relative_path.with_extension("am"));
 
         let mut automerge_doc = Automerge::new();
+        let mut text_obj_id = None;
 
         if sync_file_path.exists() {
-            // Load existing Automerge doc
             let data = fs::read(&sync_file_path)
                 .await
                 .map_err(|e| format!("Failed to read sync file: {}", e))?;
             automerge_doc = Automerge::load(&data)
                 .map_err(|e| format!("Failed to load automerge doc: {}", e))?;
-        } else if abs_file_path.exists() {
-            // New doc but file exists, initialize it
-            let content = fs::read_to_string(&abs_file_path)
-                .await
-                .map_err(|e| format!("Failed to read markdown file: {}", e))?;
 
+            if let Ok(Some((automerge::Value::Object(ObjType::Text), id))) = automerge_doc.get(ROOT, "content") {
+                text_obj_id = Some(id);
+            }
+        }
+
+        if text_obj_id.is_none() {
             let mut tx = automerge_doc.transaction();
-            tx.put(ROOT, "content", content)
-                .map_err(|e| format!("Failed to put initial content: {}", e))?;
-            tx.commit();
+            let new_id = tx.put_object(ROOT, "content", ObjType::Text)
+                .map_err(|e| format!("Failed to create text object: {}", e))?;
 
-            // Save the initialized doc
+            if abs_file_path.exists() {
+                let content = fs::read_to_string(&abs_file_path)
+                    .await
+                    .map_err(|e| format!("Failed to read markdown file: {}", e))?;
+                tx.splice_text(&new_id, 0, 0, &content)
+                    .map_err(|e| format!("Failed to splice initial content: {}", e))?;
+            }
+            tx.commit();
+            text_obj_id = Some(new_id);
+
             if let Some(parent) = sync_file_path.parent() {
                 fs::create_dir_all(parent)
                     .await
@@ -66,18 +76,13 @@ impl CrdtManager {
             fs::write(&sync_file_path, automerge_doc.save())
                 .await
                 .map_err(|e| format!("Failed to write initial sync file: {}", e))?;
-        } else {
-            // Entirely new document
-            let mut tx = automerge_doc.transaction();
-            tx.put(ROOT, "content", "")
-                .map_err(|e| format!("Failed to put empty content: {}", e))?;
-            tx.commit();
         }
 
         self.documents.insert(
             relative_path.clone(),
             DocumentState {
                 automerge_doc,
+                text_obj_id: text_obj_id.unwrap(),
                 path: relative_path.clone(),
             },
         );
@@ -94,16 +99,18 @@ impl CrdtManager {
         }
 
         if let Some(doc_state) = self.documents.get_mut(relative_path) {
-            let content = fs::read_to_string(&abs_file_path)
+            let new_content = fs::read_to_string(&abs_file_path)
                 .await
                 .map_err(|e| format!("Failed to read markdown file: {}", e))?;
 
-            // Simple text replacement for MVP instead of diffing
-            // A more complex implementation would diff `content` with the current CRDT text
-            // and apply splice operations.
+            // Replace text by splicing out the old and splicing in the new.
+            // Ideally we'd use a real diffing algorithm here like `similar` crate
+            // to generate precise splices for better CRDT merges, but a full delete+insert
+            // is still valid Automerge text operation and better than scalar overwrite.
             let mut tx = doc_state.automerge_doc.transaction();
-            tx.put(ROOT, "content", content)
-                .map_err(|e| format!("Failed to update content: {}", e))?;
+            let current_len = tx.length(&doc_state.text_obj_id);
+            tx.splice_text(&doc_state.text_obj_id, 0, current_len as isize, &new_content)
+                .map_err(|e| format!("Failed to update content via splice: {}", e))?;
             tx.commit();
 
             fs::write(&sync_file_path, doc_state.automerge_doc.save())
@@ -135,13 +142,10 @@ impl CrdtManager {
                 .map_err(|e| format!("Failed to save sync file after merge: {}", e))?;
 
             // Project new state to plain markdown file
-            if let Ok(Some((value, _))) = doc_state.automerge_doc.get(ROOT, "content") {
-                if let automerge::Value::Scalar(s) = value {
-                    let content_str = s.to_string();
-                    fs::write(&abs_file_path, content_str)
-                        .await
-                        .map_err(|e| format!("Failed to write merged content to markdown: {}", e))?;
-                }
+            if let Ok(content_str) = doc_state.automerge_doc.text(&doc_state.text_obj_id) {
+                fs::write(&abs_file_path, content_str)
+                    .await
+                    .map_err(|e| format!("Failed to write merged content to markdown: {}", e))?;
             }
         }
 

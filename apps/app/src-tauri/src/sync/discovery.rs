@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
+use crate::sync::crdt::CrdtManager;
 
 pub const SERVICE_TYPE: &str = "_cherit._tcp.local.";
 
@@ -21,21 +22,57 @@ pub struct SyncState {
     pub my_name: String,
     pub peers: RwLock<HashMap<String, PeerInfo>>,
     pub port: u16,
-    // Add pairing pin state here later
     pub active_pin: RwLock<Option<String>>,
+    pub crdt_manager: RwLock<CrdtManager>,
+    pub server_shutdown_tx: Option<tokio::sync::broadcast::Sender<()>>,
+    pub config_dir: std::path::PathBuf,
 }
 
 impl SyncState {
-    pub fn new(id: String, name: String, port: u16) -> Result<Self, String> {
+    pub async fn new(id: String, name: String, port: u16, workspace_root: String, config_dir: std::path::PathBuf) -> Result<Self, String> {
         let mdns = ServiceDaemon::new().map_err(|e| e.to_string())?;
+
+        // Clean URL-encoded file protocols if present
+        let mut path_str = workspace_root.clone();
+        if path_str.starts_with("file://") {
+            path_str = path_str.trim_start_matches("file://").to_string();
+        }
+        path_str = urlencoding::decode(&path_str).unwrap_or(std::borrow::Cow::Borrowed(&path_str)).to_string();
+
+        let crdt_manager = CrdtManager::new(std::path::PathBuf::from(path_str)).await?;
+
+        // Channel for server shutdown
+        let (tx, _) = tokio::sync::broadcast::channel(1);
+
+        let peers_file = config_dir.join("peers.json");
+        let mut peers = HashMap::new();
+        if peers_file.exists() {
+            if let Ok(data) = std::fs::read_to_string(&peers_file) {
+                if let Ok(saved_peers) = serde_json::from_str::<HashMap<String, PeerInfo>>(&data) {
+                    peers = saved_peers;
+                }
+            }
+        }
+
         Ok(Self {
             mdns,
             my_id: id,
             my_name: name,
-            peers: RwLock::new(HashMap::new()),
+            peers: RwLock::new(peers),
             port,
             active_pin: RwLock::new(None),
+            crdt_manager: RwLock::new(crdt_manager),
+            server_shutdown_tx: Some(tx),
+            config_dir,
         })
+    }
+
+    pub async fn save_peers(&self) {
+        let peers = self.peers.read().await;
+        let peers_file = self.config_dir.join("peers.json");
+        if let Ok(data) = serde_json::to_string(&*peers) {
+            let _ = std::fs::write(peers_file, data);
+        }
     }
 
     pub fn start_broadcasting(&self) -> Result<(), String> {
@@ -106,7 +143,14 @@ impl SyncState {
                                     is_paired: false,
                                 };
                                 let mut peers = state.peers.write().await;
-                                peers.insert(peer_id.to_string(), peer_info);
+
+                                // Preserve pairing status if we already knew this peer
+                                let is_paired = peers.get(&peer_id.to_string()).map(|p| p.is_paired).unwrap_or(false);
+
+                                let mut updated_info = peer_info;
+                                updated_info.is_paired = is_paired;
+
+                                peers.insert(peer_id.to_string(), updated_info);
                             }
                         }
                     }

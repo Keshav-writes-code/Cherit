@@ -7,10 +7,18 @@
 	let discovered_peers = $state<Array<{ id: string; name: string; is_paired: boolean }>>([]);
 	let input_pin = $state('');
 
+	import { workspace_root_path } from '@/lib/global_states/index.svelte';
+
 	async function toggle_sync() {
 		try {
 			if (!is_sync_enabled) {
-				await invoke('start_sync_service');
+				const workspace_root = workspace_root_path.data?.path;
+				if (!workspace_root) {
+					toast.error("Please open a workspace folder first.");
+					return;
+				}
+
+				await invoke('start_sync_service', { workspaceRoot: workspace_root });
 				is_sync_enabled = true;
 				refresh_peers();
 				toast.success('Sync service started');

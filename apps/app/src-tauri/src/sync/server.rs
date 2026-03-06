@@ -5,6 +5,7 @@ use axum::{
 };
 use std::sync::Arc;
 use crate::sync::discovery::SyncState;
+use tauri::Emitter;
 use crate::sync::pairing::{PairRequest, PairResponse};
 use serde::{Deserialize, Serialize};
 
@@ -26,12 +27,17 @@ pub struct SyncResponse {
     pub success: bool,
 }
 
-pub async fn start_server(state: Arc<SyncState>, port: u16) -> Result<(), String> {
+pub async fn start_server(state: Arc<SyncState>, port: u16, app_handle: tauri::AppHandle) -> Result<(), String> {
+    let server_state = ServerState {
+        sync: state.clone(),
+        app: app_handle,
+    };
+
     let app = Router::new()
         .route("/status", get(status_handler))
         .route("/pair", post(pair_handler))
         .route("/sync", post(sync_handler))
-        .with_state(state);
+        .with_state(server_state);
 
     let addr = format!("0.0.0.0:{}", port);
     let listener = tokio::net::TcpListener::bind(&addr)
@@ -40,8 +46,15 @@ pub async fn start_server(state: Arc<SyncState>, port: u16) -> Result<(), String
 
     println!("Sync server listening on {}", addr);
 
+    let mut rx = state.server_shutdown_tx.as_ref().unwrap().subscribe();
+
     tokio::spawn(async move {
-        if let Err(e) = axum::serve(listener, app).await {
+        let server = axum::serve(listener, app).with_graceful_shutdown(async move {
+            let _ = rx.recv().await;
+            println!("Sync server gracefully shutting down");
+        });
+
+        if let Err(e) = server.await {
             eprintln!("Server error: {}", e);
         }
     });
@@ -49,35 +62,51 @@ pub async fn start_server(state: Arc<SyncState>, port: u16) -> Result<(), String
     Ok(())
 }
 
-async fn status_handler(State(state): State<Arc<SyncState>>) -> Json<PeerStatus> {
+// Due to the wrapper struct, we need to adjust handlers signature to extract it.
+// To avoid redefining struct visibility issues, we'll inline it at the module level.
+#[derive(Clone)]
+struct ServerState {
+    sync: Arc<SyncState>,
+    app: tauri::AppHandle,
+}
+
+async fn status_handler(State(state): State<ServerState>) -> Json<PeerStatus> {
     Json(PeerStatus {
-        id: state.my_id.clone(),
-        name: state.my_name.clone(),
+        id: state.sync.my_id.clone(),
+        name: state.sync.my_name.clone(),
     })
 }
 
 async fn pair_handler(
-    State(state): State<Arc<SyncState>>,
+    State(state): State<ServerState>,
     Json(payload): Json<PairRequest>,
 ) -> Json<PairResponse> {
-    let active_pin = state.active_pin.read().await;
+    let active_pin = state.sync.active_pin.read().await;
 
     if let Some(pin) = active_pin.as_ref() {
         if pin == &payload.pin {
-            // Pin matches, pair the device
-            let mut peers = state.peers.write().await;
+            let mut peers = state.sync.peers.write().await;
             if let Some(peer) = peers.get_mut(&payload.peer_id) {
                 peer.is_paired = true;
-                return Json(PairResponse {
-                    success: true,
-                    message: "Successfully paired".to_string(),
-                });
             } else {
-                return Json(PairResponse {
-                    success: false,
-                    message: "Peer not found in discovered list".to_string(),
-                });
+                let stub_peer = crate::sync::discovery::PeerInfo {
+                    id: payload.peer_id.clone(),
+                    name: "Unknown Peer".to_string(),
+                    ip: "0.0.0.0".to_string(),
+                    port: 8080,
+                    is_paired: true,
+                };
+                peers.insert(payload.peer_id.clone(), stub_peer);
             }
+
+            // Drop lock and save asynchronously
+            drop(peers);
+            state.sync.save_peers().await;
+
+            return Json(PairResponse {
+                success: true,
+                message: "Successfully paired".to_string(),
+            });
         }
     }
 
@@ -88,41 +117,34 @@ async fn pair_handler(
 }
 
 async fn sync_handler(
-    State(state): State<Arc<SyncState>>,
+    State(state): State<ServerState>,
     Json(payload): Json<SyncRequest>,
 ) -> Json<SyncResponse> {
-    let peers = state.peers.read().await;
+    let peers = state.sync.peers.read().await;
 
     // Authenticate: Ensure the peer exists and is paired
     if let Some(peer) = peers.get(&payload.peer_id) {
         if peer.is_paired {
-            // For MVP, without the CRDTManager hooked into global state,
-            // we will write the synced content directly to the documents directory.
-            // A more complete CRDT impl is in crdt.rs but requires global state integration
+            let relative_path_str = payload.file_path.clone();
+            // Ensure any incoming Unix paths are correctly converted to local platform paths (e.g. Windows)
+            let relative_path = std::path::PathBuf::from(relative_path_str.replace('/', std::path::MAIN_SEPARATOR_STR));
 
-            let file_name = payload.file_path;
+            let mut crdt_manager = state.sync.crdt_manager.write().await;
 
-            // For safety and MVP purposes, assume files are saved to a common default local location
-            // or the same dir structure if they have identical root workspaces.
-            // Here we simply print and save into a `.sync-inbox` to prove it works without
-            // accidentally overwriting the user's primary workspace root if not configured properly.
+            match crdt_manager.apply_sync_data(&relative_path, &payload.content).await {
+                Ok(_) => {
+                    println!("Successfully merged sync data from {} for {:?}", peer.name, relative_path);
 
-            // Note: full CRDT integration requires the app's selected workspace dir, which is kept
-            // in the Svelte frontend state (or passed to Rust via set_workspace_root).
+                    // Emit event so the frontend knows to reload this file
+                    let _ = state.app.emit("sync-file-updated", relative_path_str);
 
-            if let Some(mut home_dir) = dirs::home_dir() {
-                 home_dir.push(".cherit-sync-inbox");
-                 let _ = std::fs::create_dir_all(&home_dir);
-                 let save_path = home_dir.join(&file_name);
-                 let _ = std::fs::write(&save_path, &payload.content);
-
-                 println!("Received sync data from {} for {:?} and saved to {:?}", peer.name, file_name, save_path);
-            } else {
-                 let _ = std::fs::write(&file_name, &payload.content);
-                 println!("Received sync data from {} for {:?}", peer.name, file_name);
+                    return Json(SyncResponse { success: true });
+                }
+                Err(e) => {
+                    eprintln!("Failed to merge sync data: {}", e);
+                    return Json(SyncResponse { success: false });
+                }
             }
-
-            return Json(SyncResponse { success: true });
         }
     }
 
