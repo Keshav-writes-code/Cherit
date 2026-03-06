@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 #[cfg(all(test, not(target_os = "android")))]
 mod desktop_test;
 
+mod sync;
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct FileNode {
     pub name: String,
@@ -432,6 +434,8 @@ async fn move_file_android(
     }
 }
 
+use tauri::Manager;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -446,9 +450,17 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             build_file_tree,
             move_file_android,
-            move_directory_android
+            move_directory_android,
+            sync::commands::start_sync_service,
+            sync::commands::stop_sync_service,
+            sync::commands::generate_pairing_pin,
+            sync::commands::get_discovered_peers,
+            sync::commands::pair_with_peer
         ])
         .setup(|app| {
+            app.manage(sync::commands::AppSyncState {
+                inner: tokio::sync::RwLock::new(None),
+            });
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()

@@ -20,5 +20,27 @@
           .pop()}
       </button>
     </li>
+    <li>
+      <button
+        onclick={() => {
+          (document.getElementById('sync_settings_modal') as HTMLDialogElement)?.showModal();
+        }}
+      >
+        <div class="i-famicons:sync size-4"></div>
+        Sync Devices
+      </button>
+    </li>
   </ul>
 </div>
+
+<dialog id="sync_settings_modal" class="modal">
+  <div class="modal-box w-11/12 max-w-5xl">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <!-- SyncSettings component loaded dynamically to avoid circular dependencies if any -->
+    {#await import('@/lib/components/sync/SyncSettings.svelte') then SyncSettings}
+      <SyncSettings.default />
+    {/await}
+  </div>
+</dialog>
