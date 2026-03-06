@@ -114,10 +114,14 @@ pub async fn sync_file(state: State<'_, AppSyncState>, file_path: String) -> Res
         // First ensure the file is loaded into the CRDT manager so we have an active tracking state
         // This is necessary if it's the very first time the file is being synced.
         if !crdt_manager.documents.contains_key(&relative_path) {
-            let _ = crdt_manager.load_or_create_doc(&relative_path).await;
+            if let Err(e) = crdt_manager.load_or_create_doc(&relative_path).await {
+                eprintln!("Failed to initialize doc for sync: {}", e);
+            }
         }
 
-        let _ = crdt_manager.update_doc_from_file(&relative_path).await;
+        if let Err(e) = crdt_manager.update_doc_from_file(&relative_path).await {
+            eprintln!("Failed to update doc for sync: {}", e);
+        }
 
         // Fetch the raw bytes of the automerge CRDT state to send
         let payload_content = match crdt_manager.documents.get(&relative_path) {

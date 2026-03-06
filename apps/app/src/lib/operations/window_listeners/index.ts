@@ -33,11 +33,8 @@ async function on_window_blur() {
       editor_view.data.state.doc.toString()
     );
 
-    // Trigger sync if enabled
-    try {
-      await invoke('sync_file', { filePath: opened_filenode.data.path });
-    } catch (e) {
-      console.warn('Failed to trigger sync: ', e);
-    }
+    // The main_section/text_editor handles sync_file immediately on write_to_file
+    // so we don't strictly need to double fire it here unless we're caching.
+    // For safety, re-triggering is fine, but it might just be redundant.
   }
 }

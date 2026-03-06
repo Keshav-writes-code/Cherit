@@ -131,9 +131,12 @@ async fn sync_handler(
 
             let mut crdt_manager = state.sync.crdt_manager.write().await;
 
-            // First ensure we have tracking for this file initialized on this end too
+            // Wait for file creation / tracking initialization before applying merge
+            // otherwise the new file merge has no context.
             if !crdt_manager.documents.contains_key(&relative_path) {
-                let _ = crdt_manager.load_or_create_doc(&relative_path).await;
+                if let Err(e) = crdt_manager.load_or_create_doc(&relative_path).await {
+                    eprintln!("Failed to init tracking for new sync file: {}", e);
+                }
             }
 
             match crdt_manager.apply_sync_data(&relative_path, &payload.content).await {
