@@ -40,7 +40,7 @@ impl SyncState {
         }
         path_str = urlencoding::decode(&path_str).unwrap_or(std::borrow::Cow::Borrowed(&path_str)).to_string();
 
-        let crdt_manager = CrdtManager::new(std::path::PathBuf::from(path_str)).await?;
+        let crdt_manager = CrdtManager::new(std::path::PathBuf::from(path_str), config_dir.clone()).await?;
 
         // Channel for server shutdown
         let (tx, _) = tokio::sync::broadcast::channel(1);

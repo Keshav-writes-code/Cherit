@@ -19,12 +19,18 @@ pub struct CrdtManager {
 
 #[allow(dead_code)]
 impl CrdtManager {
-    pub async fn new(base_dir: PathBuf) -> Result<Self, String> {
-        let sync_dir = base_dir.join(".sync");
+    pub async fn new(base_dir: PathBuf, config_dir: PathBuf) -> Result<Self, String> {
+        // Instead of writing to base_dir which causes "Read-only file system" errors
+        // on Android SAF URIs, we store sync states in the app's native config directory.
+        // We hash the base_dir path so multiple workspaces don't collide their sync states.
+
+        let workspace_hash = md5::compute(base_dir.to_string_lossy().as_bytes());
+        let sync_dir = config_dir.join(format!("sync_states_{:x}", workspace_hash));
+
         if !sync_dir.exists() {
             fs::create_dir_all(&sync_dir)
                 .await
-                .map_err(|e| format!("Failed to create .sync dir: {}", e))?;
+                .map_err(|e| format!("Failed to create sync dir: {}", e))?;
         }
 
         Ok(Self {
