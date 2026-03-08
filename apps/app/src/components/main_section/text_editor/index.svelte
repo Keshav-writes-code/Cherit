@@ -8,7 +8,7 @@
   import MobileToolbar from './editor_toolbar_mobile/index.svelte';
   import { editor_view } from './editor_state.svelte';
   import { focused_subtree } from '@/components/sidebar_section/file_manager/states.svelte';
-  import { current_platform_type } from '@/lib/states/';
+  import { current_platform_type } from '@/lib/states/domain_specific/os.svelte';
 
   let {
     filenode = $bindable(),

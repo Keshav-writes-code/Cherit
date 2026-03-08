@@ -6,7 +6,7 @@
   import BreadCrumb from '@/components/general/breadcrumb_path/index.svelte';
   import PaneMenu from '@/components/main_section/pane_menu/index.svelte';
   import { opened_filenode } from '@/lib/states';
-  import { current_platform_type } from '@/lib/states/';
+  import { current_platform_type } from '@/lib/states/domain_specific/os.svelte';
 </script>
 
 <TitleBar />
