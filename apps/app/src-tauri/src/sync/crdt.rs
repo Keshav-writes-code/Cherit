@@ -126,13 +126,19 @@ impl CrdtManager {
 
             // Only mutate if there's actually a change
             if current_text != new_content {
-                // If it is completely different we splice the whole text out and in.
-                // However, if new_content is empty (e.g. file just created or wiped),
-                // we still need to record the deletion.
                 let mut tx = doc_state.automerge_doc.transaction();
                 let current_len = tx.length(&doc_state.text_obj_id);
-                tx.splice_text(&doc_state.text_obj_id, 0, current_len as isize, &new_content)
-                    .map_err(|e| format!("Failed to update content via splice: {}", e))?;
+
+                // If new_content is empty (e.g. file just created or wiped),
+                // we still need to record the deletion.
+                if current_len > 0 {
+                    tx.splice_text(&doc_state.text_obj_id, 0, current_len as isize, "")
+                        .map_err(|e| format!("Failed to delete old content via splice: {}", e))?;
+                }
+                if !new_content.is_empty() {
+                    tx.splice_text(&doc_state.text_obj_id, 0, 0, &new_content)
+                        .map_err(|e| format!("Failed to insert new content via splice: {}", e))?;
+                }
                 tx.commit();
             }
 
