@@ -12,10 +12,7 @@
   import { onMount } from 'svelte';
   import { show_folder_picker } from '@/lib/operations/picker_dialog';
   import { update_workspace } from '@/lib/operations/workspace';
-  import {
-    current_platform,
-    current_platform_type,
-  } from '@/lib/states/';
+  import { current_platform, current_platform_type } from '@/lib/states/';
   import { RecentWorkspaces } from '@/lib/states';
 
   onMount(async () => {
