@@ -129,6 +129,7 @@ impl CrdtManager {
                 let mut tx = doc_state.automerge_doc.transaction();
                 let current_len = tx.length(&doc_state.text_obj_id);
 
+
                 // If new_content is empty (e.g. file just created or wiped),
                 // we still need to record the deletion.
                 if current_len > 0 {

@@ -7,7 +7,7 @@
 	let discovered_peers = $state<Array<{ id: string; name: string; is_paired: boolean }>>([]);
 	let input_pin = $state('');
 
-	import { workspace_root_path } from '@/lib/global_states/index.svelte';
+	import { workspace_root_path } from '@/lib/states/global/index.svelte';
 
 	async function toggle_sync() {
 		try {
