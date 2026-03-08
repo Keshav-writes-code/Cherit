@@ -3,12 +3,14 @@
   import { workspace_root_path } from '@/lib/states';
   import type { Node } from '@/lib/types';
   import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
+  import { invoke } from '@tauri-apps/api/core';
   import { toast } from 'svelte-sonner';
   import Editor from './editor/index.svelte';
   import MobileToolbar from './editor_toolbar_mobile/index.svelte';
   import { editor_view } from './editor_state.svelte';
   import { focused_subtree } from '@/components/sidebar_section/file_manager/states.svelte';
   import { current_platform_type } from '@/lib/states/domain_specific/os.svelte';
+  import { listen } from '@tauri-apps/api/event';
 
   let {
     filenode = $bindable(),
@@ -20,7 +22,7 @@
   let is_file_named_changed: boolean = $state(false);
   let mobile_toolbar_visible: boolean = $state(false);
 
-  $effect(() => {
+  function load_file_content() {
     if (!filenode) return;
     readTextFile(filenode.path)
       .then((res) => {
@@ -33,6 +35,46 @@
         text_content = undefined;
         current_file_name = undefined;
       });
+  }
+
+  $effect(() => {
+    load_file_content();
+  });
+
+  $effect(() => {
+    const unlisten = listen('sync-file-updated', (event) => {
+      const updated_relative_path = event.payload as string;
+      // The incoming event payload is a relative path.
+      // For a strict match, we'd compare base_dir + relative_path to filenode.path.
+      // As a simple MVP, check if the active file path ends with the updated path.
+      if (filenode && filenode.path.endsWith(updated_relative_path)) {
+        // Reload contents from disk. This updates text_content,
+        // but the codemirror editor needs to be informed.
+        // To force Svelte to recreate the Editor component or re-eval state,
+        // we briefly clear the content.
+        readTextFile(filenode.path)
+          .then((res) => {
+            // Update state if changed
+            if (text_content !== res) {
+              text_content = res;
+              if (editor_view.data) {
+                editor_view.data.dispatch({
+                  changes: {
+                    from: 0,
+                    to: editor_view.data.state.doc.length,
+                    insert: res || '\n',
+                  },
+                });
+              }
+            }
+          })
+          .catch(console.error);
+      }
+    });
+
+    return () => {
+      unlisten.then((f) => f());
+    };
   });
 </script>
 
@@ -83,6 +125,11 @@
       write_to_file={(content) => {
         if (!filenode) return;
         writeTextFile(filenode?.path, content);
+
+        // Trigger sync if enabled
+        invoke('sync_file', { filePath: filenode?.path }).catch((e) => {
+          console.warn('Failed to trigger sync: ', e);
+        });
       }}
       on_focus_in={() => {
         mobile_toolbar_visible = true;

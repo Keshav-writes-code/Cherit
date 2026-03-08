@@ -6,6 +6,7 @@ import {
   is_contents_changed,
 } from '@/components/main_section/text_editor/editor_state.svelte';
 import { touch_recent_workspaces } from '../workspace';
+import { invoke } from '@tauri-apps/api/core';
 
 export async function attach_window_listeners() {
   const unlistenFocus = await getCurrentWindow().onFocusChanged(
@@ -31,5 +32,19 @@ async function on_window_blur() {
       opened_filenode.data.path,
       editor_view.data.state.doc.toString()
     );
+
+    // Also explicitly trigger sync so if offline edits happened, they get pushed.
+    try {
+        await invoke('sync_file', { filePath: opened_filenode.data.path });
+    } catch (e) {
+        console.warn("Failed to trigger sync: ", e);
+    }
   }
 }
+
+// Ensure the sync engine is aware we just focused back to possibly push changes
+getCurrentWindow().onFocusChanged(({ payload: focused }) => {
+    if (focused && opened_filenode.data) {
+        invoke('sync_file', { filePath: opened_filenode.data.path }).catch(console.warn);
+    }
+});
