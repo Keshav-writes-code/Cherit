@@ -180,6 +180,7 @@
 
 {#snippet folder_node(node: Node, parent_subtree: Node[])}
   {@const is_focused_and_collapsed_and_hover =
+    expand_override_fine_grain.has(node.path) === false &&
     !child_render_paths.has(node.path) &&
     node.path === focused_directory_path &&
     hover_newnode_button.data}
