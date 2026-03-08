@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { SubmitStates } from '@/types';
+  import type { SubmitStates } from '@/lib/types';
 
   type Props = {
     tooltip?: string;

@@ -4,8 +4,8 @@
   import GlobalContextMenu from '@/components/general/context_menu/index.svelte';
   import { Toaster } from 'svelte-sonner';
   import Main from '@/components/main_section/index.svelte';
-  import { attach_window_listeners } from '@/lib/window_listeners';
-  import { drawer_open } from '@/lib/global_states/index.svelte';
+  import { attach_window_listeners } from './lib/operations/window_listeners';
+  import { drawer_open } from './lib/states';
   $effect(() => {
     const detach = attach_window_listeners();
     return () => detach.then((f) => f()); // Handle the async setup/cleanup

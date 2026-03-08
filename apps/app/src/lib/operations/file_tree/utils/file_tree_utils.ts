@@ -1,4 +1,4 @@
-import { type Node } from '@/types';
+import { type Node } from '@/lib/types/';
 
 export function find_unused_name(
   base_name: string,

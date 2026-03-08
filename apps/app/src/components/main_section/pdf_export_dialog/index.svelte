@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { pdf_rendered } from '@/lib/features/pdf_export';
-  import { show_folder_picker } from '@/lib/file_system/picker_dialog';
-  import type { Node, GenericPath } from '@/types';
+  import { pdf_rendered } from '@/lib/operations/pdf_export';
+  import { show_folder_picker } from '@/lib/operations/picker_dialog';
+  import type { Node, GenericPath, SubmitStates } from '@/lib/types';
   import { toast } from 'svelte-sonner';
-  import type { SubmitStates } from '@/types';
   import SubmitButton from '@/components/general/submit_button/index.svelte';
   import { pdf_export_status } from '@/components/main_section/pdf_export_dialog/states.svelte';
   let { open = $bindable(), filenode }: { open: boolean; filenode: Node } =

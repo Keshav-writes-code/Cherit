@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { get_relative_path_parts } from '@/lib/file_system';
-  import { workspace_root_path } from '@/lib/global_states/index.svelte';
-  import type { Node } from '@/types';
+  import { get_relative_path_parts } from '@/lib/operations/file_tree';
+  import { workspace_root_path } from '@/lib/states';
+  import type { Node } from '@/lib/types';
   let {
     filenode,
     class: classes = 'text-xs',

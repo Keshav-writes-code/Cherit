@@ -1,4 +1,4 @@
-import { type MenuItem } from '@/types';
+import { type MenuItem } from '@/lib/types/';
 
 class MenuState {
   visible = $state(false);

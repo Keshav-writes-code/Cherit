@@ -1,14 +1,10 @@
 <script lang="ts">
-  import {
-    add_new_folder,
-    add_new_note,
-    current_platform_type,
-  } from '@/lib/file_system';
+  import { add_new_folder, add_new_note } from '@/lib/operations/file_tree';
   import {
     drawer_open,
     opened_filenode,
     workspace_root_path,
-  } from '@/lib/global_states/index.svelte';
+  } from '@/lib/states';
   import {
     file_tree,
     focused_subtree,
@@ -19,6 +15,7 @@
     expand_override_global,
     expand_override_fine_grain,
   } from './states.svelte';
+  import { current_platform_type } from '@/lib/states/';
   let {
     focused_directory_path,
   }: { focused_directory_path: string | undefined } = $props();

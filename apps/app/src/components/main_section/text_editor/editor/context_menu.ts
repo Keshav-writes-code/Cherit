@@ -1,6 +1,6 @@
 // @unocss-include
 
-import type { MenuItem } from '@/types';
+import type { MenuItem } from '@/lib/types';
 import type { EditorView } from '@codemirror/view';
 import { writeText, readText } from '@tauri-apps/plugin-clipboard-manager';
 export function get_desktop_context_menu(view: EditorView): MenuItem[] {

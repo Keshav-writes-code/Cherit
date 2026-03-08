@@ -1,26 +1,22 @@
 <script lang="ts">
+  import { get_relative_path_parts } from '@/lib/operations/file_tree';
+  import { get_most_recent_workspace } from '@/lib/operations/user_activity';
+  import {
+    opened_filenode,
+    recent_workspaces,
+    user_activity,
+    workspace_root_path,
+  } from '@/lib/states';
+  import { root_folder_picker_dialog_state } from './states.svelte';
+  import type { Workspace } from '@/lib/types';
+  import { onMount } from 'svelte';
+  import { show_folder_picker } from '@/lib/operations/picker_dialog';
+  import { update_workspace } from '@/lib/operations/workspace';
   import {
     current_platform,
     current_platform_type,
-    get_relative_path_parts,
-  } from '@/lib/file_system';
-  import {
-    get_most_recent_workspace,
-    RecentWorkspaces,
-  } from '@/lib/user_activity';
-  import {
-    opened_filenode,
-    workspace_root_path,
-  } from '@/lib/global_states/index.svelte';
-  import { root_folder_picker_dialog_state } from './states.svelte';
-  import type { Workspace } from '@/types';
-  import { onMount } from 'svelte';
-  import { show_folder_picker } from '@/lib/file_system/picker_dialog';
-  import {
-    recent_workspaces,
-    user_activity,
-    update_workspace,
-  } from './operations.svelte';
+  } from '@/lib/states/';
+  import { RecentWorkspaces } from '@/lib/states';
 
   onMount(async () => {
     const raw = (await user_activity.get<Workspace[]>('recent_paths')) ?? [];

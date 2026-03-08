@@ -1,16 +1,12 @@
 <script lang="ts">
-  import type { Node, MenuItem } from '@/types';
+  import type { Node, MenuItem } from '@/lib/types';
   import animatedDetails from 'svelte-animated-details';
-  import {
-    current_platform_type,
-    get_parent_path,
-    rename_node,
-  } from '@/lib/file_system';
+  import { get_parent_path, rename_node } from '@/lib/operations/file_tree';
   import {
     opened_filenode,
     workspace_root_path,
     context_menu,
-  } from '@/lib/global_states/index.svelte';
+  } from '@/lib/states';
   import {
     get_desktop_context_menu,
     get_mobile_context_menu,
@@ -29,7 +25,7 @@
   } from './states.svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import { toast } from 'svelte-sonner';
-  import { boolean } from 'zod';
+  import { current_platform_type } from '@/lib/states/';
 
   let {
     focused_directory_path = $bindable(),

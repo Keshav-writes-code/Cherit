@@ -1,14 +1,11 @@
-import { touch_recent_workspaces } from '@/components/general/root_folder_selector/operations.svelte';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
-import {
-  opened_filenode,
-  workspace_root_path,
-} from '@/lib/global_states/index.svelte';
+import { opened_filenode, workspace_root_path } from '@/lib/states/';
 import {
   editor_view,
   is_contents_changed,
 } from '@/components/main_section/text_editor/editor_state.svelte';
+import { touch_recent_workspaces } from '../workspace';
 
 export async function attach_window_listeners() {
   const unlistenFocus = await getCurrentWindow().onFocusChanged(

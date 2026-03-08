@@ -1,7 +1,7 @@
 import { open } from '@tauri-apps/plugin-dialog';
-import { current_platform } from '../file_tree';
-import type { GenericPath } from '@/types';
+import type { GenericPath } from '@/lib/types/';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
+import { current_platform } from '@/lib/states/domain_specific/os.svelte';
 
 export async function show_folder_picker(): Promise<GenericPath> {
   let path: GenericPath;

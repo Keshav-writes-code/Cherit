@@ -1,9 +1,9 @@
 import { create, mkdir, remove, rename } from '@tauri-apps/plugin-fs';
-import { type Node, type GenericPath } from '@/types';
+import { type Node, type GenericPath } from '@/lib/types/';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
 import { invoke } from '@tauri-apps/api/core';
+import { pending_app_changes, current_platform } from '@/lib/states';
 import {
-  current_platform,
   find_unused_name,
   get_parent_path,
   get_relative_path_parts,
@@ -61,6 +61,8 @@ export async function move_node(
           documentTopTreeUri: document_top_tree_uri,
         });
       }
+      pending_app_changes.data.add(node.path);
+      pending_app_changes.data.add(new_path);
     } catch (e) {
       console.error(e);
       toast.error('Error Moving Node', { description: String(e) });
@@ -75,6 +77,8 @@ export async function move_node(
       ? join_path(new_parent_path, name_with_ext)
       : name_with_ext;
 
+    pending_app_changes.data.add(node.path);
+    pending_app_changes.data.add(new_path);
     await rename(node.path, new_path);
   }
 
@@ -149,8 +153,10 @@ export async function add_new_note(
         'plain/text'
       );
       new_file_path = focused_path + encodeURIComponent(`/${name}.md`);
+      pending_app_changes.data.add(new_file_path);
     } else {
       new_file_path = join_path(focused_path, name + '.md');
+      pending_app_changes.data.add(new_file_path);
       await create(new_file_path);
     }
     subtree.push({
@@ -186,8 +192,10 @@ export async function add_new_folder(
       name
     );
     new_file_path = focused_path + encodeURIComponent(`/${name}`);
+    pending_app_changes.data.add(new_file_path);
   } else {
     new_file_path = join_path(focused_path, name);
+    pending_app_changes.data.add(new_file_path);
     await mkdir(new_file_path);
   }
   subtree.push({
@@ -235,6 +243,9 @@ export async function rename_node({
         ));
       }
 
+      pending_app_changes.data.add(node.path);
+      pending_app_changes.data.add(new_path);
+
       // Update node
       node.name = new_name;
 
@@ -260,6 +271,8 @@ export async function rename_node({
     const parent = get_parent_path(node.path);
     const new_path = join_path(parent, final_name);
     try {
+      pending_app_changes.data.add(node.path);
+      pending_app_changes.data.add(new_path);
       await rename(node.path, new_path);
 
       node.name = new_name;
@@ -299,7 +312,9 @@ export async function delete_node(
           documentTopTreeUri: document_top_tree_uri,
         });
       }
+      pending_app_changes.data.add(node.path);
     } else {
+      pending_app_changes.data.add(node.path);
       await remove(node.path, { recursive: node.is_directory });
     }
     const index = parent_tree.findIndex((v) => v == node);

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { move_node } from '@/lib/file_system';
+  import { move_node } from '@/lib/operations/file_tree';
   import ItemsRender from './items_renderer.svelte';
   import Toolbar from './toolbar.svelte';
   import { toast } from 'svelte-sonner';
-  import { workspace_root_path } from '@/lib/global_states/index.svelte';
+  import { workspace_root_path } from '@/lib/states';
   import { file_tree } from './states.svelte';
   let focused_directory_path: string | undefined = $derived(
     workspace_root_path.data?.path

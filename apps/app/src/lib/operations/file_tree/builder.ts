@@ -1,4 +1,4 @@
-import { type Node, type GenericPath } from '@/types';
+import { type Node, type GenericPath } from '@/lib/types/';
 import { invoke } from '@tauri-apps/api/core';
 
 export async function build_file_tree_from_fs({

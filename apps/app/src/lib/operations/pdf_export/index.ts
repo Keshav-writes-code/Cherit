@@ -1,9 +1,10 @@
 import html2canvas from 'html2canvas-pro';
 import { jsPDF } from 'jspdf';
 import { writeFile } from '@tauri-apps/plugin-fs';
-import { current_platform, join_path } from '@/lib/file_system';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
-import type { GenericPath } from '@/types';
+import type { GenericPath } from '@/lib/types/';
+import { current_platform } from '@/lib/states';
+import { join_path } from '@/lib/operations/file_tree';
 
 export async function pdf_rendered(file_name: string, location: GenericPath) {
   const el = document.getElementById('text_editor');

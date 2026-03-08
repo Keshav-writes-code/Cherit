@@ -1,12 +1,12 @@
 <script lang="ts">
   import { EditorView } from '@codemirror/view';
   import { editor_view, is_contents_changed } from '../editor_state.svelte';
-  import type { MenuItem } from '@/types';
-  import { current_platform_type } from '@/lib/file_system';
+  import type { MenuItem } from '@/lib/types';
   import { get_desktop_context_menu } from './context_menu';
-  import { context_menu } from '@/lib/global_states/index.svelte';
   import { create_editor } from './editor_config';
   import './editor_config/theme.css';
+  import { current_platform_type } from '@/lib/states/';
+  import { context_menu } from '@/lib/states';
   let {
     text_content,
     write_to_file,

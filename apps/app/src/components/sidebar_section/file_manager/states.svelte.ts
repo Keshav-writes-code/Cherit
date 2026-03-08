@@ -1,6 +1,5 @@
-import { workspace_root_path } from '@/lib/global_states/index.svelte';
 import { SvelteSet } from 'svelte/reactivity';
-import type { Node } from '@/types';
+import type { Node } from '@/lib/types';
 
 // Main File tree
 export const file_tree: { data: Node[] | undefined } = $state({

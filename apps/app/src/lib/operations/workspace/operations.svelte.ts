@@ -1,25 +1,25 @@
 import {
   build_file_tree_from_fs,
   find_filenode_by_path,
-} from '@/lib/file_system';
-import { current_platform } from '@/lib/file_system';
+} from '@/lib/operations/file_tree';
 import {
   opened_filenode,
+  pending_app_changes,
+  recent_workspaces,
+  user_activity,
   workspace_root_path,
-} from '@/lib/global_states/index.svelte';
+} from '@/lib/states/';
 import { root_folder_picker_dialog_state } from '@/components/general/root_folder_selector/states.svelte';
-import { type Workspace, type GenericPath } from '@/types';
-import { LazyStore } from '@tauri-apps/plugin-store';
+import { type Workspace, type GenericPath } from '@/lib/types/';
 import { toast } from 'svelte-sonner';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
 import {
   file_tree,
+  focused_subtree,
   is_filetree_loading,
 } from '@/components/sidebar_section/file_manager/states.svelte';
 import { watch } from '@tauri-apps/plugin-fs';
-
-export const user_activity = new LazyStore('user_activity.json');
-export let recent_workspaces: { data: Workspace[] } = $state({ data: [] });
+import { current_platform } from '@/lib/states';
 
 // NOTE: Mainly updates only the UI States of the App
 export async function update_workspace(
@@ -51,8 +51,20 @@ export async function update_workspace(
             ('modify' in event_type && event_type.modify.kind !== 'rename'))
         )
           return;
+
+        // check if this event was initiated by the app
+        let is_app_initiated = false;
+        for (const path of e.paths) {
+          if (pending_app_changes.data.has(path)) {
+            is_app_initiated = true;
+            pending_app_changes.data.delete(path);
+          }
+        }
+        if (is_app_initiated) return;
+
         console.log('Stuff CHanged', e);
         file_tree.data = await build_file_tree_from_fs(generic_path);
+        focused_subtree.data = undefined;
       },
       {
         recursive: true,

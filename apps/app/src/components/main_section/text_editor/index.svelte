@@ -1,13 +1,14 @@
 <script lang="ts">
-  import { current_platform_type, rename_node } from '@/lib/file_system';
-  import { workspace_root_path } from '@/lib/global_states/index.svelte';
-  import type { Node } from '@/types';
+  import { rename_node } from '@/lib/operations/file_tree';
+  import { workspace_root_path } from '@/lib/states';
+  import type { Node } from '@/lib/types';
   import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
   import { toast } from 'svelte-sonner';
   import Editor from './editor/index.svelte';
   import MobileToolbar from './editor_toolbar_mobile/index.svelte';
   import { editor_view } from './editor_state.svelte';
   import { focused_subtree } from '@/components/sidebar_section/file_manager/states.svelte';
+  import { current_platform_type } from '@/lib/states/';
 
   let {
     filenode = $bindable(),
