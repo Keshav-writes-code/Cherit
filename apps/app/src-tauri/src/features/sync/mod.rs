@@ -1,9 +1,6 @@
-use std::{
-    collections::HashMap,
-    net::{IpAddr, Ipv4Addr},
-};
+use std::collections::HashMap;
 
-use local_ip_address::{list_afinet_netifas, local_ip};
+use local_ip_address::local_ip;
 use mdns_sd::{ServiceDaemon, ServiceEvent, ServiceInfo};
 use serde::Serialize;
 use tauri::{Emitter, Window};
