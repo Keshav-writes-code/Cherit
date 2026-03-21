@@ -1,5 +1,5 @@
 use std::{
-    collections::HashSet,
+    collections::HashMap,
     net::{IpAddr, Ipv4Addr},
 };
 
@@ -52,7 +52,7 @@ pub fn join_scan_local_network(win: Window) {
     // Scan Local Network
     std::thread::spawn(move || {
         let receiver = deamon.browse(SERVICE_TYPE).unwrap();
-        let mut recevied_devices = HashSet::<DiscoveredDevice>::new();
+        let mut recevied_devices = HashMap::<String, DiscoveredDevice>::new();
 
         while let Ok(event) = receiver.recv() {
             if let ServiceEvent::ServiceResolved(info) = event {
@@ -61,9 +61,12 @@ pub fn join_scan_local_network(win: Window) {
                         name: info.get_property_val_str("name").unwrap_or("").to_string(),
                         ip: ip.to_string(),
                     };
-                    recevied_devices.insert(device);
+                    recevied_devices.insert(info.fullname, device);
                     let _ = win.emit("device_found", &recevied_devices);
                 }
+            } else if let ServiceEvent::ServiceRemoved(_, full_name) = event {
+                recevied_devices.remove(&full_name);
+                let _ = win.emit("device_found", &recevied_devices);
             }
         }
     });
