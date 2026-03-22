@@ -4,11 +4,14 @@ use local_ip_address::local_ip;
 use mdns_sd::{ServiceDaemon, ServiceEvent, ServiceInfo};
 use serde::Serialize;
 use tauri::{Emitter, Window};
+use tauri_plugin_os::OsType;
 
 #[derive(Clone, Serialize, Hash, PartialEq, Eq)]
 struct DiscoveredDevice {
     name: String,
     ip: String,
+    host_name_2: String,
+    os: String,
 }
 
 fn gen_nick_name() -> String {
@@ -32,7 +35,14 @@ pub fn join_scan_local_network(win: Window) {
     let name = gen_nick_name();
     let active_ip = local_ip().expect("Failed to get local IP");
     let host_name = format!("{}.local.", active_ip);
-    let properties = [("ip", active_ip.to_string()), ("name", name.to_string())];
+    let host_name_2 = tauri_plugin_os::hostname();
+    let os = tauri_plugin_os::platform();
+    let properties = [
+        ("ip", active_ip.to_string()),
+        ("name", name.to_string()),
+        ("hostname2", host_name_2),
+        ("os", os.to_string()),
+    ];
 
     let service = ServiceInfo::new(
         SERVICE_TYPE,
@@ -56,11 +66,13 @@ pub fn join_scan_local_network(win: Window) {
                 if host_name == info.get_fullname() {
                     return;
                 }
-                let (Some(name), Some(ip)) = (info.get_property_val_str("name"), info.get_property_val_str("ip")) else {continue;};
+                let (Some(name), Some(ip), Some(host_name_2_fetched), Some(os)) = (info.get_property_val_str("name"), info.get_property_val_str("ip"), info.get_property_val_str("hostname2"), info.get_property_val_str("os")) else {continue;};
 
                 let device = DiscoveredDevice {
                     name: name.to_string(),
                     ip: ip.to_string(),
+                    host_name_2: host_name_2_fetched.to_string(),
+                    os: os.to_string(),
                 };
                 recevied_devices.insert(info.fullname, device);
                 let _ = win.emit("device_found", &recevied_devices);

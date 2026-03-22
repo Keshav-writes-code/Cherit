@@ -1,6 +1,6 @@
 import { platform, type Platform } from '@tauri-apps/plugin-os';
 
-const PLATFORM_TYPE_MAP = {
+export const PLATFORM_TYPE_MAP = {
   linux: 'desktop',
   macos: 'desktop',
   ios: 'mobile',
