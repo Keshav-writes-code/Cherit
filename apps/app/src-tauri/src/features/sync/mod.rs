@@ -53,14 +53,17 @@ pub fn join_scan_local_network(win: Window) {
 
         while let Ok(event) = receiver.recv() {
             if let ServiceEvent::ServiceResolved(info) = event {
-                if let Some(ip) = info.get_property_val_str("ip") {
-                    let device = DiscoveredDevice {
-                        name: info.get_property_val_str("name").unwrap_or("").to_string(),
-                        ip: ip.to_string(),
-                    };
-                    recevied_devices.insert(info.fullname, device);
-                    let _ = win.emit("device_found", &recevied_devices);
+                if host_name == info.get_fullname() {
+                    return;
                 }
+                let (Some(name), Some(ip)) = (info.get_property_val_str("name"), info.get_property_val_str("ip")) else {continue;};
+
+                let device = DiscoveredDevice {
+                    name: name.to_string(),
+                    ip: ip.to_string(),
+                };
+                recevied_devices.insert(info.fullname, device);
+                let _ = win.emit("device_found", &recevied_devices);
             } else if let ServiceEvent::ServiceRemoved(_, full_name) = event {
                 recevied_devices.remove(&full_name);
                 let _ = win.emit("device_found", &recevied_devices);
