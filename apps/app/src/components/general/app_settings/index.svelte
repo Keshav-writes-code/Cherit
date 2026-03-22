@@ -4,12 +4,14 @@
   import { sidebar_items } from './sidebar_items';
   import { fade } from 'svelte/transition';
   import { current_platform_type } from '@/lib/states/session';
+  import Sync from './sync/index.svelte';
 
-  const viewMap: Record<string, Component> = {};
+  const viewMap: Record<string, Component> = { sync: Sync };
   let activeTab = $state<string>();
-  let ActiveView: Component | undefined = $derived(
+  let ActiveView: Component | undefined = $derived.by(() =>
     activeTab ? viewMap[activeTab] : undefined
   );
+  $inspect(activeTab);
 </script>
 
 {#if app_settings_dialog_open_state.data}

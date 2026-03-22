@@ -7,4 +7,14 @@ export const sidebar_items: {
     icon: string;
   }[];
 }[] = [
+  {
+    category_label: 'options',
+    items: [
+      {
+        id: 'sync',
+        label: 'Sync',
+        icon: 'i-tabler:refresh',
+      },
+    ],
+  },
 ];
