@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { context_menu } from '@/lib/states';
-  import { current_platform_type } from '@/lib/states/';
+  import { context_menu, current_platform_type } from '@/lib/states';
   import { fly } from 'svelte/transition';
 
   let dialog = $state<HTMLDialogElement>();

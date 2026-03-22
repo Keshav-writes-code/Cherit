@@ -9,7 +9,6 @@ import {
   user_activity,
   workspace_root_path,
 } from '@/lib/states/';
-import { root_folder_picker_dialog_state } from '@/components/general/root_folder_selector/states.svelte';
 import { type Workspace, type GenericPath } from '@/lib/types/';
 import { toast } from 'svelte-sonner';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
@@ -20,6 +19,7 @@ import {
 } from '@/components/sidebar_section/file_manager/states.svelte';
 import { watch } from '@tauri-apps/plugin-fs';
 import { current_platform } from '@/lib/states';
+import { workspace_picker_dialog_open_state } from '@/components/general/workspace_selector/states.svelte';
 
 // NOTE: Mainly updates only the UI States of the App
 export async function update_workspace(
@@ -28,7 +28,7 @@ export async function update_workspace(
 ) {
   try {
     // Prerequisites
-    root_folder_picker_dialog_state.open = false;
+    workspace_picker_dialog_open_state.data = false;
     const { path, document_top_tree_uri, last_filenode_path } = new_workspace;
     if (old_workspace_root_path === path) return;
     reset_ui_states();
@@ -84,7 +84,7 @@ export async function update_workspace(
   } catch (e) {
     reset_ui_states();
     toast.error('Error Opening Folder: \n' + e);
-    root_folder_picker_dialog_state.open = true;
+    workspace_picker_dialog_open_state.data = true;
   }
 }
 

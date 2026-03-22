@@ -1,12 +1,6 @@
 <script lang="ts">
   import type { Node, MenuItem } from '@/lib/types';
   import animatedDetails from 'svelte-animated-details';
-  import { get_parent_path, rename_node } from '@/lib/operations/file_tree';
-  import {
-    opened_filenode,
-    workspace_root_path,
-    context_menu,
-  } from '@/lib/states';
   import {
     get_desktop_context_menu,
     get_mobile_context_menu,
@@ -25,7 +19,13 @@
   } from './states.svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import { toast } from 'svelte-sonner';
-  import { current_platform_type } from '@/lib/states/';
+  import {
+    context_menu,
+    current_platform_type,
+    opened_filenode,
+    workspace_root_path,
+  } from '@/lib/states';
+  import { get_parent_path, rename_node } from '@/lib/operations/file_tree';
 
   let {
     focused_directory_path = $bindable(),
@@ -176,7 +176,6 @@
 
 {#snippet folder_node(node: Node, parent_subtree: Node[])}
   {@const is_focused_and_collapsed_and_hover =
-    expand_override_fine_grain.has(node.path) === false &&
     !child_render_paths.has(node.path) &&
     node.path === focused_directory_path &&
     hover_newnode_button.data}
