@@ -20,8 +20,6 @@
       (data) => (devices = data.payload as Record<string, DiscoveredDevice>)
     );
   });
-
-  $inspect(devices);
 </script>
 
 <ul class="list bg-base-100 rounded-box shadow-md">
@@ -51,6 +49,21 @@
       <button class="btn btn-square btn-ghost">
         <div class=" i-tabler:link size-5"></div>
       </button>
+    </li>
+  {:else}
+    <li
+      class="skeleton list-row color-[color-mix(in_srgb,var(--color-base-content)_52%,black)]"
+    >
+      <div class="flex flex-col gap-2">
+        <span class="flex gap-2 items-center">
+          <span class="loading loading-ring loading-sm text-primary"></span>
+          <p>Looking for devices</p>
+        </span>
+        <p>
+          To get everything working, just make sure all your devices are using
+          the same Wi-Fi Network
+        </p>
+      </div>
     </li>
   {/each}
 </ul>
