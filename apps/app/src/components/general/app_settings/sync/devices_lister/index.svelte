@@ -43,6 +43,9 @@
           <span class="badge">
             {device.host_name_2}
           </span>
+          <span class="badge">
+            #{device.ip.split('.').pop()}
+          </span>
         </div>
       </div>
       <button class="btn btn-square btn-ghost">
