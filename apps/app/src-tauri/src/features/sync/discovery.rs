@@ -63,8 +63,8 @@ pub fn join_scan_local_network(win: Window) {
 
         while let Ok(event) = receiver.recv() {
             if let ServiceEvent::ServiceResolved(info) = event {
-                if host_name == info.get_fullname() {
-                    return;
+                if host_name == info.get_hostname() {
+                    continue;
                 }
                 let (Some(name), Some(ip), Some(host_name_2_fetched), Some(os)) = (info.get_property_val_str("name"), info.get_property_val_str("ip"), info.get_property_val_str("hostname2"), info.get_property_val_str("os")) else {continue;};
 
