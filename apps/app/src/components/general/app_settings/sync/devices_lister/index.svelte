@@ -1,29 +1,22 @@
 <script lang="ts">
-  import { PLATFORM_TYPE_MAP } from '@/lib/states';
   import { invoke } from '@tauri-apps/api/core';
   import { listen } from '@tauri-apps/api/event';
   import { onMount } from 'svelte';
-
-  type DiscoveredDevice = {
-    name: String;
-    ip: String;
-    host_name_2: String;
-    os: keyof typeof PLATFORM_TYPE_MAP;
-  };
-
-  let devices = $state<Record<string, DiscoveredDevice>>({});
+  import { devices, type DiscoveredDevice } from '../states.svelte';
+  import { PLATFORM_TYPE_MAP } from '@/lib/states';
 
   onMount(async () => {
     await invoke('join_scan_local_network');
     listen(
       'device_found',
-      (data) => (devices = data.payload as Record<string, DiscoveredDevice>)
+      (data) =>
+        (devices.data = data.payload as Record<string, DiscoveredDevice>)
     );
   });
 </script>
 
 <ul class="list bg-base-100 rounded-box shadow-md">
-  {#each Object.values(devices) as device}
+  {#each Object.values(devices.data) as device}
     <li class="list-row">
       <div>
         <div
