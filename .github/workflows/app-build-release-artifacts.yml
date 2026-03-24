@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish-tauri:
+  build-app-release:
     environment: production
     permissions:
       contents: write
