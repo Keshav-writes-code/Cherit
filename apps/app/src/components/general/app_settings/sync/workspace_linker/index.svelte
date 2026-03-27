@@ -35,3 +35,23 @@
     <Background />
   </SvelteFlow>
 </div>
+
+<style>
+  :global {
+    .svelte-flow__handle {
+      width: 100% !important;
+      height: 100% !important;
+      opacity: 0 !important; /* Make them invisible */
+      top: 0 !important;
+      left: 0 !important;
+      transform: none !important;
+      border-radius: 0 !important;
+    }
+    .svelte-flow__handle-source {
+      z-index: 10 !important;
+    }
+    .svelte-flow.connecting .svelte-flow__handle-target {
+      z-index: 20 !important;
+    }
+  }
+</style>
