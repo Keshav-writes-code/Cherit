@@ -20,7 +20,7 @@ pub fn run() {
             features::file_system::android::move_file_android,
             features::file_system::android::move_directory_android,
             features::persistency::commands::get_persistent_states,
-            features::persistency::commands::save_persistent_states
+            features::persistency::commands::save_persistent_states,
             features::sync::discovery::join_scan_local_network
         ])
         .setup(|app| {
