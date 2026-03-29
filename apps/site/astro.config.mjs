@@ -1,5 +1,5 @@
 import svelte from "@astrojs/svelte";
-import { defineConfig } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 import UnoCSS from "unocss/astro";
 import mermaid from "astro-mermaid";
 
@@ -51,4 +51,47 @@ export default defineConfig({
   devToolbar: {
     enabled: false,
   },
+  fonts: [
+    {
+      provider: fontProviders.local(),
+      name: "DTNightingale",
+      cssVariable: "--font-astro-dtnightingale",
+      options: {
+        variants: [
+          {
+            src: ["./src/assets/fonts/DTNightingale-Light.otf"],
+          },
+        ],
+      },
+    },
+    {
+      provider: fontProviders.local(),
+      name: "Recoleta",
+      cssVariable: "--font-astro-recoleta",
+      options: {
+        variants: [
+          {
+            src: ["./src/assets/fonts/Recoleta-RegularDEMO.otf"],
+          },
+        ],
+      },
+    },
+    {
+      name: "Anonymous Pro",
+      cssVariable: "--font-astro-anonymous-pro",
+      weights: ["400"],
+      provider: fontProviders.fontsource(),
+    },
+    {
+      name: "Xanh Mono",
+      cssVariable: "--font-astro-xanh-mono",
+      weights: ["400"],
+      provider: fontProviders.fontsource(),
+    },
+    {
+      name: "Satoshi",
+      cssVariable: "--font-astro-satoshi",
+      provider: fontProviders.fontshare(),
+    },
+  ],
 });

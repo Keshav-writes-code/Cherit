@@ -28,6 +28,13 @@ export default defineConfig({
     ["capitalize", { "text-transform": "capitalize" }],
     ["isolate", { isolation: "isolate" }],
   ],
+  theme: {
+    extend: {
+      fontFamily: {
+        dt123: ["var(--font-dtnightingale)"],
+      },
+    },
+  },
   presets: [
     presetWind4({
       preflights: {
@@ -40,21 +47,13 @@ export default defineConfig({
     presetDaisyui(),
     presetTypography(),
     presetWebFonts({
-      provider: "fontshare",
+      provider: "none",
       fonts: {
-        sans: "Satoshi",
-        recoleta: "Recoleta-Regular",
-        nightingale: "DTNightingale",
-        mono: {
-          name: "Anonymous Pro",
-          weights: ["400"],
-          provider: "fontsource",
-        },
-        mono2: {
-          name: "Xanh Mono",
-          weights: ["400"],
-          provider: "fontsource",
-        },
+        sans: "var(--font-astro-satoshi)",
+        recoleta: "var(--font-astro-recoleta)",
+        nightingale: "var(--font-astro-dtnightingale)", //coming from Astro's Font config
+        mono: "var(--font-astro-anonymous-pro)",
+        mono2: "var(--font-astro-xanh-mono)",
       },
       processors: createLocalFontProcessor({
         cacheDir: "node_modules/.cache/unocss/fonts",

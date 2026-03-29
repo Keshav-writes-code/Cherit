@@ -3,12 +3,12 @@ import "daisyui/theme/business.css";
 import "daisyui/theme/dim.css";
 import "daisyui/theme/dark.css";
 import "daisyui/theme/black.css";
-import "../styles/fonts.css";
 import "../../../app/src/styles/global.css";
 
 import { ClientRouter } from "astro:transitions";
 import SeoHead from "@/components/common/seo_head.astro";
 import { type PageMetadata } from "@/types";
+import { Font } from "astro:assets";
 
 interface Props {
   class?: string;
@@ -26,6 +26,11 @@ const { class: classes, theme = "dark", page_metadata }: Props = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <SeoHead page_metadata={page_metadata} />
     <ClientRouter />
+    <Font preload cssVariable="--font-astro-recoleta" />
+    <Font preload cssVariable="--font-astro-dtnightingale" />
+    <Font preload cssVariable="--font-astro-anonymous-pro" />
+    <Font preload cssVariable="--font-astro-xanh-mono" />
+    <Font preload cssVariable="--font-astro-satoshi" />
   </head>
   <body class={`${classes}`}>
     <slot />
