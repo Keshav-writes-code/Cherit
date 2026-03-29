@@ -14,14 +14,17 @@ type Platform = {
 export const gh_relases_latest_metadata = (await call_gh_api(
   "/releases/latest",
 )) as {
-  tag_name: string;
-  assets: { name: string; size: number }[];
+  tag_name: string | undefined;
+  assets: { name: string; size: number }[] | undefined;
 };
 
 function file_size(suffix: string): number | undefined {
-  return gh_relases_latest_metadata.assets.find(
-    (asset) => asset.name === `${repo}-${suffix}`,
-  )?.size;
+  return (
+    gh_relases_latest_metadata.assets &&
+    gh_relases_latest_metadata.assets.find(
+      (asset) => asset.name === `${repo}-${suffix}`,
+    )?.size
+  );
 }
 
 export let platforms: Platform[] = [

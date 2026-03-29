@@ -55,9 +55,10 @@ const download_count_server = get_total_downloads(gh_releases_metadata);
           />
           <span class="font-mono font-bold lt-sm:text-sm -tracking-0.09em">
             {
-              gh_relases_latest_metadata.tag_name.substring(
-                gh_relases_latest_metadata.tag_name.search(/\d/),
-              )
+              gh_relases_latest_metadata.tag_name &&
+                gh_relases_latest_metadata.tag_name.substring(
+                  gh_relases_latest_metadata.tag_name.search(/\d/),
+                )
             }</span
           >
         </a>
