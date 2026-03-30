@@ -1,59 +1,59 @@
-import svelte from "@astrojs/svelte";
-import { defineConfig, fontProviders } from "astro/config";
-import UnoCSS from "unocss/astro";
-import sitemap from "@astrojs/sitemap";
-import robotsTxt from "astro-robots-txt";
+import svelte from '@astrojs/svelte';
+import { defineConfig, fontProviders } from 'astro/config';
+import UnoCSS from 'unocss/astro';
+import sitemap from '@astrojs/sitemap';
+import robotsTxt from 'astro-robots-txt';
 
-import mdx from "@astrojs/mdx";
+import mdx from '@astrojs/mdx';
 
 export default defineConfig({
   prefetch: true,
   integrations: [UnoCSS(), svelte(), sitemap(), robotsTxt(), mdx()],
-  site: "https://keshav.is-a.dev/",
-  base: "Cherit",
+  site: 'https://keshav.is-a.dev/',
+  base: 'Cherit',
   devToolbar: {
     enabled: false,
   },
   fonts: [
     {
       provider: fontProviders.local(),
-      name: "DTNightingale",
-      cssVariable: "--font-astro-dtnightingale",
+      name: 'DTNightingale',
+      cssVariable: '--font-astro-dtnightingale',
       options: {
         variants: [
           {
-            src: ["./src/assets/fonts/DTNightingale-Light.otf"],
+            src: ['./src/assets/fonts/DTNightingale-Light.woff2'],
           },
         ],
       },
     },
     {
       provider: fontProviders.local(),
-      name: "Recoleta",
-      cssVariable: "--font-astro-recoleta",
+      name: 'Recoleta',
+      cssVariable: '--font-astro-recoleta',
       options: {
         variants: [
           {
-            src: ["./src/assets/fonts/Recoleta-RegularDEMO.otf"],
+            src: ['./src/assets/fonts/Recoleta-RegularDEMO.woff2'],
           },
         ],
       },
     },
     {
-      name: "Anonymous Pro",
-      cssVariable: "--font-astro-anonymous-pro",
-      weights: ["400"],
+      name: 'Anonymous Pro',
+      cssVariable: '--font-astro-anonymous-pro',
+      weights: ['400'],
       provider: fontProviders.fontsource(),
     },
     {
-      name: "Xanh Mono",
-      cssVariable: "--font-astro-xanh-mono",
-      weights: ["400"],
+      name: 'Xanh Mono',
+      cssVariable: '--font-astro-xanh-mono',
+      weights: ['400'],
       provider: fontProviders.fontsource(),
     },
     {
-      name: "Satoshi",
-      cssVariable: "--font-astro-satoshi",
+      name: 'Satoshi',
+      cssVariable: '--font-astro-satoshi',
       provider: fontProviders.fontshare(),
     },
   ],

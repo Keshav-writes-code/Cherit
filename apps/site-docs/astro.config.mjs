@@ -64,7 +64,7 @@ export default defineConfig({
         variants: [
           {
             src: [
-              '../../packages/shared-packages/fonts/Recoleta-RegularDEMO.otf ',
+              '../../packages/shared-packages/fonts/Recoleta-RegularDEMO.woff2 ',
             ],
           },
         ],
