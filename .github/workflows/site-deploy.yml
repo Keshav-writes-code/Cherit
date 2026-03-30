@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/site/**'
+      - 'apps/site-*/**'
       - '.github/workflows/site-deploy.yml'
 
   workflow_dispatch:
@@ -18,29 +18,40 @@ jobs:
   build:
     runs-on: ubuntu-slim
     steps:
-      - name: Checkout your repository using git
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
-      # Install dependencies at root (Monorepo context)
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-      - name: Install dependencies
-        run: bun i
+      - uses: oven-sh/setup-bun@v2
 
-      - name: Install, build, and upload your site
-        uses: withastro/action@v5
-        with:
-          path: 'apps/site'
+      - run: bun i
+
+      - name: Build & Merge
+        run: |
+          mkdir out
+          for d in apps/site-*/; do
+            app=$(basename "$d")
+            echo "Building $app..."
+            
+            cd "$d"
+            bun run build
+            path=$(grep "base:" astro.config.mjs | sed -E "s/.*base:\s*['\"]Cherit\/?([^'\"]*)['\"].*/\1/" | tr -d /)
+            
+            mkdir -p "../../out/$path"
+            cp -r dist/* "../../out/$path/"
+            cd ../..
+          done
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
 
   deploy:
     needs: build
     runs-on: ubuntu-slim
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: '${{ steps.deployment.outputs.page_url }}'
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
