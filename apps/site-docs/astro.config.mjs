@@ -15,7 +15,6 @@ export default defineConfig({
     sitemap(),
     robotsTxt(),
     mermaid(),
-    mdx(),
     starlight({
       title: 'Cherit',
       plugins: [
@@ -49,6 +48,7 @@ export default defineConfig({
       },
       customCss: ['./src/styles/custom.css'],
     }),
+    mdx(),
   ],
   site: 'https://keshav.is-a.dev/',
   base: 'Cherit/docs/',
