@@ -17,6 +17,7 @@
     "astro": "catalog:",
     "astro-mermaid": "^2.0.1",
     "@astrojs/sitemap": "catalog:",
-    "@astrojs/mdx": "catalog:"
+    "@astrojs/mdx": "catalog:",
+    "sharp": "catalog:"
   }
 }
