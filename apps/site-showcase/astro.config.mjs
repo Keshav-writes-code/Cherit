@@ -22,7 +22,9 @@ export default defineConfig({
       options: {
         variants: [
           {
-            src: ['./src/assets/fonts/DTNightingale-Light.woff2'],
+            src: [
+              '../../packages/shared-packages/fonts/DTNightingale-Light.woff2',
+            ],
           },
         ],
       },
@@ -34,7 +36,9 @@ export default defineConfig({
       options: {
         variants: [
           {
-            src: ['./src/assets/fonts/Recoleta-RegularDEMO.woff2'],
+            src: [
+              './../../packages/shared-packages/fonts/Recoleta-RegularDEMO.woff2',
+            ],
           },
         ],
       },

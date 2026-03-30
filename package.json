@@ -40,9 +40,9 @@
     "format": "prettier --write .",
     "check-format": "prettier --check ."
   },
-  "devdependencies": {
+  "devDependencies": {
     "prettier": "^3.7.4",
     "prettier-plugin-astro": "^0.14.1",
-    "prettier-plugin-svelte": "^3.4.1"
+    "prettier-plugin-svelte": "^3.5.1"
   }
 }

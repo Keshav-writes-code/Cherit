@@ -1,9 +1,9 @@
 ---
-import { Image } from "astro:assets";
-import logo from "@/assets/images/logo_500.png";
-import InteractiveNav from "./interactive.svelte";
-import { base } from "astro:config/client";
-import { call_gh_api } from "@/lib/gh_api.ts";
+import { Image } from 'astro:assets';
+import logo from '@workspace/shared-assets/images/logo_500.png';
+import InteractiveNav from './interactive.svelte';
+import { base } from 'astro:config/client';
+import { call_gh_api } from '@/lib/gh_api.ts';
 const links = {
   downloads: `${base}/downloads`,
   demo: `${base}/demo`,

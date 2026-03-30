@@ -15,6 +15,7 @@
   import { get_most_recent_workspace } from '@/lib/operations/user_activity';
   import { show_folder_picker } from '@/lib/operations/picker_dialog';
   import { update_workspace } from '@/lib/operations/workspace';
+  import logo from '@workspace/shared-assets/images/logo_500.png';
 
   onMount(async () => {
     const raw = (await user_activity.get<Workspace[]>('recent_paths')) ?? [];
@@ -117,7 +118,7 @@
       grow pt-14 flex flex-col"
     >
       <div class="w-full flex flex-col items-center">
-        <img alt="logo" class="size-30" src="logo_500.png" />
+        <img alt="logo" class="size-30" src={logo} />
         <p class="font-[Recoleta] leading-normal mt-3 capitalize text-4xl">
           {__APP_NAME__}
         </p>

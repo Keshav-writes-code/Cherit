@@ -7,7 +7,7 @@ import { call_gh_api, get_total_downloads, owner, repo } from '@/lib/gh_api.ts';
 import { platforms, gh_relases_latest_metadata } from '@/lib/download_links.ts';
 import prettyBytes from 'pretty-bytes';
 import { Image } from 'astro:assets';
-import logo from '@/assets/images/logo_500.png';
+import logo from '@workspace/shared-assets/images/logo_500.png';
 
 let metadata: PageMetadata = {
   title: 'Downloads',
