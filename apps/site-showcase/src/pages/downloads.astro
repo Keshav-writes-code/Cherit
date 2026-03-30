@@ -1,31 +1,31 @@
 ---
-import SiteLayout from "@/layout/SiteLayout.astro";
-import PagetopBG from "@/components/common/pagetop_background.html";
-import DownloadBtnHeadless from "@/components/common/download_button_headless.svelte";
-import type { PageMetadata } from "@/types";
-import { call_gh_api, get_total_downloads, owner, repo } from "@/lib/gh_api.ts";
-import { platforms, gh_relases_latest_metadata } from "@/lib/download_links.ts";
-import prettyBytes from "pretty-bytes";
-import { Image } from "astro:assets";
-import logo from "@/assets/images/logo_500.png";
+import SiteLayout from '@/layout/SiteLayout.astro';
+import PagetopBG from '@/components/common/pagetop_background.html';
+import DownloadBtnHeadless from '@/components/common/download_button_headless.svelte';
+import type { PageMetadata } from '@/types';
+import { call_gh_api, get_total_downloads, owner, repo } from '@/lib/gh_api.ts';
+import { platforms, gh_relases_latest_metadata } from '@/lib/download_links.ts';
+import prettyBytes from 'pretty-bytes';
+import { Image } from 'astro:assets';
+import logo from '@/assets/images/logo_500.png';
 
 let metadata: PageMetadata = {
-  title: "Downloads",
+  title: 'Downloads',
   description:
-    "Get Cherit for Windows, macOS, Linux, and Android. A 2MB native powerhouse for offline-first, private Markdown note-taking with lightning speed.",
+    'Get Cherit for Windows, macOS, Linux, and Android. A 2MB native powerhouse for offline-first, private Markdown note-taking with lightning speed.',
   open_graph: {
-    title: "Download Cherit - Native & Fast Markdown Notes",
+    title: 'Download Cherit - Native & Fast Markdown Notes',
     description:
-      "Stop downloading entire web browsers just to write a note. Get the 2MB, local-first markdown editor for all your devices.",
+      'Stop downloading entire web browsers just to write a note. Get the 2MB, local-first markdown editor for all your devices.',
   },
   twitter: {
-    title: "Download Cherit - The 2MB Note-Taking Powerhouse",
+    title: 'Download Cherit - The 2MB Note-Taking Powerhouse',
     description:
-      "Native performance on every platform. Markdown native, offline-first, and completely private.",
+      'Native performance on every platform. Markdown native, offline-first, and completely private.',
   },
 };
 
-const gh_releases_metadata = await call_gh_api("/releases");
+const gh_releases_metadata = await call_gh_api('/releases');
 const download_count_server = get_total_downloads(gh_releases_metadata);
 ---
 
@@ -57,7 +57,7 @@ const download_count_server = get_total_downloads(gh_releases_metadata);
             {
               gh_relases_latest_metadata.tag_name &&
                 gh_relases_latest_metadata.tag_name.substring(
-                  gh_relases_latest_metadata.tag_name.search(/\d/),
+                  gh_relases_latest_metadata.tag_name.search(/\d/)
                 )
             }</span
           >
@@ -148,14 +148,14 @@ const download_count_server = get_total_downloads(gh_releases_metadata);
             acc +
             release.assets.reduce(
               (sum, asset) => sum + asset.download_count,
-              0,
+              0
             ),
-          0,
+          0
         )
       : 0;
 
   function on_load() {
-    const download_count_elem = document.getElementById("downloads_count");
+    const download_count_elem = document.getElementById('downloads_count');
     if (!download_count_elem) return;
     let download_count = 0;
     fetch(`https://api.github.com/repos/${owner}/${repo}/releases`)
@@ -163,27 +163,27 @@ const download_count_server = get_total_downloads(gh_releases_metadata);
       .then((releases_info) => {
         download_count += get_total_downloads(releases_info);
         if (download_count) {
-          download_count_elem.style.setProperty("--value", download_count);
+          download_count_elem.style.setProperty('--value', download_count);
         } else {
           download_count = download_count_server;
           download_count_elem.style.setProperty(
-            "--value",
-            download_count_server,
+            '--value',
+            download_count_server
           );
         }
       })
       .catch(() => {
         download_count = download_count_server;
-        download_count_elem.style.setProperty("--value", download_count_server);
+        download_count_elem.style.setProperty('--value', download_count_server);
       });
-    const buttons = document.querySelectorAll(".download-btn");
+    const buttons = document.querySelectorAll('.download-btn');
     buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener('click', () => {
         download_count++;
-        download_count_elem.style.setProperty("--value", download_count);
+        download_count_elem.style.setProperty('--value', download_count);
       });
     });
   }
 
-  document.addEventListener("astro:page-load", on_load);
+  document.addEventListener('astro:page-load', on_load);
 </script>
