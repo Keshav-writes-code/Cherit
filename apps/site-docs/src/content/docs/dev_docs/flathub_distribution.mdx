@@ -1,0 +1,110 @@
+---
+title: Flathub Distribution
+description: A Place where we talk about how flathub distrbution is setup to work with Cherit
+---
+
+## Understanding Flathub
+
+so basically, Flathub is an Organisation, and Flatpak is a App format used by Flathub
+
+flathub offers developers the ability to build and distribute software as flatpak, on thier servers for compleltly free
+
+to make our app avialable on flathub, the flathub team asks the developer :
+
+*Hi Developer, you're app has a lot of dependencies and technologies, how should we build your app and bundle it into a flatpak?*
+
+we provide flathub these 3 things that it needs as a seperate Github Repo contains 3 files :
+- **flatpak builder workflow** (`.yml`): how to build our tuari app and how to package it into a flatpak
+- **nodejs sources** (`.json`): what npm packages does are app needs
+- **cargo sources** (`.json`): what cargo crates does are app needs
+
+that github repo is right [here](https://github.com/flathub/io.github.keshav_writes_code.cherit) (or [here](https://github.com/Keshav-writes-code/flathub/tree/cherit))
+
+if you take a look, you will find :
+- `io.github.keshav_writes_code.cherit.yml`: the yml file having the instructions to build and package our app
+- `node-sources.json`: the npm packages in json format
+- `cargo-sources.json`: the cargo crates in json format
+
+so, how did we created these 3 files? uhh.. Mannualy.. lets take a look
+
+## Flathub Setup
+
+Lets start with the 1st file, the workflow file
+
+### Workflow file
+
+The workflow file in flathub is special, flathub just takes our workflow file, runs it on thier computers and builds a flatpak of our app.
+
+but there's a **slight catch**
+
+due to security reasons, flathub will run the workflow but without an internet connection! meaning we can't install npm dependencies or cargo dependencies as part of the workflow
+
+so, if i can't have my app's dependencies, there's no way i can build my app, what do i do then?
+
+**the Answer** : provide flathub a simple list of dependencies to download before the workflow builds the app
+
+you do this by simply adding this code in the workflow file
+
+```yml {6,7}
+sources:
+  - type: git
+    url: https://github.com/Keshav-writes-code/Cherit.git
+    branch: feat/flatpak-support
+
+  - cargo-sources.json
+  - node-sources.json
+
+```
+
+so to recap:
+- **Pupose** : To Build the tauri app by providing instruction in yml
+- **How did we created it?**: we mannualy created it by hand by testing it on Diffrent computers
+
+lets look at the node sources files
+
+### Node Sources
+
+this file is a simple json, and the only information it gives flathub is these 2 things
+- what nodejs dependencies are needed
+- what's the download link to the the dependency
+
+it is a big file which contains upto 1,600 dependencies and download links\
+so, it cann't be mannualy created, it has to be generated
+
+lets look at how we obtain it
+
+so, Cherit is managed by a nodejs package manager called [bun](https://bun.com/)
+
+just like npm, bun also maintains 2 files to track nodejs dependecies in our project,
+- `package.json` : what dependencies version the app needs
+- `bun.lock` : what dependencies and sub dependencies are actually being used
+
+our goal would be to take the `bun.lock` as a reliable source of truth and convert it into `node-sources.json` to give to flathub
+
+Fortunetly, there is such tool for converting a `bun.lock` file into `node-sources.json`
+its called [flatpak-bun-generator](https://github.com/MultiboxLabs/flatpak-bun-generator).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

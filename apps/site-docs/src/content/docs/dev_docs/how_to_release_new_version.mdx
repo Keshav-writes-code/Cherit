@@ -13,6 +13,7 @@ import { Steps } from '@astrojs/starlight/components';
 |Tool|Purpose|
 |---|---|
 |[nodejs / npm](https://nodejs.org/en/download)| JS Runtime, Package manager|
+|[bun](https://bun.com/docs/installation)| JS Runtime, Package manager|
 |[uv](https://docs.astral.sh/uv/getting-started/installation/)| Python Package manager|
 
 
@@ -23,9 +24,9 @@ import { Steps } from '@astrojs/starlight/components';
 
 1. ### Update version
     edit these files and update the version parameters \
-    `./package.json` \
-    `./src-tauri/Cargo.toml` \
-    `./src-tauri/tauri.conf.json` 
+    `apps/app/package.json` \
+    `apps/app/src-tauri/Cargo.toml` \
+    `apps/app/src-tauri/tauri.conf.json` 
 
 
 2. ### Push to Main Branch
@@ -33,6 +34,7 @@ import { Steps } from '@astrojs/starlight/components';
     after doing a git push or merging a pull request, a ci/cd pipeline will build the app and site, make a draft github release and deploy the site
 
 3. ### Update Cherit on [Flathub](https://flathub.org/en)
+    to take a look at how flathub is integrated into Cherit, please read [this](/Cherit/docs/dev_docs/flathub_distribution/)
     <Steps>
     1. #### Update Node Sources
         run this in root of the Cherit Dir to obtain a `package-lock.json` :
