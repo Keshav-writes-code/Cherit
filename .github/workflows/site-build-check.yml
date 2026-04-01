@@ -3,11 +3,11 @@ name: 'site-build-check'
 on:
   pull_request:
     branches: [staging, dev]
-    paths: ['apps/site-*/**', '.github/workflows/site-check.yml']
+    paths: ['apps/site-*/**', '.github/workflows/site-build-check.yml']
 
   push:
     branches: [staging]
-    paths: ['apps/site-*/**', '.github/workflows/site-check.yml']
+    paths: ['apps/site-*/**', '.github/workflows/site-build-check.yml']
 
   workflow_dispatch:
 
