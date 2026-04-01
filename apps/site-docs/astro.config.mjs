@@ -17,6 +17,7 @@ export default defineConfig({
     mermaid(),
     starlight({
       title: 'Cherit',
+      tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 4 },
       plugins: [
         starlightSidebarTopics([
           {
