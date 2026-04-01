@@ -23,49 +23,53 @@ import { Steps } from '@astrojs/starlight/components';
 <Steps>
 
 1. ### Update version
+
     edit these files and update the version parameters \
     `apps/app/package.json` \
     `apps/app/src-tauri/Cargo.toml` \
     `apps/app/src-tauri/tauri.conf.json` 
 
-
 2. ### Push to Main Branch
+
     make sure all changes are present in the `main` branch.\
     after doing a git push or merging a pull request, a ci/cd pipeline will build the app and site, make a draft github release and deploy the site
 
 3. ### Update Cherit on [Flathub](https://flathub.org/en)
+
     to take a look at how flathub is integrated into Cherit, please read [this](/Cherit/docs/dev_docs/flathub_distribution/)
     <Steps>
+
     1. #### Update Node Sources
-        run this in root of the Cherit Dir to obtain a `package-lock.json` :
-        ```sh
-        npm i --package-lock-only
-        ```
+
         if you are the owner of the repo (which is only me), then only clone\
         if you are a contributor, then: \
         fork and clone the [flathub/io.github.keshav_writes_code.cherit](https://github.com/flathub/io.github.keshav_writes_code.cherit)
     github repo in a seperate directory than the Cherit Dir :  
+
         ```sh
         git clone https://github.com/flathub/io.github.keshav_writes_code.cherit.git
+        cd io.github.keshav_writes_code.cherit
+        ```
+
+        copy the `bun.lock` file form the Cherit Dir to this dir\
+        replace the `<path to cherit dir>` with the actuall Cherit dir path, eg `../Cherit`
+        ```sh
+        cp <path to cherit dir>/bun.lock .
         ```
         
-        copy that generated `package-lock.json` in 2 places:
-
-        - to the root dir of the `flathub` local clone
-        - and to `./apps/app/distribute/linux/flatpak`
-
-        now, we need a tool called `flatpak-node-generator` tool to generate a `node-sources.json` file which the flatpak building process needs which can be simply installed like this :
+        now, we will use a tool called `flatpak-bun-generator` tool, already preset in the repo to generate a `node-sources.json` file
         ```sh
-        cd flathub/flatpak-builder-tools/node/
-        uv tool install .
-        cd ../../../
+        bunx flatpak-bun-generator bun.lock --output node-sources.json
         ```
-        then, run this command to generate `node-sources.json` :
-        ```sh
-        flatpak-node-generator --no-requests-cache -o node_sources.json npm package-lock.json
-        ```
+
     2. #### Update Cargo Sources
-        being in the flathub directory, copy the `Cargo.lock` file from the Cherit Dir (`./apps/app/src-tauri/Cargo.lock`) to the root of flathub dir \
+
+        being in the flathub directory, copy the `Cargo.lock` file from the Cherit Dir (`./apps/app/src-tauri/Cargo.lock`) to the root of flathub dir\
+        replace the `<path to cherit dir>` with the actuall Cherit dir path, eg `../Cherit`
+
+        ```sh
+        cp <path to Cherit Dir>/apps/app/src-tauri/Cargo.lock .
+        ```
         then, run this :
         
         ```sh
@@ -76,7 +80,9 @@ import { Steps } from '@astrojs/starlight/components';
         - `cargo-sources.json`
 
         which are neccessary to build the new Cherit flatpak bundle.
+
     3. #### Cleanup and Commit
+
         now, the `package-lock.json`, `Cargo.lock` is no longer needed so we need to remove them from the flathub directory
         ```sh
         rm package-lock.json Cargo.lock
@@ -90,6 +96,4 @@ import { Steps } from '@astrojs/starlight/components';
 
 
     </Steps>
-    
-
 </Steps>

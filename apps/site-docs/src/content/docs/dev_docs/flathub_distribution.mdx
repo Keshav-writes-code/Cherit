@@ -68,7 +68,7 @@ this file is a simple json, and the only information it gives flathub is these 2
 - what nodejs dependencies are needed
 - what's the download link to the the dependency
 
-it is a big file which contains upto 1,600 dependencies and download links\
+it is a big file which contains upto 700 dependencies and download links\
 so, it cann't be mannualy created, it has to be generated
 
 lets look at how we obtain it
@@ -83,6 +83,36 @@ our goal would be to take the `bun.lock` as a reliable source of truth and conve
 
 Fortunetly, there is such tool for converting a `bun.lock` file into `node-sources.json`
 its called [flatpak-bun-generator](https://github.com/MultiboxLabs/flatpak-bun-generator).
+
+then, we use it in our manifest by adding :
+```yml {8,9,12,15,16,17}
+modules:
+  - name: cherit
+    build-options:
+      env:
+        CARGO_HOME: /run/build/cherit/cargo
+        CARGO_NET_OFFLINE: "true"
+        XDG_CACHE_HOME: /run/build/cherit/flatpak-node/cache
+        # Tell bun to look into this dir for packages
+        BUN_INSTALL_CACHE_DIR: /run/build/cherit/bun_cache
+
+    sources:
+      - node-sources.json # <--- Import the node-sources
+
+    build-commands:
+      # Setup the bun cache to be used by bun install
+      - find bun_cache -name package.tgz -execdir tar --strip-components=1 --delay-directory-restore -xf {} \; -delete
+      - chmod -R u+rwX bun_cache
+      - cd apps/app && bun install
+      - cd apps/app && bun run tauri build --no-bundle
+```
+this manifest file is right [here](https://github.com/flathub/io.github.keshav_writes_code.cherit/blob/cherit/io.github.keshav_writes_code.cherit.yml)
+
+### Cargo Sources
+
+cargo sources is pretty straight forward to do.
+the flatpak-builder-tools repo already has a built in python tool that converts `cargo.Lock` to `cargo-sources.json`
+for information regarding how to do it, please refer [ this doc ](/Cherit/docs/dev_docs/how_to_release_new_version/)
 
 
 
