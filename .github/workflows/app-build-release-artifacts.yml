@@ -64,13 +64,7 @@ jobs:
 
       # Case 1: Run bun for everything EXCEPT Windows ARM
       - name: install frontend dependencies
-        if: matrix.platform != 'windows-11-arm'
         run: bun i
-
-      # Case 2: Run npm ONLY for Windows ARM
-      - name: install frontend dependencies (Windows ARM)
-        if: matrix.platform == 'windows-11-arm'
-        run: npm install
 
       # ------------- Rust & Cargo Cache -------------
       - name: install Rust stable (desktop)
