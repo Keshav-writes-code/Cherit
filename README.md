@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="apps/site/src/assets/images/logo_500.png" alt="Lokus" width="120" height="120" />
+<img src="packages/shared-packages/images/logo_500.png" alt="Lokus" width="120" height="120" />
 
 # Cherit
 

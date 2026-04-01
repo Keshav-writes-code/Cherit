@@ -1,0 +1,75 @@
+name: 'site-build-check'
+
+on:
+  pull_request:
+    branches: [staging, dev]
+    paths: ['apps/site-*/**', '.github/workflows/site-check.yml']
+
+  push:
+    branches: [staging]
+    paths: ['apps/site-*/**', '.github/workflows/site-check.yml']
+
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-slim
+    outputs:
+      apps: '${{ steps.set.outputs.apps }}'
+    steps:
+      - uses: actions/checkout@v5
+      - id: set
+        run: echo "apps=$(ls apps | grep '^site-' | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+
+  build:
+    needs: setup
+    runs-on: ubuntu-slim
+    strategy:
+      matrix:
+        app: '${{ fromJson(needs.setup.outputs.apps) }}'
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun i
+
+      - name: Build
+        working-directory: apps/${{ matrix.app }}
+        run: |
+          bun run build
+          path=$(grep "base:" astro.config.mjs | sed -E "s/.*base:\s*['\"]Cherit\/?([^'\"]*)['\"].*/\1/" | tr -d /)
+          echo "$path" > ../../${{ matrix.app }}_path.txt
+        env:
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.app }}-dist
+          path: |
+            apps/${{ matrix.app }}/dist
+            ${{ matrix.app }}_path.txt
+
+  merge:
+    needs: build
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: 'site-*-dist'
+
+      - name: Merge Artifacts
+        run: |
+          mkdir out
+          for d in artifacts/site-*-dist; do
+            A=$(basename "$d" -dist)
+            P=$(cat "$d/${A}_path.txt")
+            mkdir -p "out/$P"
+            cp -r "$d/apps/$A/dist/"* "out/$P/"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site-build-output
+          path: out

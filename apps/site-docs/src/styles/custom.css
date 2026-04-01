@@ -1,0 +1,11 @@
+/* src/styles/custom.css */
+:root {
+  --sl-font: var(--font-astro-inter);
+}
+h1,
+h2 {
+  font-family: var(--font-astro-recoleta);
+}
+code {
+  font-family: monospace;
+}

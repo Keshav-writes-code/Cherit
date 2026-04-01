@@ -58,11 +58,7 @@ jobs:
       - name: setup bun
         uses: oven-sh/setup-bun@v2
       - name: install frontend dependencies
-        if: matrix.platform != 'windows-11-arm'
         run: bun i
-      - name: install frontend dependencies (Windows ARM)
-        if: matrix.platform == 'windows-11-arm'
-        run: npm install
 
       # ------------- Rust -------------
       - name: install Rust stable (desktop)

@@ -1,16 +1,16 @@
 @font-face {
   font-family: 'Recoleta';
-  src:
-    local('Recoleta-Regular'),
-    local('Recoleta-RegularDEMO'),
-    url('../assets/fonts/Recoleta-RegularDEMO.otf') format('opentype');
+  src: url('@workspace/shared-assets/fonts/Recoleta-RegularDEMO.woff2')
+    format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
   font-family: 'display-serif';
-  src: url('../assets/fonts/DTNightingale-Light.woff2') format('woff2');
+  src: url('@workspace/shared-assets/fonts/DTNightingale-Light.woff2')
+    format('woff2');
   font-weight: 900;
   font-style: normal;
   font-display: swap;

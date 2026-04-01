@@ -1,0 +1,24 @@
+{
+  "name": "site-docs",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "catalog:",
+    "@astrojs/sitemap": "catalog:",
+    "@astrojs/starlight": "^0.38.2",
+    "@workspace/shared-assets": "workspace:*",
+    "astro": "catalog:",
+    "astro-mermaid": "^2.0.1",
+    "astro-robots-txt": "catalog:",
+    "mermaid": "^11.13.0",
+    "sharp": "catalog:",
+    "starlight-sidebar-topics": "^0.7.1"
+  }
+}

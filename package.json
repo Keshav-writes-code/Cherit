@@ -2,9 +2,36 @@
   "name": "cherit",
   "license": "GPL-2.0",
   "private": true,
-  "workspaces": [
-    "apps/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "catalog": {
+      "@codemirror/commands": "^6.10.1",
+      "@codemirror/lang-markdown": "^6.5.0",
+      "@codemirror/language": "^6.12.1",
+      "@codemirror/language-data": "^6.5.2",
+      "@codemirror/state": "^6.5.3",
+      "@codemirror/view": "^6.39.11",
+      "@lezer/markdown": "^1.6.3",
+      "@prosemark/core": "^0.0.5",
+      "@prosemark/render-html": "^0.0.6",
+      "astro": "6.1.1",
+      "daisyui": "5.5.19",
+      "astro-robots-txt": "^1.0.0",
+      "@0x-jerry/unocss-preset-daisyui": "0.2.3",
+      "typescript": "^6.0.2",
+      "svelte": "^5.55.0",
+      "@unocss/preset-typography": "^66.6.7",
+      "unocss": "^66.6.7",
+      "@iconify-json/tabler": "^1.2.33",
+      "@unocss/preset-icons": "^66.6.7",
+      "@astrojs/sitemap": "3.7.2",
+      "@astrojs/mdx": "5.0.3",
+      "sharp": "^0.34.2"
+    }
+  },
   "scripts": {
     "dev": "bun run dev --workspace app-tauri",
     "build": "bun run build --workspace app-tauri",
@@ -16,17 +43,6 @@
   "devDependencies": {
     "prettier": "^3.7.4",
     "prettier-plugin-astro": "^0.14.1",
-    "prettier-plugin-svelte": "^3.4.1"
-  },
-  "dependencies": {
-    "@codemirror/commands": "^6.10.1",
-    "@codemirror/lang-markdown": "^6.5.0",
-    "@codemirror/language": "^6.12.1",
-    "@codemirror/language-data": "^6.5.2",
-    "@codemirror/state": "^6.5.3",
-    "@codemirror/view": "^6.39.11",
-    "@lezer/markdown": "^1.6.3",
-    "@prosemark/core": "^0.0.5",
-    "@prosemark/render-html": "^0.0.6"
+    "prettier-plugin-svelte": "^3.5.1"
   }
 }

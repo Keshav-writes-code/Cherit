@@ -1,0 +1,92 @@
+---
+import { base, site } from 'astro:config/client';
+import type { PageMetadata } from '@/types';
+import { SEO } from 'astro-seo';
+import { getImage } from 'astro:assets';
+
+type Props = {
+  page_metadata: PageMetadata;
+};
+const { page_metadata }: Props = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, site);
+const siteName = 'Cherit';
+
+import logo from '@workspace/shared-assets/images/logo_500.png';
+import desktop_screen from '@/assets/images/screenshots/desktop/1.png';
+
+// Optimize OG Image (larger for social sharing)
+const screen_opt = await getImage({
+  src: desktop_screen,
+  format: 'webp',
+  width: 1200,
+  height: 630,
+  fit: 'contain',
+  background: '#000000',
+});
+
+// Favicon/Icon (smaller)
+const logo_opt = await getImage({
+  src: logo,
+  format: 'webp',
+  width: 50,
+  height: 50,
+});
+
+const defaultDescription =
+  'Cherit is a lightning-fast, offline-first, markdown-native note-taking app. Built for performance and privacy. Available on Windows, macOS, Linux, and Android.';
+const title = page_metadata?.title
+  ? `${page_metadata.title} | ${siteName}`
+  : siteName;
+const description = page_metadata?.description || defaultDescription;
+const ogTitle = page_metadata?.open_graph?.title || title;
+const ogDescription = page_metadata?.open_graph?.description || description;
+const ogImage = page_metadata?.open_graph?.images?.[0]?.url || screen_opt.src;
+const ogImageAlt =
+  page_metadata?.open_graph?.images?.[0]?.alt ||
+  'Cherit Application Screenshot';
+---
+
+<SEO
+  title={title}
+  description={description}
+  canonical={canonicalURL.href}
+  openGraph={{
+    basic: {
+      title: ogTitle,
+      type: 'website',
+      image: ogImage,
+      url: canonicalURL.href,
+    },
+    optional: {
+      siteName: siteName,
+      description: ogDescription,
+      locale: 'en_US',
+    },
+    image: {
+      alt: ogImageAlt,
+    },
+  }}
+  twitter={{
+    card: 'summary_large_image',
+    site: '@cherit_app',
+    title: page_metadata?.twitter?.title || ogTitle,
+    description: page_metadata?.twitter?.description || ogDescription,
+    image: page_metadata?.twitter?.image || ogImage,
+    imageAlt: page_metadata?.twitter?.imageAlt || ogImageAlt,
+  }}
+  extend={{
+    link: [
+      { rel: 'icon', href: logo_opt.src },
+      { rel: 'sitemap', href: `${base}/sitemap-index.xml` },
+    ],
+    meta: [
+      { name: 'author', content: 'Cherit Team' },
+      { name: 'robots', content: 'index, follow' },
+      { name: 'googlebot', content: 'index, follow' },
+      { name: 'theme-color', content: '#000000' },
+      { name: 'apple-mobile-web-app-title', content: siteName },
+      { name: 'application-name', content: siteName },
+      { name: 'generator', content: Astro.generator },
+    ],
+  }}
+/>

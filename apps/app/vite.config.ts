@@ -27,9 +27,6 @@ export default defineConfig({
     },
     conditions: process.env.VITEST ? ['browser'] : undefined,
   },
-  build: {
-    cssMinify: 'lightningcss', // Enables advanced CSS minification
-  },
   define: {
     __APP_NAME__: JSON.stringify(process.env.npm_package_name),
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
