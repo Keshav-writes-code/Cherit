@@ -2,7 +2,7 @@ name: 'site-build-check'
 
 on:
   pull_request:
-    branches: [staging]
+    branches: [staging, dev]
     paths: ['apps/site-*/**', '.github/workflows/site-check.yml']
 
   push:

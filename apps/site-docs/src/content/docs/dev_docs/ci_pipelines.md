@@ -5,15 +5,15 @@ description: How we test, build, and release Cherit automatically.
 
 ```mermaid
 graph LR
-    subgraph Triggers ["⚡ Triggers"]
+    subgraph Triggers ["⚡ Automated Events"]
         DevPR["PR ➔ 'dev'"]
         StgPushPR["Push / PR ➔ 'staging'"]
         MainPushPR["Push / PR ➔ 'main'"]
-        Mannual["Mannual Trigger"]
     end
 
     subgraph AppWorkflows ["📦 App (Tauri)"]
         Debug["`**app-build-debug**
+        *(Manual Trigger Only)*
         - Mode: debug
         - Output: Workflow artifacts`"]
 
@@ -36,8 +36,13 @@ graph LR
         - Output: GH Pages`"]
     end
 
-    %% Automated Workflow Triggers
+    %% Floating Explanation
+    GlobalNote["`**ℹ️ Note:**
+    You can run any of these workflows
+    manually whenever you need to.
+    The arrows show what runs automatically.`"]
 
+    %% Automated Workflow Triggers
     MainPushPR --> Release
     MainPushPR --> SiteDeploy
 
@@ -45,22 +50,21 @@ graph LR
     StgPushPR --> SiteCheck
 
     DevPR --> Artifacts
-
-    Mannual -.-> Debug
-    Mannual -.-> Artifacts
-    Mannual -.-> Release
-    Mannual -.-> SiteCheck
-    Mannual -.-> SiteDeploy
+    DevPR --> SiteCheck
 
     %% Styling Classes
     classDef trigger fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#000
     classDef appNode fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000,text-align:left
     classDef siteNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000,text-align:left
 
+    %% Note styled for dark mode (soft slate background, light text)
+    classDef noteNode fill:#334155,stroke:#475569,stroke-width:1px,stroke-dasharray: 5 5,color:#f8fafc,text-align:center
+
     %% Apply Styles
-    class DevPR,StgPushPR,MainPushPR,Mannual trigger
+    class DevPR,StgPushPR,MainPushPR trigger
     class Debug,Artifacts,Release appNode
     class SiteCheck,SiteDeploy siteNode
+    class GlobalNote noteNode
 ```
 
 ## `app-build-debug`
