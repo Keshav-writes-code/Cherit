@@ -14,7 +14,24 @@ export default defineConfig({
   integrations: [
     sitemap(),
     robotsTxt(),
-    mermaid(),
+    mermaid({
+      iconPacks: [
+        {
+          name: 'logos',
+          loader: () =>
+            fetch('https://unpkg.com/@iconify-json/logos@1/icons.json').then(
+              (res) => res.json()
+            ),
+        },
+        {
+          name: 'iconoir',
+          loader: () =>
+            fetch('https://unpkg.com/@iconify-json/iconoir@1/icons.json').then(
+              (res) => res.json()
+            ),
+        },
+      ],
+    }),
     starlight({
       title: 'Cherit',
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 4 },
