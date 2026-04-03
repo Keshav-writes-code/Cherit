@@ -8,7 +8,7 @@ import {
   recent_workspaces,
   user_activity,
   workspace_root_path,
-} from '@/lib/states/';
+} from '@/lib/states/session/';
 import { type Workspace, type GenericPath } from '@/lib/types/';
 import { toast } from 'svelte-sonner';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
@@ -18,7 +18,7 @@ import {
   is_filetree_loading,
 } from '@/components/sidebar_section/file_manager/states.svelte';
 import { watch } from '@tauri-apps/plugin-fs';
-import { current_platform } from '@/lib/states';
+import { current_platform } from '@/lib/states/session';
 import { workspace_picker_dialog_open_state } from '@/components/general/workspace_selector/states.svelte';
 
 // NOTE: Mainly updates only the UI States of the App

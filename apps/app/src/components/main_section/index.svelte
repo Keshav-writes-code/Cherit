@@ -5,8 +5,8 @@
   import { pdf_export_status } from '@/components/main_section/pdf_export_dialog/states.svelte';
   import BreadCrumb from '@/components/general/breadcrumb_path/index.svelte';
   import PaneMenu from '@/components/main_section/pane_menu/index.svelte';
-  import { opened_filenode } from '@/lib/states';
-  import { current_platform_type } from '@/lib/states/';
+  import { opened_filenode } from '@/lib/states/session';
+  import { current_platform_type } from '@/lib/states/session/';
 </script>
 
 <TitleBar />

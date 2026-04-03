@@ -4,7 +4,7 @@
     drawer_open,
     opened_filenode,
     workspace_root_path,
-  } from '@/lib/states';
+  } from '@/lib/states/session';
   import {
     file_tree,
     focused_subtree,
@@ -15,7 +15,7 @@
     expand_override_global,
     expand_override_fine_grain,
   } from './states.svelte';
-  import { current_platform_type } from '@/lib/states/';
+  import { current_platform_type } from '@/lib/states/session/';
   let {
     focused_directory_path,
   }: { focused_directory_path: string | undefined } = $props();

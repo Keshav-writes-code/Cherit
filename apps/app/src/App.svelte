@@ -5,7 +5,7 @@
   import { Toaster } from 'svelte-sonner';
   import Main from '@/components/main_section/index.svelte';
   import AppSettings from '@/components/general/app_settings/index.svelte';
-  import { drawer_open } from '@/lib/states/global/index.svelte';
+  import { drawer_open } from '@/lib/states/session/global/index.svelte';
   import { attach_window_listeners } from './lib/operations/window_listeners';
   $effect(() => {
     const detach = attach_window_listeners();

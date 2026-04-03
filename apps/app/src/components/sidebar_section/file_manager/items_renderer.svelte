@@ -24,7 +24,7 @@
     current_platform_type,
     opened_filenode,
     workspace_root_path,
-  } from '@/lib/states';
+  } from '@/lib/states/session';
   import { get_parent_path, rename_node } from '@/lib/operations/file_tree';
 
   let {

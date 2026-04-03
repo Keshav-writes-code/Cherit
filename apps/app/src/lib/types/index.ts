@@ -21,7 +21,7 @@ export type SubmitStates =
   | 'success'
   | 'error';
 
-import { workspace } from '@/lib/states';
+import { workspace } from '@/lib/states/session';
 import z from 'zod';
 export type Workspace = z.infer<typeof workspace>;
 export * from './schema';

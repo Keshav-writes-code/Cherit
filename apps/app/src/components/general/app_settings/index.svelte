@@ -3,7 +3,7 @@
   import type { Component } from 'svelte';
   import { sidebar_items } from './sidebar_items';
   import { fade } from 'svelte/transition';
-  import { current_platform_type } from '@/lib/states';
+  import { current_platform_type } from '@/lib/states/session';
 
   const viewMap: Record<string, Component> = {};
   let activeTab = $state<string>();

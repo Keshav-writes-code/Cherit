@@ -10,7 +10,7 @@
     RecentWorkspaces,
     user_activity,
     workspace_root_path,
-  } from '@/lib/states';
+  } from '@/lib/states/session';
   import { get_relative_path_parts } from '@/lib/operations/file_tree';
   import { get_most_recent_workspace } from '@/lib/operations/user_activity';
   import { show_folder_picker } from '@/lib/operations/picker_dialog';

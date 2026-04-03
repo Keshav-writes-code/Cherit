@@ -1,6 +1,6 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
-import { opened_filenode, workspace_root_path } from '@/lib/states/';
+import { opened_filenode, workspace_root_path } from '@/lib/states/session/';
 import {
   editor_view,
   is_contents_changed,

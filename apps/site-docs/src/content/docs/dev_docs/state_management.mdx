@@ -25,76 +25,74 @@ graph LR
     State@{ icon: "iconoir:code-brackets-square" }
 
     %% Level 1 - Split
-    Persistent["Persistent State<br/>(Disk / OS)"]
+    Persistent["Persistent State<br/>(Rust Managed / Disk)"]
     Persistent@{ icon: "iconoir:hard-drive" }
-    
-    NonPersistent["Non-Persistent<br/>(System RAM)"]
-    NonPersistent@{ icon: "iconoir:flash" }
+
+    Session["Session State<br/>(Svelte Memory)"]
+    Session@{ icon: "iconoir:flash" }
 
     State --> Persistent
-    State --> NonPersistent
+    State --> Session
 
     %% Level 2 - Persistent Sub-types
-    Secure["Secure<br/>(OS Keychain)"]
+    Secure["Secure<br/>(OS Keychain via `keyring`)"]
     Secure@{ icon: "iconoir:lock-key" }
-    
-    Normal["Normal<br/>(AppData Dir)"]
-    Normal@{ icon: "iconoir:folder" }
+
+    Local["Local Config<br/>(Device Specific)"]
+    Local@{ icon: "iconoir:pc-check" }
+
+    Synced["Synced Config<br/>(Portable / Shareable)"]
+    Synced@{ icon: "iconoir:cloud-sync" }
 
     Persistent --> Secure
-    Persistent --> Normal
+    Persistent --> Local
+    Persistent --> Synced
 
-    %% Level 3 - Secure Items
-    Sec1["Sync Tokens"]
-    Sec1@{ icon: "iconoir:key" }
-    
-    Sec2["LLM API Keys"]
-    Sec2@{ icon: "iconoir:key" }
+    %% Level 3 - Persistent Items
+    LmmApi["LLM API Keys"]
+    Secure --> LmmApi
 
-    Secure --> Sec1
-    Secure --> Sec2
+    LocalFile["local_settings.json<br/>- Local LLM Path<br/>- Window Bounds"]
+    Local --> LocalFile
 
-    %% Level 3 - Normal Persistent Sub-types
-    Domain["Domain Specific"]
-    Domain@{ icon: "iconoir:task-list" }
-    
-    UIPrefs["UI & Window<br/>Preferences"]
-    UIPrefs@{ icon: "iconoir:mac-os-window" }
+    Workspaces["workspaces.json<br/>- Workspace paths mapping"]
+    Local --> Workspaces
 
-    Normal --> Domain
-    Normal --> UIPrefs
-    
-    %% Level 4 - Domain Files
-    F1["Workspaces.json"]
-    F1@{ icon: "iconoir:page" }
-    
-    F2["Sync_settings.json"]
-    F2@{ icon: "iconoir:settings" }
-    
-    F3["LLM_settings.json"]
-    F3@{ icon: "iconoir:bright-crown" }
+    SyncedFile["synced_settings.json<br/>- Theme & Fonts<br/>- Default LLM Provider"]
+    Synced --> SyncedFile
 
-    Domain --> F1
-    Domain --> F2
-    Domain --> F3
-    
-    %% Level 4 - UI Files
-    U1["window_geometry.json"]
-    U1@{ icon: "iconoir:view-grid" }
+    %% Level 2 - Session Items
+    SingleComponent["Component States<br/>(Active Drafts)"]
+    MultiComponent["Multi Component<br/>(Context Menu)"]
+    Global["Global States<br/>(Memory File Tree)"]
 
-    UIPrefs --> U1
-
-    %% Level 2 - Non-Persistent Items
-    Ram_Editor["Editor State<br/>(Active Drafts)"]
-    Ram_Editor@{ icon: "iconoir:edit-pencil" }
-    
-    Ram_Sys["System Env<br/>(mDNS/Sync)"]
-    Ram_Sys@{ icon: "iconoir:network-alt" }
-    
-    Ram_UI["UI View<br/>(Hover/Modals)"]
-    Ram_UI@{ icon: "iconoir:mouse-pointer" }
-
-    NonPersistent --> Ram_Editor
-    NonPersistent --> Ram_Sys
-    NonPersistent --> Ram_UI
+    Session --> SingleComponent
+    Session --> MultiComponent
+    Session --> Global
 ```
+
+as of right now, from all the branches, these are the states that are present in the project
+
+- [x] markdown content state: the actual markdown content that the user is going to Create/Update/Delete. Stored as simple madown file on the file system with directories
+- [ ] Current Workpsace Root Path
+- [ ] Most Recent Opened Workspace root path
+- [ ] All Recent Workpsace root path
+- [ ] ip of devices paired with current device
+- [ ] workspace mapping for each device
+- [ ] LM provider name
+- [ ] LM's name
+- [ ] LM provider API key
+
+
+- Various Dialog Open/CLose States
+- Currently Opened file state
+- Collapse states of folder in file manager
+- 
+
+# Session States
+# Persistent States 
+these states have thier own `.json` files in the AppData Directory
+## Secure States
+although these states come under Persistent States, they are not stored in a `.json` file, instead it will be stored in the OS-native Keychain using either the [Stronghold](https://v2.tauri.app/plugin/stronghold/) or [Keyring](https://crates.io/crates/keyring) Plugin (not decided on which to use yet)
+
+
