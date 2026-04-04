@@ -4,7 +4,6 @@ description: A discussion about how the various app states are managemed
 ---
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-
 so generally, an app's states fall into 2 main categories
 
 <CardGrid>
@@ -35,8 +34,6 @@ graph LR
     State --> Session
 
     %% Level 2 - Persistent Sub-types
-    Secure["Secure<br/>(OS Keychain via `keyring`)"]
-    Secure@{ icon: "iconoir:lock-key" }
 
     Local["Local Config<br/>(Device Specific)"]
     Local@{ icon: "iconoir:pc-check" }
@@ -44,21 +41,27 @@ graph LR
     Synced["Synced Config<br/>(Portable / Shareable)"]
     Synced@{ icon: "iconoir:cloud-sync" }
 
-    Persistent --> Secure
     Persistent --> Local
     Persistent --> Synced
 
     %% Level 3 - Persistent Items
     LmmApi["LLM API Keys"]
-    Secure --> LmmApi
 
-    LocalFile["local_settings.json<br/>- Local LLM Path<br/>- Window Bounds"]
+    LocalFile["
+      <p style="text-align:left">local_config.json
+        - All recent workpsaces
+        - Paired devices for sync
+        - LM provider's id
+        - LM's name
+        - LM provider API key
+      </p>"]
+
+    Local --> LmmApi
     Local --> LocalFile
 
-    Workspaces["workspaces.json<br/>- Workspace paths mapping"]
-    Local --> Workspaces
-
-    SyncedFile["synced_settings.json<br/>- Theme & Fonts<br/>- Default LLM Provider"]
+    SyncedFile["<p style="text-align:left">synced_config.json
+      - Theme & Fonts (in future)
+      - Default LLM Provider</p>"]
     Synced --> SyncedFile
 
     %% Level 2 - Session Items
@@ -71,28 +74,38 @@ graph LR
     Session --> Global
 ```
 
-as of right now, from all the branches, these are the states that are present in the project
+## What is being stored?
 
-- [x] markdown content state: the actual markdown content that the user is going to Create/Update/Delete. Stored as simple madown file on the file system with directories
-- [ ] Current Workpsace Root Path
-- [ ] Most Recent Opened Workspace root path
-- [ ] All Recent Workpsace root path
-- [ ] ip of devices paired with current device
-- [ ] workspace mapping for each device
-- [ ] LM provider name
-- [ ] LM's name
-- [ ] LM provider API key
+2 files in the app data dir. and 1 in a secure way
+
+### 1. `local_config.json`
+
+a schema tracked plain json file managed by rust backend of the tauri app for storing locally.
+
+### 2. `synced_config.json`
+
+also an schema tracked plain json file managed by the rust backend for syncing across devices.
+
+### 3. Secure storage
+
+some sensitive data like api keys and things like that mustn't be accessible by the outside OS\
+to ensure that, the Secure Storage works on all platofrmsm, it a good decision to go with the official Tauri Plugin [Stronghold](https://v2.tauri.app/plugin/stronghold/) or [Keyring](https://crates.io/crates/keyring).
+
+## Communication Stratergy
+
+$$
+\text{Svelte} \longleftrightarrow \text{Rust}
+$$
+
+The frontend only cares about the sessions and persistent states. it doesn't care about which states are synced or stored securely.\
+Menaing, the rust backend will abstract away the syncing and secure storage system to the frontend\
+and the `src/lib/states` dir will have no mention of *Synced States* or *Secure States*
 
 
-- Various Dialog Open/CLose States
-- Currently Opened file state
-- Collapse states of folder in file manager
-- 
+Simmilarly the Rust Backend doesn't care about the Frontend Session States
 
-# Session States
-# Persistent States 
-these states have thier own `.json` files in the AppData Directory
-## Secure States
-although these states come under Persistent States, they are not stored in a `.json` file, instead it will be stored in the OS-native Keychain using either the [Stronghold](https://v2.tauri.app/plugin/stronghold/) or [Keyring](https://crates.io/crates/keyring) Plugin (not decided on which to use yet)
+the only way Frontend -> Backend communicate is 2 simple tauri commands:
+- one to get a json representing persistent states. or getting a partial state by telling the backend, which states to get
+- one to set persistent states. this has to give the compelete persistent state to the backend
 
-
+anytime, the frontend wanted to ask for persistent states, the tauri backend will respond with the full data not with a part of it
