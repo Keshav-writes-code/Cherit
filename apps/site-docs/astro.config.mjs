@@ -97,9 +97,10 @@ export default defineConfig({
       },
     },
     {
-      name: 'Inter',
-      cssVariable: '--font-astro-inter',
-      provider: fontProviders.fontsource(),
+      name: 'Satoshi',
+      cssVariable: '--font-astro-satoshi',
+      provider: fontProviders.fontshare(),
+      weights: [500],
     },
   ],
 });
