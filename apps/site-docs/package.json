@@ -18,6 +18,8 @@
     "astro-mermaid": "^2.0.1",
     "astro-robots-txt": "catalog:",
     "mermaid": "^11.13.0",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
     "sharp": "catalog:",
     "starlight-sidebar-topics": "^0.7.1"
   }

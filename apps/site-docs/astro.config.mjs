@@ -9,6 +9,9 @@ import starlightSidebarTopics from 'starlight-sidebar-topics';
 
 import mdx from '@astrojs/mdx';
 
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+
 export default defineConfig({
   prefetch: true,
   integrations: [
@@ -35,6 +38,15 @@ export default defineConfig({
     starlight({
       title: 'Cherit',
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 4 },
+      head: [
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'stylesheet',
+            href: 'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css',
+          },
+        },
+      ],
       plugins: [
         starlightSidebarTopics([
           {
@@ -103,4 +115,8 @@ export default defineConfig({
       weights: [500],
     },
   ],
+  markdown: {
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex],
+  },
 });
