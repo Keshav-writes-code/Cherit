@@ -2,6 +2,7 @@ use std::{error::Error, fs};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use tauri::{AppHandle, Manager};
 
 // Global Struct
 #[derive(Serialize, Deserialize)]
@@ -27,14 +28,16 @@ pub struct LocalConfig {
 }
 
 impl LocalConfig {
-    pub fn save_to_file(&self) -> Result<(), Box<dyn Error>> {
+    pub fn save_to_file(&self, app: &AppHandle) -> Result<(), Box<dyn Error>> {
         let content = serde_json::to_string(self)?;
-        fs::write("hello.txt", content)?;
+        let path = app.path().config_dir().unwrap().join("local_config.json");
+        fs::write(path, content)?;
         Ok(())
     }
 
-    pub fn get_config() -> Result<LocalConfig, Box<dyn Error>> {
-        let raw = fs::read_to_string("hello.txt")?;
+    pub fn get_config(app: &AppHandle) -> Result<LocalConfig, Box<dyn Error>> {
+        let path = app.path().config_dir().unwrap().join("local_config.json");
+        let raw = fs::read_to_string(path)?;
         let config = serde_json::from_str::<LocalConfig>(&raw)?;
         Ok(config)
     }

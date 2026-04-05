@@ -4,6 +4,7 @@
   import { sidebar_items } from './sidebar_items';
   import { fade } from 'svelte/transition';
   import { current_platform_type } from '@/lib/states/session';
+  import { persistent_states } from '@/lib/states/persistent/index.svelte';
 
   const viewMap: Record<string, Component> = {};
   let activeTab = $state<string>();
@@ -69,7 +70,19 @@
             <span>Back to Menu</span>
           </button>
         {/if}
-
+        <button
+          class="btn"
+          onclick={async () => {
+            const data = await persistent_states.get();
+            console.log(data);
+          }}>get persistent states</button
+        >
+        <button
+          class="btn"
+          onclick={async () => {
+            await persistent_states.update({});
+          }}>save persistent states</button
+        >
         <ActiveView />
       </div>
 
