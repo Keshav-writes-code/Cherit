@@ -101,6 +101,7 @@ The frontend only cares about the sessions and persistent states. it doesn't car
 Menaing, the rust backend will abstract away the syncing and secure storage system to the frontend\
 and the `src/lib/states` dir will have no mention of *Synced States* or *Secure States*
 
+the frontend always demands the data to be in the latest schema no matter the stored schema version. so the backend need to run migration and provide frontend the required data
 
 Simmilarly the Rust Backend doesn't care about the Frontend Session States
 
