@@ -17,7 +17,9 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             features::file_system::build_file_tree,
             features::file_system::android::move_file_android,
-            features::file_system::android::move_directory_android
+            features::file_system::android::move_directory_android,
+            features::persistency::get_persistent_states,
+            features::persistency::save_persistent_states
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

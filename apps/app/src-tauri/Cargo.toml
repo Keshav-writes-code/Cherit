@@ -37,6 +37,7 @@ tauri-plugin-safe-area-insets-css = "0.2"
 tauri-plugin-clipboard-manager = "2"
 futures = "0.3"
 rayon = "1.10"
+chrono = { version = "0.4.44", features = ["serde"] }
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.
