@@ -11,19 +11,35 @@ type WorkspaceMetadata = {
 };
 
 type PersistentStates = {
-  recent_workspaces: WorkspaceMetadata[];
+  workspaces_metadata: WorkspaceMetadata[];
 };
 
-const data: PersistentStates = {
-  recent_workspaces: [
-    {
-      last_accessed: new Date(),
-      recent_file_node_path: {
-        path: '/home/keshav/notes',
-        document_top_tree_uri: null,
+type SecureConfig = {
+  llm_api: string;
+};
+
+type AppPersistentState = {
+  schema_version: number;
+  app_config: PersistentStates;
+  secure: SecureConfig;
+};
+
+const data: AppPersistentState = {
+  schema_version: 1,
+  app_config: {
+    workspaces_metadata: [
+      {
+        last_accessed: new Date(),
+        recent_file_node_path: {
+          path: '/home/keshav/notes',
+          document_top_tree_uri: null,
+        },
       },
-    },
-  ],
+    ],
+  },
+  secure: {
+    llm_api: 'askjdas;lidugpauisyd',
+  },
 };
 
 class PersistentState {
@@ -39,7 +55,7 @@ class PersistentState {
       ...patch,
     } as PersistentStates;
     await invoke('save_persistent_states', {
-      state: data,
+      states: data,
     });
   }
 }
