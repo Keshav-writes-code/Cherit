@@ -71,6 +71,7 @@ impl AppPersistentStates {
         app: &AppHandle,
         states: &AppPersistentStates,
     ) -> Result<(), Box<dyn Error>> {
+        self.schema_version= states.schema_version;
         self.app_config = states.app_config.clone();
         self.secure = states.secure.clone();
 
@@ -90,7 +91,7 @@ impl AppPersistentStates {
         self.setup_config_path(app)?;
 
         let path = app.path().app_config_dir().unwrap().join(CONFIG_FILE_NAME);
-        let file = fs::File::options().read(true).write(true).open(path)?;
+        let file = fs::File::options().read(true).open(path)?;
         *self = serde_json::from_reader(&file)?;
 
         // Run migrations if needed
