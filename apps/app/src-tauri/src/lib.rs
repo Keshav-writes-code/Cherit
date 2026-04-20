@@ -1,3 +1,5 @@
+use crate::features::persistency::structs::AppPersistentStates;
+
 mod features;
 
 #[cfg(all(test, not(target_os = "android")))]
@@ -22,6 +24,8 @@ pub fn run() {
             features::persistency::commands::save_persistent_states
         ])
         .setup(|app| {
+            let app_config = AppPersistentStates::new();
+            app_config.setup_config_path(app.handle())?;
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()

@@ -86,18 +86,10 @@ impl AppPersistentStates {
     }
 
     pub fn load_states(&mut self, app: &AppHandle) -> Result<(), Box<dyn Error>> {
+        // Setup Config Path
+        self.setup_config_path(app)?;
+
         let path = app.path().app_config_dir().unwrap().join(CONFIG_FILE_NAME);
-
-        // Create the file path if doesn't exists
-        if !path.exists() {
-            if let Some(parent) = path.parent() {
-                fs::create_dir_all(parent)?;
-            }
-            let file = File::create(&path)?;
-            serde_json::to_writer_pretty(&file, &self)?;
-            return Ok(());
-        }
-
         let file = fs::File::options().read(true).write(true).open(path)?;
         *self = serde_json::from_reader(&file)?;
 
@@ -121,5 +113,17 @@ impl AppPersistentStates {
         // }
 
         // Ok(())
+    }
+    pub fn setup_config_path(&self, app: &AppHandle) -> Result<(), Box<dyn Error>> {
+        let path = app.path().app_config_dir().unwrap().join(CONFIG_FILE_NAME);
+        // Create the file path if doesn't exists
+        if !path.exists() {
+            if let Some(parent) = path.parent() {
+                fs::create_dir_all(parent)?;
+            }
+            let file = File::create(&path)?;
+            serde_json::to_writer_pretty(&file, &self)?;
+        }
+        Ok(())
     }
 }
