@@ -10,52 +10,34 @@ type WorkspaceMetadata = {
   recent_file_node_path: GenericPath;
 };
 
-type PersistentStates = {
+type AppConfig = {
   workspaces_metadata: WorkspaceMetadata[];
 };
 
-type SecureConfig = {
+type AppSecureConfig = {
   llm_api: string;
 };
 
-type AppPersistentState = {
+export type AppPersistentState = {
   schema_version: number;
-  app_config: PersistentStates;
-  secure: SecureConfig;
-};
-
-const data: AppPersistentState = {
-  schema_version: 1,
-  app_config: {
-    workspaces_metadata: [
-      {
-        last_accessed: new Date(),
-        recent_file_node_path: {
-          path: '/home/keshav/notes',
-          document_top_tree_uri: null,
-        },
-      },
-    ],
-  },
-  secure: {
-    llm_api: 'askjdas;lidugpauisyd',
-  },
+  app_config: AppConfig;
+  secure: AppSecureConfig;
 };
 
 class PersistentState {
-  states = $state<PersistentStates>();
+  states = $state<AppConfig>();
   async get() {
     this.states = await invoke('get_persistent_states');
     return this.states;
   }
-  async update(patch: Partial<PersistentStates>) {
+  async update(patch: Partial<AppPersistentState>) {
     console.log('update');
     this.states = {
       ...(this.states ?? {}),
       ...patch,
-    } as PersistentStates;
+    } as AppConfig;
     await invoke('save_persistent_states', {
-      states: data,
+      states: this.states,
     });
   }
 }

@@ -5,6 +5,7 @@
   import { fade } from 'svelte/transition';
   import { current_platform_type } from '@/lib/states/session';
   import { persistent_states } from '@/lib/states/persistent/index.svelte';
+  import type { AppPersistentState } from '@/lib/states/persistent/index.svelte.ts';
 
   const viewMap: Record<string, Component> = {};
   let activeTab = $state<string>();
@@ -80,7 +81,25 @@
         <button
           class="btn"
           onclick={async () => {
-            await persistent_states.update({});
+            const data: AppPersistentState = {
+              schema_version: 1,
+              app_config: {
+                workspaces_metadata: [
+                  {
+                    last_accessed: new Date(),
+                    recent_file_node_path: {
+                      path: '/home/keshav/notes',
+                      document_top_tree_uri: null,
+                    },
+                  },
+                ],
+              },
+              secure: {
+                llm_api: 'askjdas;lidugpauisyd',
+              },
+            };
+
+            await persistent_states.update(data);
           }}>save persistent states</button
         >
         <ActiveView />
