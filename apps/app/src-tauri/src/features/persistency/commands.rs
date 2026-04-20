@@ -15,15 +15,11 @@ pub fn save_persistent_states(
     app: AppHandle,
     states: AppPersistentStates,
 ) -> Result<(), String> {
-    println!(
-        "Got from Frontend : {}",
-        serde_json::to_string(&states).map_err(|e| e.to_string())?
-    );
     state
         .lock()
         .map_err(|e| e.to_string())?
         .clone()
-        .save_states(&app)
+        .save_states(&app, &states)
         .map_err(|e| e.to_string())?;
 
     Ok(())
