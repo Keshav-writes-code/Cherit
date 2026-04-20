@@ -13,10 +13,11 @@
       "@codemirror/language": "^6.12.1",
       "@codemirror/language-data": "^6.5.2",
       "@codemirror/state": "^6.5.3",
-      "@codemirror/view": "^6.39.11",
+      "@codemirror/view": "^6.41.1",
       "@lezer/markdown": "^1.6.3",
-      "@prosemark/core": "^0.0.5",
-      "@prosemark/render-html": "^0.0.6",
+      "@prosemark/core": "^0.0.6",
+      "@prosemark/paste-rich-text": "^0.0.3",
+      "@prosemark/render-html": "^0.0.7",
       "astro": "6.1.1",
       "daisyui": "5.5.19",
       "astro-robots-txt": "^1.0.0",
@@ -41,7 +42,7 @@
     "check-format": "prettier --check ."
   },
   "devDependencies": {
-    "prettier": "^3.7.4",
+    "prettier": "^3.8.3",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-svelte": "^3.5.1"
   }

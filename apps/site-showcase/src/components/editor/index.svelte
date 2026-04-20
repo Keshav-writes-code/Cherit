@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { create_editor } from "../../../../app/src/components/main_section/text_editor/editor/editor_config/";
-  import MobileToolbar from "../../../../app/src/components/main_section/text_editor/editor_toolbar_mobile/index.svelte";
-  import "../../../../app/src/components/main_section/text_editor/editor/editor_config/theme.css";
-  import markdown_content from "./data.md?raw";
-  import type { EditorView } from "@codemirror/view";
+  import { create_editor } from '../../../../app/src/components/main_section/text_editor/editor/editor_config/';
+  import MobileToolbar from '../../../../app/src/components/main_section/text_editor/editor_toolbar_mobile/index.svelte';
+  import '../../../../app/src/components/main_section/text_editor/editor/editor_config/theme.css';
+  import markdown_content from './data.md?raw';
+  import type { EditorView } from '@codemirror/view';
 
   let element: HTMLDivElement | undefined = $state();
   let editor_view = $state<EditorView>();
