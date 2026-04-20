@@ -1,7 +1,4 @@
 mod features;
-use crate::features::persistency::structs::AppPersistentStates;
-use std::sync::Mutex;
-use tauri::Manager;
 
 #[cfg(all(test, not(target_os = "android")))]
 mod desktop_test;
@@ -25,10 +22,6 @@ pub fn run() {
             features::persistency::commands::save_persistent_states
         ])
         .setup(|app| {
-            let mut initial_states = AppPersistentStates::new();
-            initial_states.load_states(app.handle())?;
-            app.manage(Mutex::new(initial_states));
-
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
