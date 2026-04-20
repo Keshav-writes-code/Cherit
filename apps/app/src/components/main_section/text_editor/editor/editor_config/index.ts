@@ -14,6 +14,10 @@ import { indentUnit } from '@codemirror/language';
 import { defaultKeymap } from '@codemirror/commands';
 import { custom_keymaps } from './keymaps';
 import { obsidian_theme } from './theme';
+import {
+  pasteRichTextExtension,
+  pastePlainTextExtension,
+} from '@prosemark/paste-rich-text';
 
 export function create_editor(
   text_content: string,
@@ -25,6 +29,8 @@ export function create_editor(
     parent: html_element,
     extensions: [
       custom_keymaps,
+      pasteRichTextExtension(),
+      pastePlainTextExtension(),
       keymap.of(defaultKeymap),
       EditorView.lineWrapping,
       EditorState.tabSize.of(8),
