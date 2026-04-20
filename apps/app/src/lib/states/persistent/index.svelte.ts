@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
+import merge from 'deepmerge';
 
 type GenericPath = {
   path: string;
@@ -25,17 +26,14 @@ export type AppPersistentState = {
 };
 
 class PersistentState {
-  states = $state<AppConfig>();
+  states = $state<AppPersistentState>();
   async get() {
     this.states = await invoke('get_persistent_states');
     return this.states;
   }
   async update(patch: Partial<AppPersistentState>) {
     console.log('update');
-    this.states = {
-      ...(this.states ?? {}),
-      ...patch,
-    } as AppConfig;
+    this.states = merge(this.states ?? {}, patch);
     await invoke('save_persistent_states', {
       states: this.states,
     });
