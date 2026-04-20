@@ -1,0 +1,57 @@
+---
+title: Dev Environemnt Setup
+description: Simple guide to get started with development.
+topic: dev-docs
+---
+import { Steps } from '@astrojs/starlight/components';
+
+## Prerequisites
+
+please follow the official [tauri guide](https://v2.tauri.app/start/prerequisites/) to setup rust and tauri deps according to your OS\
+Then install these tools :
+
+|Tool|Purpose|
+|-|-|
+|[ `bun` ](https://bun.com/)| Javascript Package manager, Monorepo tool |
+|[ `nodejs` ](https://nodejs.org/en)| acts as Fishnet for bun issues |
+|[ `git` ](https://git-scm.com/)| Version Control system |
+
+
+
+## Run the App 
+<Steps>
+
+1. ### Clone the repo
+    ```sh
+    git clone https://github.com/Keshav-writes-code/Cherit.git
+    ```
+2. ### Go to the app directory
+    the main app is located at `apps/app` directory
+    ```sh
+    cd Cherit/apps/app
+    ```
+3. ### Install dependencies
+
+    install frontend Dependencies
+    ```sh
+    bun i
+    ```
+
+    install cargo Dependencies in the `apps/app/src-tauri` dir
+    ```sh
+    cd src-tauri
+    cargo sync
+    ```
+4. ### Run app in dev mode
+    ```sh
+    bun tauri dev
+    ```
+    takes about 4 minutes to build everything from scratch\
+    you will expierence high CPU usage for some time
+    
+    in case if you are running linux with xorg on a Old Nvidia GPU, then you might expierence black screen in the app window.
+    in such case, run this command instead
+    ```sh
+    WEBKIT_DISABLE_DMABUF_RENDERER=1 bun tauri dev
+    ```
+</Steps>
