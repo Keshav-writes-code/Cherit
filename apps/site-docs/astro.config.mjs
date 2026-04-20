@@ -27,8 +27,16 @@ export default defineConfig({
             icon: 'laptop',
             items: [
               {
-                label: 'Development',
-                autogenerate: { directory: 'dev_docs' },
+                label: 'Get Started',
+                autogenerate: { directory: 'dev_docs/get_started' },
+              },
+              {
+                label: 'Core Concepts',
+                autogenerate: { directory: 'dev_docs/core_concepts' },
+              },
+              {
+                label: 'Guides',
+                autogenerate: { directory: 'dev_docs/guides' },
               },
             ],
           },
