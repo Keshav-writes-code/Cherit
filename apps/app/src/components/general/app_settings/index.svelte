@@ -74,8 +74,7 @@
         <button
           class="btn"
           onclick={async () => {
-            const data = await persistent_states.get();
-            console.log(data);
+            const data = await persistent_states.load();
           }}>get persistent states</button
         >
         <button
@@ -86,8 +85,12 @@
               app_config: {
                 workspaces_metadata: [
                   {
+                    path: {
+                      path: '/home/keshav/notes/',
+                      document_top_tree_uri: null,
+                    },
                     last_accessed: new Date(),
-                    recent_file_node_path: {
+                    recent_filenode_path: {
                       path: '/home/keshav/notes',
                       document_top_tree_uri: null,
                     },
@@ -99,9 +102,16 @@
               },
             };
 
-            await persistent_states.update(data);
+            persistent_states.states = data;
+            await persistent_states.save();
           }}>save persistent states</button
         >
+        <pre class="w-full">{JSON.stringify(
+            persistent_states.states,
+            null,
+            '\t'
+          )}</pre>
+
         <ActiveView />
       </div>
 

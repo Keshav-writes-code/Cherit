@@ -1,14 +1,15 @@
 import { invoke } from '@tauri-apps/api/core';
-import merge from 'deepmerge';
+import { toast } from 'svelte-sonner';
 
 type GenericPath = {
   path: string;
   document_top_tree_uri: string | null;
 };
 
-type WorkspaceMetadata = {
-  last_accessed: Date;
-  recent_file_node_path: GenericPath;
+export type WorkspaceMetadata = {
+  path: GenericPath;
+  last_accessed: Date | string;
+  recent_filenode_path: GenericPath | undefined;
 };
 
 type AppConfig = {
@@ -27,13 +28,15 @@ export type AppPersistentState = {
 
 class PersistentState {
   states = $state<AppPersistentState>();
-  async get() {
-    this.states = await invoke('get_persistent_states');
-    return this.states;
+  async load() {
+    try {
+      this.states = await invoke('get_persistent_states');
+      return this.states;
+    } catch (e) {
+      if (e instanceof Error) toast.error(e.message);
+    }
   }
-  async update(patch: Partial<AppPersistentState>) {
-    console.log('update');
-    this.states = merge(this.states ?? {}, patch);
+  async save() {
     await invoke('save_persistent_states', {
       states: this.states,
     });

@@ -20,8 +20,9 @@ struct GenericPath {
 // Domain : Wokrspace
 #[derive(Serialize, Deserialize, Clone)]
 struct WorkspaceMetaData {
+    path: GenericPath,
     last_accessed: DateTime<Utc>,
-    recent_file_node_path: GenericPath,
+    recent_filenode_path: Option<GenericPath>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -71,7 +72,7 @@ impl AppPersistentStates {
         app: &AppHandle,
         states: &AppPersistentStates,
     ) -> Result<(), Box<dyn Error>> {
-        self.schema_version= states.schema_version;
+        self.schema_version = states.schema_version;
         self.app_config = states.app_config.clone();
         self.secure = states.secure.clone();
 
