@@ -19,7 +19,7 @@
       "@prosemark/paste-rich-text": "^0.0.3",
       "@prosemark/render-html": "^0.0.7",
       "astro": "6.1.1",
-      "daisyui": "5.5.19",
+      "daisyui": "5.4.7",
       "astro-robots-txt": "^1.0.0",
       "@0x-jerry/unocss-preset-daisyui": "0.2.3",
       "typescript": "^6.0.2",
