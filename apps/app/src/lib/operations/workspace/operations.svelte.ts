@@ -103,26 +103,31 @@ async function update_opened_filenode(
 }
 // NOTE: Just update the last accessed time and nothing else
 export async function touch_recent_workspaces(
-  data: Omit<WorkspaceMetadata, 'last_accessed'>,
+  workspace: Omit<WorkspaceMetadata, 'last_accessed'>,
   { update_time = true }: { update_time?: boolean } = {}
 ) {
   if (!persistent_states.states) return;
   const existing = persistent_states.states.app_config.workspaces_metadata.find(
-    (v) => v.path === data.path
+    (v) => v.path === workspace.path
   );
 
-  const processed = [
+  const rest_of_the_workspaces =
+    persistent_states.states.app_config.workspaces_metadata.filter(
+      (v) => v.path.path !== workspace.path.path
+    );
+
+  const merged_workspaces = [
     {
-      ...data,
+      ...workspace,
       last_accessed:
         existing && !update_time ? existing.last_accessed : new Date(),
     },
-    ...persistent_states.states.app_config.workspaces_metadata.filter(
-      (v) => v.path !== data.path
-    ),
-  ].slice(0, 10);
+    ...rest_of_the_workspaces,
+  ];
 
-  persistent_states.states.app_config.workspaces_metadata = processed;
+  const sliced_workspaces = merged_workspaces.slice(0, 10);
+
+  persistent_states.states.app_config.workspaces_metadata = sliced_workspaces;
   await persistent_states.save();
 
   // await user_activity.set('recent_paths', processed);
