@@ -21,17 +21,19 @@ import {
   persistent_states,
   type WorkspaceMetadata,
 } from '@/lib/states/persistent/index.svelte';
+import type { GenericPath } from '@/lib/types';
 
 // NOTE: Mainly updates only the UI States of the App
 export async function init_or_update_workspace(
-  old_workspace_root_path: string | undefined,
+  old_workspace: GenericPath | undefined,
   new_workspace: Omit<WorkspaceMetadata, 'last_accessed'>
 ) {
   try {
     // Prerequisites
     workspace_picker_dialog_open_state.data = false;
     const { path: workspace_path, recent_filenode_path } = new_workspace;
-    if (old_workspace_root_path === workspace_path.path) return;
+    if (old_workspace?.path === workspace_path.path) return;
+    console.log('Passed the return');
     reset_ui_states();
 
     // Actual Workspace Updation

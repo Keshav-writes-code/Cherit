@@ -65,10 +65,10 @@
                       }
                     : undefined;
 
-                  await init_or_update_workspace(
-                    workspace_root_path.data?.path,
-                    { path, recent_filenode_path }
-                  );
+                  await init_or_update_workspace(workspace_root_path.data, {
+                    path,
+                    recent_filenode_path,
+                  });
                 }}
                 class="
                 {workspace_root_path.data?.path == path.path && 'bg-base-100'}
@@ -121,6 +121,7 @@
             onclick={async () => {
               const path = await show_folder_picker();
 
+              // Update the prevous workspace
               const recent_filenode_path = opened_filenode.data
                 ? {
                     path: opened_filenode.data.path,
@@ -128,7 +129,7 @@
                   }
                 : undefined;
 
-              await init_or_update_workspace(workspace_root_path.data?.path, {
+              await init_or_update_workspace(workspace_root_path.data, {
                 path,
                 recent_filenode_path,
               });
@@ -148,13 +149,10 @@
                       }
                     : undefined;
 
-                  await init_or_update_workspace(
-                    workspace_root_path.data?.path,
-                    {
-                      path,
-                      recent_filenode_path,
-                    }
-                  );
+                  await init_or_update_workspace(workspace_root_path.data, {
+                    path,
+                    recent_filenode_path,
+                  });
                 }}
               >
                 <div class="size-6 i-tabler:folder-open"></div>
