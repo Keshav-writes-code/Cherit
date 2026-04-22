@@ -1,39 +1,16 @@
 <script lang="ts">
   import { workspace_picker_dialog_open_state } from './states.svelte';
-  import type { Workspace } from '@/lib/types';
-  import { onMount } from 'svelte';
   import {
     current_platform,
     current_platform_type,
     opened_filenode,
-    recent_workspaces,
-    RecentWorkspaces,
-    user_activity,
     workspace_root_path,
-  } from '@/lib/states';
+  } from '@/lib/states/session';
   import { get_relative_path_parts } from '@/lib/operations/file_tree';
-  import { get_most_recent_workspace } from '@/lib/operations/user_activity';
   import { show_folder_picker } from '@/lib/operations/picker_dialog';
-  import { update_workspace } from '@/lib/operations/workspace';
+  import { init_or_update_workspace } from '@/lib/operations/workspace';
   import logo from '@workspace/shared-assets/images/logo_500.png';
-
-  onMount(async () => {
-    const raw = (await user_activity.get<Workspace[]>('recent_paths')) ?? [];
-    if (!raw.length) return (workspace_picker_dialog_open_state.data = true);
-
-    const { data, success } = RecentWorkspaces.safeParse(raw);
-    if (!success) {
-      await user_activity.clear();
-      workspace_picker_dialog_open_state.data = true;
-      return;
-    }
-    const recent_workspace = get_most_recent_workspace(data);
-    if (!recent_workspace)
-      return (workspace_picker_dialog_open_state.data = true);
-
-    recent_workspaces.data = data;
-    update_workspace(undefined, { ...recent_workspace });
-  });
+  import { persistent_states } from '@/lib/states/persistent/index.svelte';
 </script>
 
 <dialog open={workspace_picker_dialog_open_state.data} class="modal z-11">
@@ -56,23 +33,24 @@
     </form>
 
     <div class="min-w-70 bg-base-content/10">
-      {#if recent_workspaces.data.length}
+      {#if persistent_states.states?.app_config.workspaces_metadata.length}
         <ul
           class="w-full bg-transparent gap-2 menu bg-base-200 rounded-box w-56"
         >
           <button
             onclick={async () => {
-              await user_activity.clear();
-              recent_workspaces.data = [];
+              if (!persistent_states.states) return;
+              persistent_states.states.app_config.workspaces_metadata = [];
+              await persistent_states.save();
             }}
             class="btn btn-square btn-ghost color-gray"
             aria-label="Delete All Recent folders"
           >
             <div class=" i-tabler:trash-filled size-4"></div>
           </button>
-          {#each recent_workspaces.data as { path, document_top_tree_uri }}
+          {#each persistent_states.states.app_config.workspaces_metadata as { path }}
             {@const path_parts = get_relative_path_parts(
-              path,
+              path.path,
               current_platform == 'android'
                 ? 'content://com.android.externalstorage.documents/tree/primary%3A'
                 : ''
@@ -80,14 +58,20 @@
             <li class="w-full">
               <button
                 onclick={async () => {
-                  await update_workspace(workspace_root_path.data?.path, {
+                  const recent_filenode_path = opened_filenode.data
+                    ? {
+                        path: opened_filenode.data.path,
+                        document_top_tree_uri: null,
+                      }
+                    : undefined;
+
+                  await init_or_update_workspace(workspace_root_path.data, {
                     path,
-                    document_top_tree_uri,
-                    last_filenode_path: opened_filenode.data?.path,
+                    recent_filenode_path,
                   });
                 }}
                 class="
-                {workspace_root_path.data?.path == path && 'bg-base-100'}
+                {workspace_root_path.data?.path == path.path && 'bg-base-100'}
                 flex w-full gap-0 flex-col items-baseline"
               >
                 <p class="text-sm text-base-content/80">
@@ -135,12 +119,19 @@
           <button
             class="btn btn-primary w-30"
             onclick={async () => {
-              const { path, document_top_tree_uri } =
-                await show_folder_picker();
-              await update_workspace(workspace_root_path.data?.path, {
+              const path = await show_folder_picker();
+
+              // Update the prevous workspace
+              const recent_filenode_path = opened_filenode.data
+                ? {
+                    path: opened_filenode.data.path,
+                    document_top_tree_uri: null,
+                  }
+                : undefined;
+
+              await init_or_update_workspace(workspace_root_path.data, {
                 path,
-                document_top_tree_uri,
-                last_filenode_path: opened_filenode.data?.path,
+                recent_filenode_path,
               });
             }}>Open</button
           >
@@ -150,12 +141,17 @@
               <button
                 class="grid grid-cols-[auto_auto_1fr]"
                 onclick={async () => {
-                  const { path, document_top_tree_uri } =
-                    await show_folder_picker();
-                  await update_workspace(workspace_root_path.data?.path, {
+                  const path = await show_folder_picker();
+                  const recent_filenode_path = opened_filenode.data
+                    ? {
+                        path: opened_filenode.data.path,
+                        document_top_tree_uri: null,
+                      }
+                    : undefined;
+
+                  await init_or_update_workspace(workspace_root_path.data, {
                     path,
-                    document_top_tree_uri,
-                    last_filenode_path: opened_filenode.data?.path,
+                    recent_filenode_path,
                   });
                 }}
               >

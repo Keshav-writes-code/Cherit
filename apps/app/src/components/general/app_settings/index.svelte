@@ -3,7 +3,9 @@
   import type { Component } from 'svelte';
   import { sidebar_items } from './sidebar_items';
   import { fade } from 'svelte/transition';
-  import { current_platform_type } from '@/lib/states';
+  import { current_platform_type } from '@/lib/states/session';
+  import { persistent_states } from '@/lib/states/persistent/index.svelte';
+  import type { AppPersistentState } from '@/lib/states/persistent/index.svelte.ts';
 
   const viewMap: Record<string, Component> = {};
   let activeTab = $state<string>();
@@ -69,6 +71,46 @@
             <span>Back to Menu</span>
           </button>
         {/if}
+        <button
+          class="btn"
+          onclick={async () => {
+            const data = await persistent_states.load();
+          }}>get persistent states</button
+        >
+        <button
+          class="btn"
+          onclick={async () => {
+            const data: AppPersistentState = {
+              schema_version: 1,
+              app_config: {
+                workspaces_metadata: [
+                  {
+                    path: {
+                      path: '/home/keshav/notes/',
+                      document_top_tree_uri: null,
+                    },
+                    last_accessed: new Date(),
+                    recent_filenode_path: {
+                      path: '/home/keshav/notes',
+                      document_top_tree_uri: null,
+                    },
+                  },
+                ],
+              },
+              secure: {
+                llm_api: 'askjdas;lidugpauisyd',
+              },
+            };
+
+            persistent_states.states = data;
+            await persistent_states.save();
+          }}>save persistent states</button
+        >
+        <pre class="w-full">{JSON.stringify(
+            persistent_states.states,
+            null,
+            '\t'
+          )}</pre>
 
         <ActiveView />
       </div>

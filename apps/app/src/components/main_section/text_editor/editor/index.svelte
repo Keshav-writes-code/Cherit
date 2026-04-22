@@ -5,8 +5,8 @@
   import { get_desktop_context_menu } from './context_menu';
   import { create_editor } from './editor_config';
   import './editor_config/theme.css';
-  import { current_platform_type } from '@/lib/states/';
-  import { context_menu } from '@/lib/states';
+  import { current_platform_type } from '@/lib/states/session/';
+  import { context_menu } from '@/lib/states/session';
   let {
     text_content,
     write_to_file,

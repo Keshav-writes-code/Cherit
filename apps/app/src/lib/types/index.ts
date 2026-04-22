@@ -20,8 +20,7 @@ export type SubmitStates =
   | 'waiting'
   | 'success'
   | 'error';
-
-import { workspace } from '@/lib/states';
-import z from 'zod';
-export type Workspace = z.infer<typeof workspace>;
-export * from './schema';
+export type GenericPath = {
+  path: string;
+  document_top_tree_uri: string | null;
+};

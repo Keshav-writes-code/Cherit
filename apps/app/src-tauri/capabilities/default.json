@@ -6,7 +6,6 @@
   "permissions": [
     "core:default",
     "fs:default",
-    "store:default",
     "dialog:default",
     "core:window:allow-start-dragging",
     "core:window:allow-close",
@@ -24,4 +23,3 @@
     "clipboard-manager:allow-write-text"
   ]
 }
-

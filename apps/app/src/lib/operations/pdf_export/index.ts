@@ -3,7 +3,7 @@ import { jsPDF } from 'jspdf';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
 import type { GenericPath } from '@/lib/types/';
-import { current_platform } from '@/lib/states';
+import { current_platform } from '@/lib/states/session';
 import { join_path } from '@/lib/operations/file_tree';
 
 export async function pdf_rendered(file_name: string, location: GenericPath) {

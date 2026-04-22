@@ -2,7 +2,7 @@ import { create, mkdir, remove, rename } from '@tauri-apps/plugin-fs';
 import { type Node, type GenericPath } from '@/lib/types/';
 import { AndroidFs } from 'tauri-plugin-android-fs-api';
 import { invoke } from '@tauri-apps/api/core';
-import { pending_app_changes, current_platform } from '@/lib/states';
+import { pending_app_changes, current_platform } from '@/lib/states/session';
 import {
   find_unused_name,
   get_parent_path,

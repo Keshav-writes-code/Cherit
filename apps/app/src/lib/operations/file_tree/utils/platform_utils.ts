@@ -1,4 +1,4 @@
-import { SEP } from '@/lib/states/domain_specific/os.svelte';
+import { SEP } from '@/lib/states/session/domain_specific/os.svelte';
 
 /**
  * Joins multiple path segments using the platform-specific separator.

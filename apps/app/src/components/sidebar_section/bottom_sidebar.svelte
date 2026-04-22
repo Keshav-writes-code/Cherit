@@ -1,6 +1,6 @@
 <script lang="ts">
   import { app_settings_dialog_open_state } from '@/components/general/app_settings/states.svelte';
-  import { workspace_root_path } from '@/lib/states';
+  import { workspace_root_path } from '@/lib/states/session';
   import { workspace_picker_dialog_open_state } from '@/components/general/workspace_selector/states.svelte';
 </script>
 

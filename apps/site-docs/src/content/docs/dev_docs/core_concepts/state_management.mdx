@@ -1,0 +1,115 @@
+---
+title: How State management works
+description: A discussion about how the various app states are managemed
+---
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+so generally, an app's states fall into 2 main categories
+
+<CardGrid>
+  <Card title="Sessions States" icon="seti:clock">
+    the non persistent states only required for current session and don't need to be persisted
+  </Card>
+  <Card title="Persistent States" icon="substack">
+    the states that need to be persisted amoung sessions
+  </Card>
+</CardGrid>
+
+In case of <span style="font-family: var(--font-astro-recoleta)" >Cherit</span>, we can divide states into further categories 
+
+```mermaid
+graph LR
+    %% Root
+    State["App States"]
+    State@{ icon: "iconoir:code-brackets-square" }
+
+    %% Level 1 - Split
+    Persistent["Persistent State<br/>(Rust Managed / Disk)"]
+    Persistent@{ icon: "iconoir:hard-drive" }
+
+    Session["Session State<br/>(Svelte Memory)"]
+    Session@{ icon: "iconoir:flash" }
+
+    State --> Persistent
+    State --> Session
+
+    %% Level 2 - Persistent Sub-types
+
+    Local["Local Config<br/>(Device Specific)"]
+    Local@{ icon: "iconoir:pc-check" }
+
+    Synced["Synced Config<br/>(Portable / Shareable)"]
+    Synced@{ icon: "iconoir:cloud-sync" }
+
+    Persistent --> Local
+    Persistent --> Synced
+
+    %% Level 3 - Persistent Items
+    LmmApi["LLM API Keys"]
+
+    LocalFile["
+      <p style="text-align:left">local_config.json
+        - All recent workpsaces
+        - Paired devices for sync
+        - LM provider's id
+        - LM's name
+        - LM provider API key
+      </p>"]
+
+    Local --> LmmApi
+    Local --> LocalFile
+
+    SyncedFile["<p style="text-align:left">synced_config.json
+      - Theme & Fonts (in future)
+      - Default LLM Provider</p>"]
+    Synced --> SyncedFile
+
+    %% Level 2 - Session Items
+    SingleComponent["Component States<br/>(Active Drafts)"]
+    MultiComponent["Multi Component<br/>(Context Menu)"]
+    Global["Global States<br/>(Memory File Tree)"]
+
+    Session --> SingleComponent
+    Session --> MultiComponent
+    Session --> Global
+```
+
+## What is being stored?
+
+2 files in the app data dir. and 1 in a secure way
+
+### 1. `local_config.json`
+
+a schema tracked plain json file managed by rust backend of the tauri app for storing locally.
+
+### 2. `synced_config.json`
+
+also an schema tracked plain json file managed by the rust backend for syncing across devices.
+
+### 3. Secure storage
+
+some sensitive data like api keys and things like that mustn't be accessible by the outside OS\
+to ensure that, the Secure Storage works on all platofrmsm, it a good decision to go with the official Tauri Plugin [Stronghold](https://v2.tauri.app/plugin/stronghold/) or [Keyring](https://crates.io/crates/keyring).
+
+## Communication Stratergy
+
+$$
+\text{Svelte} \longleftrightarrow \text{Rust}
+$$
+
+The frontend only cares about the sessions and persistent states. it doesn't care about which states are synced or stored securely.\
+Menaing, the rust backend will abstract away the syncing and secure storage system to the frontend\
+and the `src/lib/states` dir will have no mention of *Synced States* or *Secure States*
+
+the frontend always demands the data to be in the latest schema no matter the stored schema version. so the backend need to run migration and provide frontend the required data
+
+Simmilarly the Rust Backend doesn't care about the Frontend Session States
+
+the only way Frontend -> Backend communicate is 2 simple tauri commands:
+- one to get a json representing persistent states. or getting a partial state by telling the backend, which states to get
+- one to set persistent states. this has to give the compelete persistent state to the backend
+
+anytime, the frontend wanted to ask for persistent states, the tauri backend will respond with the full data not with a part of it
+
+## Frontend
+the fronend always talks in the latest schema and also speaks with a customized schema for frontend that doesn't mention local or synced states and schema version of any

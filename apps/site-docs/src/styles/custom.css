@@ -1,6 +1,6 @@
 /* src/styles/custom.css */
 :root {
-  --sl-font: var(--font-astro-inter);
+  --sl-font: var(--font-astro-satoshi), sans;
 }
 h1,
 h2 {

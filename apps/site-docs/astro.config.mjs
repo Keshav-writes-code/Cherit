@@ -9,15 +9,44 @@ import starlightSidebarTopics from 'starlight-sidebar-topics';
 
 import mdx from '@astrojs/mdx';
 
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+
 export default defineConfig({
   prefetch: true,
   integrations: [
     sitemap(),
     robotsTxt(),
-    mermaid(),
+    mermaid({
+      iconPacks: [
+        {
+          name: 'logos',
+          loader: () =>
+            fetch('https://unpkg.com/@iconify-json/logos@1/icons.json').then(
+              (res) => res.json()
+            ),
+        },
+        {
+          name: 'iconoir',
+          loader: () =>
+            fetch('https://unpkg.com/@iconify-json/iconoir@1/icons.json').then(
+              (res) => res.json()
+            ),
+        },
+      ],
+    }),
     starlight({
       title: 'Cherit',
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 4 },
+      head: [
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'stylesheet',
+            href: 'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css',
+          },
+        },
+      ],
       plugins: [
         starlightSidebarTopics([
           {
@@ -80,9 +109,14 @@ export default defineConfig({
       },
     },
     {
-      name: 'Inter',
-      cssVariable: '--font-astro-inter',
-      provider: fontProviders.fontsource(),
+      name: 'Satoshi',
+      cssVariable: '--font-astro-satoshi',
+      provider: fontProviders.fontshare(),
+      weights: [500],
     },
   ],
+  markdown: {
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex],
+  },
 });
