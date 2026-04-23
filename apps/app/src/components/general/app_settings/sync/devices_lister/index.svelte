@@ -3,7 +3,7 @@
   import { listen } from '@tauri-apps/api/event';
   import { onMount } from 'svelte';
   import { devices, type DiscoveredDevice } from '../states.svelte';
-  import { PLATFORM_TYPE_MAP } from '@/lib/states';
+  import { PLATFORM_TYPE_MAP } from '@/lib/states/session';
 
   onMount(async () => {
     await invoke('join_scan_local_network');

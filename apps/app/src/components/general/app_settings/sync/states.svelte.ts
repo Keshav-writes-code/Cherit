@@ -1,4 +1,4 @@
-import { PLATFORM_TYPE_MAP } from '@/lib/states';
+import { PLATFORM_TYPE_MAP } from '@/lib/states/session';
 
 export type DiscoveredDevice = {
   name: String;
