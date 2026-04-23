@@ -20,6 +20,7 @@
     {current_platform_type == 'desktop' && ' w-80% h-85% '}
     {current_platform_type == 'mobile' && 'size-100%  '}
     modal-box p-0 flex max-w-275 b-1 b-[color-mix(in_srgb,var(--color-base-content)_32%,black)] relative overflow-hidden"
+      style="padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);"
     >
       <aside
         class="max-w-63 w-full h-full b-r-1 b-r-[color-mix(in_srgb,var(--color-base-content)_22%,black)]
