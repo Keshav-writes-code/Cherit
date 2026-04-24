@@ -31,7 +31,12 @@ pub fn gen_nick_name() -> String {
 static IS_DISCOVERY_ENABLED: AtomicBool = AtomicBool::new(false);
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn join_scan_local_network(win: Window, nick_name: String) {
+pub fn join_scan_local_network(win: Window, nick_name: Option<String>) {
+    // First check if nick_name is sent and allow ths user to run this command again
+    let Some(nick_name_str) = nick_name else {
+        return;
+    };
+    // if nick_name sent then only run this one time
     if IS_DISCOVERY_ENABLED.swap(true, std::sync::atomic::Ordering::Relaxed) {
         return;
     }
@@ -43,14 +48,14 @@ pub fn join_scan_local_network(win: Window, nick_name: String) {
     let os = tauri_plugin_os::platform();
     let properties = [
         ("ip", active_ip.to_string()),
-        ("name", nick_name.clone()),
+        ("name", nick_name_str.clone()),
         ("hostname2", host_name_2),
         ("os", os.to_string()),
     ];
 
     let service = ServiceInfo::new(
         SERVICE_TYPE,
-        &nick_name,
+        &nick_name_str,
         &host_name,
         active_ip,
         8080,
