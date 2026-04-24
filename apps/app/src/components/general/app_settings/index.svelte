@@ -11,7 +11,6 @@
   let ActiveView: Component | undefined = $derived.by(() =>
     activeTab ? viewMap[activeTab] : undefined
   );
-  $inspect(activeTab);
 </script>
 
 {#if app_settings_dialog_open_state.data}
@@ -46,7 +45,7 @@
                       class=" {activeTab == item.id && 'bg-base-content/10 '}"
                       onclick={() => (activeTab = item.id)}
                     >
-                      <div class=" size-4 {item.icon}"></div>
+                      <div class=" size-4 {item.icon_class}"></div>
 
                       <p class="text-3.5">{item.label}</p>
                     </button>

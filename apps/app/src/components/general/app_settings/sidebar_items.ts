@@ -4,7 +4,7 @@ export const sidebar_items: {
   items: {
     id: string;
     label: string;
-    icon: string;
+    icon_class: string;
   }[];
 }[] = [
   {
@@ -13,7 +13,7 @@ export const sidebar_items: {
       {
         id: 'sync',
         label: 'Sync',
-        icon: 'i-tabler:refresh',
+        icon_class: 'i-tabler:refresh -scale-x-100',
       },
     ],
   },
