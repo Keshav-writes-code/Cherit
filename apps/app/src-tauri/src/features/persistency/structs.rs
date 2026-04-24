@@ -113,7 +113,7 @@ impl AppPersistentStates {
         let file = fs::File::options().read(true).open(path)?;
         *self = serde_json::from_reader(&file)?;
 
-        // Run migrations if needed
+        //  Do not Run migrations if not needed
         if self.schema_version == LATEST_SCHEMA_V {
             return Ok(());
         }
