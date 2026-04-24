@@ -40,6 +40,7 @@ chrono = { version = "0.4.44", features = ["serde"] }
 mdns-sd = "0.18.2"
 rand = "0.9.2"
 local-ip-address = "0.6.10"
+tauri-plugin-device-info = "1.0.1"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.

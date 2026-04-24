@@ -45,6 +45,7 @@
         "svelte-animated-details": "^1.0.2",
         "svelte-sonner": "^1.0.7",
         "tauri-plugin-android-fs-api": "^26.1.0",
+        "tauri-plugin-device-info-api": "^1.0.1",
         "zod": "^4.3.6",
       },
       "devDependencies": {
@@ -1857,6 +1858,8 @@
     "symbol-tree": ["symbol-tree@3.2.4", "", {}, "sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw=="],
 
     "tauri-plugin-android-fs-api": ["tauri-plugin-android-fs-api@26.1.0", "", { "dependencies": { "@tauri-apps/api": "^2.0.0", "create-web-stream": "^1.1.1" } }, "sha512-MmRg+ozxJJGsbFGcKMKpxm/6yoGoo227RDELRqJuYXTdKjFYxwoVeIC0XzJetDHtSCbdvkaEPhAulTZs3ioWyA=="],
+
+    "tauri-plugin-device-info-api": ["tauri-plugin-device-info-api@1.0.1", "", { "dependencies": { "@tauri-apps/api": "^2.0.0" } }, "sha512-d2QoatWeQ6X09fdEDdWSKzBVSZv9x8LpksJP/gfv4WeRmZwJRsLLMf1++qOw7PdOmQlNoKHFcKXPZlr2n4irdg=="],
 
     "text-segmentation": ["text-segmentation@1.0.3", "", { "dependencies": { "utrie": "^1.0.2" } }, "sha512-iOiPUo/BGnZ6+54OsWxZidGCsdU8YbE4PSpdPinp7DeMtUJNJBoJ/ouUSTJjHkh1KntHaltHl/gDs2FC4i5+Nw=="],
 
