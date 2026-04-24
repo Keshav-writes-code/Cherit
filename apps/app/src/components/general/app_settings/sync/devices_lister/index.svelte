@@ -31,7 +31,7 @@
       </div>
       <div>
         <div>
-          {device.name}
+          <p class="capitalize">{device.name}</p>
         </div>
         <div class="text-xs uppercase font-semibold opacity-60">
           <span class="badge">
