@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::atomic::AtomicBool};
 
 use local_ip_address::local_ip;
 use mdns_sd::{ServiceDaemon, ServiceEvent, ServiceInfo};
@@ -28,8 +28,13 @@ pub fn gen_nick_name() -> String {
     )
 }
 
+static IS_DISCOVERY_ENABLED: AtomicBool = AtomicBool::new(false);
+
 #[tauri::command(rename_all = "snake_case")]
 pub fn join_scan_local_network(win: Window, nick_name: String) {
+    if IS_DISCOVERY_ENABLED.swap(true, std::sync::atomic::Ordering::Relaxed) {
+        return;
+    }
     static SERVICE_TYPE: &str = "_cherit._udp.local.";
     let deamon = ServiceDaemon::new().expect("Cannot create mdns deamon");
     let active_ip = local_ip().expect("Failed to get local IP");
