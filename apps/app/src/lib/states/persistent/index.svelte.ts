@@ -12,8 +12,13 @@ export type WorkspaceMetadata = {
   recent_filenode_path: GenericPath | undefined;
 };
 
+type SyncConfig = {
+  nick_name: string;
+};
+
 type AppConfig = {
   workspaces_metadata: WorkspaceMetadata[];
+  sync_config: SyncConfig;
 };
 
 type AppSecureConfig = {

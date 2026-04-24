@@ -7,6 +7,8 @@ use std::{
 };
 use tauri::{AppHandle, Manager};
 
+use crate::features::sync::discovery::gen_nick_name;
+
 const CONFIG_FILE_NAME: &str = "config.json";
 const LATEST_SCHEMA_V: u8 = 1;
 
@@ -25,15 +27,31 @@ struct WorkspaceMetaData {
     recent_filenode_path: Option<GenericPath>,
 }
 
+// Domain : Sync Feature
+#[derive(Serialize, Deserialize, Clone)]
+struct SyncConfig {
+    nick_name: String,
+}
+
+impl SyncConfig {
+    pub fn new() -> Self {
+        Self {
+            nick_name: gen_nick_name(),
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone)]
 struct AppConfig {
     workspaces_metadata: Vec<WorkspaceMetaData>,
+    sync_config: SyncConfig,
 }
 
 impl AppConfig {
     pub fn new() -> Self {
         Self {
             workspaces_metadata: vec![],
+            sync_config: SyncConfig::new(),
         }
     }
 }

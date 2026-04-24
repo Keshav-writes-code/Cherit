@@ -4,10 +4,13 @@
   import { onMount } from 'svelte';
   import { devices, type DiscoveredDevice } from '../states.svelte';
   import { PLATFORM_TYPE_MAP } from '@/lib/states/session';
+  import { persistent_states } from '@/lib/states/persistent/index.svelte';
 
   onMount(async () => {
-    await invoke('join_scan_local_network');
-    listen(
+    await invoke('join_scan_local_network', {
+      nick_name: persistent_states.states?.app_config.sync_config.nick_name,
+    });
+    await listen(
       'device_found',
       (data) =>
         (devices.data = data.payload as Record<string, DiscoveredDevice>)
@@ -39,7 +42,7 @@
           </span>
         </div>
       </div>
-      <button class="btn btn-square btn-ghost">
+      <button aria-label="Pair Button" class="btn btn-square btn-ghost">
         <div class=" i-tabler:link size-5"></div>
       </button>
     </li>

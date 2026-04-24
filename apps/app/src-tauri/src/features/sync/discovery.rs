@@ -14,11 +14,11 @@ struct DiscoveredDevice {
     os: String,
 }
 
-fn gen_nick_name() -> String {
+pub fn gen_nick_name() -> String {
     use rand::prelude::*;
 
-    const ADJECTIVES: &[&str] = &["swift", "cozy", "brave", "clever", "sunny"];
-    const NOUN: &[&str] = &["fox", "panda", "falcon", "otter", "tiger"];
+    static ADJECTIVES: &[&str] = &["swift", "cozy", "brave", "clever", "sunny"];
+    static NOUN: &[&str] = &["fox", "panda", "falcon", "otter", "tiger"];
     let mut rng = rand::rng();
 
     format!(
@@ -28,25 +28,24 @@ fn gen_nick_name() -> String {
     )
 }
 
-#[tauri::command]
-pub fn join_scan_local_network(win: Window) {
-    const SERVICE_TYPE: &str = "_cherit._udp.local.";
+#[tauri::command(rename_all = "snake_case")]
+pub fn join_scan_local_network(win: Window, nick_name: String) {
+    static SERVICE_TYPE: &str = "_cherit._udp.local.";
     let deamon = ServiceDaemon::new().expect("Cannot create mdns deamon");
-    let name = gen_nick_name();
     let active_ip = local_ip().expect("Failed to get local IP");
     let host_name = format!("{}.local.", active_ip);
     let host_name_2 = tauri_plugin_os::hostname();
     let os = tauri_plugin_os::platform();
     let properties = [
         ("ip", active_ip.to_string()),
-        ("name", name.to_string()),
+        ("name", nick_name.clone()),
         ("hostname2", host_name_2),
         ("os", os.to_string()),
     ];
 
     let service = ServiceInfo::new(
         SERVICE_TYPE,
-        &name,
+        &nick_name,
         &host_name,
         active_ip,
         8080,
@@ -66,7 +65,14 @@ pub fn join_scan_local_network(win: Window) {
                 if host_name == info.get_hostname() {
                     continue;
                 }
-                let (Some(name), Some(ip), Some(host_name_2_fetched), Some(os)) = (info.get_property_val_str("name"), info.get_property_val_str("ip"), info.get_property_val_str("hostname2"), info.get_property_val_str("os")) else {continue;};
+                let (Some(name), Some(ip), Some(host_name_2_fetched), Some(os)) = (
+                    info.get_property_val_str("name"),
+                    info.get_property_val_str("ip"),
+                    info.get_property_val_str("hostname2"),
+                    info.get_property_val_str("os"),
+                ) else {
+                    continue;
+                };
 
                 let device = DiscoveredDevice {
                     name: name.to_string(),
