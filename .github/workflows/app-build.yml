@@ -71,15 +71,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-
 
-      - name: Cache Frontend Builds
-        uses: actions/cache@v4
-        with:
-          path: |
-            apps/app/node_modules/.vite
-          key: ${{ runner.os }}-svelte-vite-${{ hashFiles('apps/app/src/**') }}
-          restore-keys: |
-            ${{ runner.os }}-svelte-vite-
-
       - name: install frontend dependencies
         run: bun i
 
