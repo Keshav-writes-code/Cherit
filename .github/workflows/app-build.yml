@@ -1,0 +1,151 @@
+name: 'app-build'
+
+on:
+  workflow_call:
+    inputs:
+      build-mode:
+        required: true
+        type: string
+      publish:
+        required: false
+        type: boolean
+        default: false
+      platform:
+        required: true
+        type: string
+      mobile:
+        required: false
+        type: string
+        default: ''
+      args:
+        required: false
+        type: string
+        default: ''
+      environment:
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  build:
+    runs-on: ${{ inputs.platform }}
+    environment: ${{ inputs.environment || '' }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Free up disk space on Linux runners
+        uses: mathio/gha-cleanup@v1
+        if: startsWith(inputs.platform, 'ubuntu')
+        with:
+          remove-browsers: true
+          verbose: true
+
+      - name: Fix Android Directory Permissions
+        if: startsWith(inputs.platform, 'ubuntu')
+        run: |
+          sudo mkdir -p /usr/local/lib/android
+          sudo chown -R $USER:$USER /usr/local/lib/android
+
+      - name: install dependencies (ubuntu only)
+        if: startsWith(inputs.platform, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev xdg-utils
+
+      # ------------- Node & Frontend Cache -------------
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: setup bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb', '**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: install frontend dependencies
+        run: bun i
+
+      # ------------- Rust & Cargo Cache -------------
+      - name: install Rust stable (desktop)
+        if: inputs.mobile == ''
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: install Rust stable (android)
+        if: inputs.mobile == 'android'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+          workspaces: apps/app/src-tauri
+          key: ${{ inputs.platform }}-${{ inputs.args }}
+
+      # ------------- Android -------------
+      - name: Set up JDK
+        if: inputs.mobile == 'android'
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Gradle
+        if: inputs.mobile == 'android'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Setup Android SDK
+        if: inputs.mobile == 'android'
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Android NDK
+        if: inputs.mobile == 'android'
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r29
+          link-to-sdk: true
+
+      - name: setup Android signing
+        if: inputs.mobile == 'android'
+        run: |
+          cd apps/app/src-tauri/gen/android
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" > keystore.properties
+          echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" >> keystore.properties
+          base64 -d <<< "${{ secrets.ANDROID_KEY_BASE64 }}" > $RUNNER_TEMP/keystore.jks
+          echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
+
+      # ---------------- Tauri -----------------
+      - name: Build Tauri Project
+        uses: tauri-apps/tauri-action@8236c82510173ef930d644f38790c4cf3fd43cf2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        with:
+          projectPath: 'apps/app'
+          uploadWorkflowArtifacts: ${{ inputs.publish != true }}
+          workflowArtifactNamePattern: '[name]-v[version]-[platform]-[arch]-[mode][ext]'
+          tagName: "${{ inputs.publish == true && 'v__VERSION__' || '' }}"
+          releaseName: "${{ inputs.publish == true && 'Cherit v__VERSION__' || '' }}"
+          releaseAssetNamePattern: '[name]-[platform]-[arch][ext]'
+          releaseBody: "${{ inputs.publish == true && 'Download from Website : [Download](https://keshav.is-a.dev/Cherit/download/)' || '' }}"
+          releaseDraft: ${{ inputs.publish == true }}
+          prerelease: false
+          args: ${{ inputs.args }}${{ inputs.build-mode == 'debug' && ' --debug' || '' }}
+          mobile: ${{ inputs.mobile }}
