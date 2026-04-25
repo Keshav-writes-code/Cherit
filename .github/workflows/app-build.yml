@@ -103,11 +103,11 @@ jobs:
           key: ${{ inputs.platform }}-${{ inputs.args }}
 
       - name: setup mold
-        if: startsWith(matrix.platform, 'ubuntu')
+        if: startsWith(inputs.platform, 'ubuntu')
         uses: rui314/setup-mold@v1
 
       - name: setup_windows_linker
-        if: startsWith(matrix.platform, 'windows')
+        if: startsWith(inputs.platform, 'windows')
         shell: bash
         run: echo "RUSTFLAGS=-C linker=rust-lld" >> $GITHUB_ENV
 
