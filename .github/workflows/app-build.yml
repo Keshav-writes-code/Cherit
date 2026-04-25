@@ -4,6 +4,7 @@ on:
   workflow_call:
     inputs:
       build-mode:
+        description: Can only be set to 'release' or 'debug'
         required: true
         type: string
       publish:
@@ -35,7 +36,7 @@ jobs:
 
       - name: Free up disk space on Linux runners
         uses: mathio/gha-cleanup@v1
-        if: startsWith(inputs.platform, 'ubuntu')
+        if: startsWith(inputs.platform, 'ubuntu') && inputs.build-mode == 'debug'
         with:
           remove-browsers: true
           verbose: true
