@@ -93,22 +93,6 @@ jobs:
           workspaces: apps/app/src-tauri
           key: ${{ inputs.platform }}-${{ inputs.args }}
 
-      - name: setup mold
-        if: startsWith(inputs.platform, 'ubuntu')
-        uses: rui314/setup-mold@v1
-
-      - name: setup_windows_linker
-        if: startsWith(inputs.platform, 'windows')
-        shell: bash
-        run: echo "RUSTFLAGS=-C linker=rust-lld" >> $GITHUB_ENV
-
-      - name: setup_linux_linker
-        if: startsWith(inputs.platform, 'ubuntu') && inputs.mobile != 'android'
-        shell: bash
-        run: |
-          sudo apt-get install -y clang
-          echo "RUSTFLAGS=-C linker=clang -C link-arg=-fuse-ld=mold" >> $GITHUB_ENV
-
       # ------------- Android -------------
       - name: Set up JDK
         if: inputs.mobile == 'android'
