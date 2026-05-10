@@ -24,7 +24,9 @@ pub fn run() {
             features::persistency::commands::save_persistent_states,
             features::sync::discovery::join_local_network,
             features::sync::discovery::stop_scan_and_discover,
-            features::sync::discovery::scan_local_network
+            features::sync::discovery::scan_local_network,
+            features::sync::discovery::stop_scan,
+            features::sync::discovery::stop_discovery,
         ])
         .setup(|app| {
             let app_config = AppPersistentStates::new();

@@ -48,11 +48,20 @@ fn get_daemon() -> ServiceDaemon {
 
 #[tauri::command]
 pub fn stop_scan_and_discover() {
+    stop_scan();
+    stop_discovery();
+}
+
+#[tauri::command]
+pub fn stop_scan() {
     let mut scan_task_guard = SCAN_TASK.lock().unwrap();
     if let Some(task) = scan_task_guard.take() {
         task.abort();
     }
+}
 
+#[tauri::command]
+pub fn stop_discovery() {
     let mut mdns_daemon = MDNS_SD_DAEMON.lock().unwrap();
     if let Some(daemon) = mdns_daemon.take() {
         daemon.shutdown().expect("Cannot shutdown daemon");
