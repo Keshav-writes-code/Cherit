@@ -1,20 +1,26 @@
 <script lang="ts">
   import { invoke } from '@tauri-apps/api/core';
-  import { listen } from '@tauri-apps/api/event';
-  import { onMount } from 'svelte';
+  import { listen, type UnlistenFn } from '@tauri-apps/api/event';
+  import { onDestroy, onMount } from 'svelte';
   import { devices, type DiscoveredDevice } from '../states.svelte';
   import { PLATFORM_TYPE_MAP } from '@/lib/states/session';
   import { persistent_states } from '@/lib/states/persistent/index.svelte';
 
+  let devices_unlistner: UnlistenFn | undefined;
   onMount(async () => {
-    await invoke('join_scan_local_network', {
+    await invoke('join_local_network', {
       nick_name: persistent_states.states?.app_config.sync_config.nick_name,
     });
-    await listen(
+    await invoke('scan_local_network');
+    devices_unlistner = await listen(
       'device_found',
       (data) =>
         (devices.data = data.payload as Record<string, DiscoveredDevice>)
     );
+  });
+  onDestroy(async () => {
+    if (devices_unlistner) devices_unlistner();
+    await invoke('stop_scan_and_discover');
   });
 </script>
 

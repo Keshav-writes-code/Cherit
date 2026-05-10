@@ -1,4 +1,7 @@
-use std::{collections::HashMap, sync::atomic::AtomicBool};
+use std::{
+    collections::HashMap,
+    sync::{atomic::AtomicBool, Mutex},
+};
 
 use local_ip_address::local_ip;
 use mdns_sd::{ServiceDaemon, ServiceEvent, ServiceInfo};
@@ -10,6 +13,7 @@ use tauri_plugin_os::OsType;
 struct DiscoveredDevice {
     name: String,
     ip: String,
+    //the Os Hostname
     host_name_2: String,
     os: String,
 }
@@ -28,49 +32,49 @@ pub fn gen_nick_name() -> String {
     )
 }
 
-static IS_DISCOVERY_ENABLED: AtomicBool = AtomicBool::new(false);
+// MDNS Daemon Variables
+static MDNS_SD_DAEMON: Mutex<Option<ServiceDaemon>> = Mutex::new(None);
+static SERVICE_TYPE: &str = "_cherit._udp.local.";
 
-#[tauri::command(rename_all = "snake_case")]
-pub fn join_scan_local_network(win: Window, nick_name: Option<String>) {
-    // First check if nick_name is sent and allow ths user to run this command again
-    let Some(nick_name_str) = nick_name else {
-        return;
-    };
-    // if nick_name sent then only run this one time
-    if IS_DISCOVERY_ENABLED.swap(true, std::sync::atomic::Ordering::Relaxed) {
-        return;
+// Tauri COmmands Variables
+static SCAN_TASK: Mutex<Option<tauri::async_runtime::JoinHandle<()>>> = Mutex::new(None);
+
+fn get_daemon() -> ServiceDaemon {
+    let mut guard = MDNS_SD_DAEMON.lock().unwrap();
+    let daemon =
+        guard.get_or_insert_with(|| ServiceDaemon::new().expect("Cannot create Service Daemon"));
+    daemon.clone()
+}
+
+#[tauri::command]
+pub fn stop_scan_and_discover() {
+    let mut scan_task_guard = SCAN_TASK.lock().unwrap();
+    if let Some(task) = scan_task_guard.take() {
+        task.abort();
     }
-    static SERVICE_TYPE: &str = "_cherit._udp.local.";
-    let deamon = ServiceDaemon::new().expect("Cannot create mdns deamon");
-    let active_ip = local_ip().expect("Failed to get local IP");
-    let host_name = format!("{}.local.", active_ip);
-    let host_name_2 = tauri_plugin_os::hostname();
-    let os = tauri_plugin_os::platform();
-    let properties = [
-        ("ip", active_ip.to_string()),
-        ("name", nick_name_str.clone()),
-        ("hostname2", host_name_2),
-        ("os", os.to_string()),
-    ];
 
-    let service = ServiceInfo::new(
-        SERVICE_TYPE,
-        &nick_name_str,
-        &host_name,
-        active_ip,
-        8080,
-        &properties[..],
-    )
-    .expect("Cannot create ServiceInfo")
-    .enable_addr_auto();
-    deamon.register(service).expect("Cannot join service");
+    let mut mdns_daemon = MDNS_SD_DAEMON.lock().unwrap();
+    if let Some(daemon) = mdns_daemon.take() {
+        daemon.shutdown().expect("Cannot shutdown daemon");
+    }
+}
 
-    // Scan Local Network
-    std::thread::spawn(move || {
-        let receiver = deamon.browse(SERVICE_TYPE).unwrap();
+#[tauri::command]
+pub fn scan_local_network(win: Window) {
+    let mut scan_task_guard = SCAN_TASK.lock().unwrap();
+    if let Some(task) = scan_task_guard.take() {
+        task.abort();
+    }
+
+    let handle = tauri::async_runtime::spawn(async move {
+        let daemon = get_daemon();
+        let receiver = daemon.browse(SERVICE_TYPE).unwrap();
+        let active_ip = local_ip().expect("Failed to get local IP");
+        let host_name = format!("{}.local.", active_ip);
+
         let mut recevied_devices = HashMap::<String, DiscoveredDevice>::new();
 
-        while let Ok(event) = receiver.recv() {
+        while let Ok(event) = receiver.recv_async().await {
             if let ServiceEvent::ServiceResolved(info) = event {
                 if host_name == info.get_hostname() {
                     continue;
@@ -98,4 +102,37 @@ pub fn join_scan_local_network(win: Window, nick_name: Option<String>) {
             }
         }
     });
+    *scan_task_guard = Some(handle);
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn join_local_network(win: Window, nick_name: Option<String>) {
+    // First check if nick_name is sent and allow ths user to run this command again
+    let Some(nick_name_str) = nick_name else {
+        return;
+    };
+
+    let daemon = get_daemon();
+    let active_ip = local_ip().expect("Failed to get local IP");
+    let host_name = format!("{}.local.", active_ip);
+    let host_name_2 = tauri_plugin_os::hostname();
+    let os = tauri_plugin_os::platform();
+    let properties = [
+        ("ip", active_ip.to_string()),
+        ("name", nick_name_str.clone()),
+        ("hostname2", host_name_2),
+        ("os", os.to_string()),
+    ];
+
+    let service = ServiceInfo::new(
+        SERVICE_TYPE,
+        &nick_name_str,
+        &host_name,
+        active_ip,
+        8080,
+        &properties[..],
+    )
+    .expect("Cannot create ServiceInfo")
+    .enable_addr_auto();
+    daemon.register(service).expect("Cannot join service");
 }

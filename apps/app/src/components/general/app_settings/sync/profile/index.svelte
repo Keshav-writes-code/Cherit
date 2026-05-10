@@ -2,6 +2,7 @@
   import { persistent_states } from '@/lib/states/persistent/index.svelte';
   import { getNetworkInfo } from 'tauri-plugin-device-info-api';
   import { onMount } from 'svelte';
+  import { toast } from 'svelte-sonner';
 
   let ip = $state<string>();
   let new_nick_name = $derived(
@@ -19,7 +20,12 @@
     enable_rename_nick_name = false;
     if (!new_nick_name || !persistent_states.states) return;
     persistent_states.states.app_config.sync_config.nick_name = new_nick_name;
-    await persistent_states.save();
+    try {
+      await persistent_states.save();
+    } catch (error) {
+      if (error instanceof Error)
+        toast.error(error.message, { description: error.stack });
+    }
   }
 </script>
 
